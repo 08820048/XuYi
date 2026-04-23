@@ -23,9 +23,12 @@ service = "xuyi"
 
 [[d1_databases]]
 binding = "DB"
+database_name = "xuyi-db"
+database_id = "e5b9fb9b-baf2-477c-99e0-cc7388de6e6f"
 
 [[r2_buckets]]
 binding = "IMAGES"
+bucket_name = "xuyi-images"
 
 # Optional Queue binding for background jobs. Uncomment after creating the queue.
 # [[queues.producers]]
