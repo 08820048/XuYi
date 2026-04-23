@@ -1,0 +1,10 @@
+{
+  "id": "qiaomu-blog-publisher",
+  "name": "XuYi'Blog Publisher",
+  "version": "1.0.0",
+  "minAppVersion": "1.0.0",
+  "description": "一键发布笔记到 XuYi'Blog 草稿",
+  "author": "joeseesun",
+  "authorUrl": "https://github.com/joeseesun",
+  "isDesktopOnly": false
+}
