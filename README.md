@@ -1,7 +1,7 @@
 # XuYi'Blog Open Source
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/joeseesun/qiaomu-blog-opensource)
-[![Use this template](https://img.shields.io/badge/GitHub-Use%20this%20template-111111?logo=github)](https://github.com/joeseesun/qiaomu-blog-opensource/generate)
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/08820048/XuYi-Blog)
+[![Use this template](https://img.shields.io/badge/GitHub-Use%20this%20template-111111?logo=github)](https://github.com/08820048/XuYi-Blog/generate)
 
 如果你也想拥有一个真正属于自己的学习、写作、分享阵地，而不是把内容完全寄托在平台算法上，这个项目就是为此做的。
 
@@ -9,7 +9,7 @@ XuYi'Blog Open Source 不是一个只会渲染 Markdown 的静态模板，而是
 
 - 在线示例：<https://blog.qiaomu.ai/>
 - 介绍文章：<https://blog.qiaomu.ai/qiaomu-blog-opensource>
-- 当前仓库：<https://github.com/joeseesun/qiaomu-blog-opensource>
+- 当前仓库：<https://github.com/08820048/XuYi-Blog>
 
 ## 为什么值得做成自己的站
 
@@ -100,8 +100,8 @@ npm run deploy
 ## 本地开发
 
 ```bash
-git clone https://github.com/joeseesun/qiaomu-blog-opensource.git
-cd qiaomu-blog-opensource
+git clone https://github.com/08820048/XuYi-Blog.git
+cd XuYi-Blog
 npm install
 cp .env.example .env.local
 npm run dev

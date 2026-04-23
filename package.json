@@ -72,11 +72,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/joeseesun/qiaomu-blog-opensource.git"
+    "url": "git+https://github.com/08820048/XuYi-Blog.git"
   },
-  "homepage": "https://github.com/joeseesun/qiaomu-blog-opensource",
+  "homepage": "https://github.com/08820048/XuYi-Blog",
   "bugs": {
-    "url": "https://github.com/joeseesun/qiaomu-blog-opensource/issues"
+    "url": "https://github.com/08820048/XuYi-Blog/issues"
   },
   "cloudflare": {
     "bindings": {
