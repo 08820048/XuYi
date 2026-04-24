@@ -60,6 +60,7 @@ import type { EditorImageActionTarget } from '@/lib/resizable-image'
 import { buildAutoDescription, normalizePostSlug, sanitizePostSlugInput } from '@/lib/post-utils'
 import { getSiteDisplayUrl } from '@/lib/site-config'
 import { resizeTextareaHeight, useAutoResizeTextarea } from '@/lib/textarea-autosize'
+import { transformHtmlMathDelimiters } from '@/lib/math-html'
 
 type SaveFeedback =
   | { type: 'success' | 'error'; message: string; slug?: string }
@@ -1114,7 +1115,7 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
                       setCharCount(st.characterCount?.characters?.() ?? 0)
                       if (initialData?.html) {
                         skipNextEditorUpdateRef.current = true
-                        editor.commands.setContent(initialData.html)
+                        editor.commands.setContent(transformHtmlMathDelimiters(initialData.html))
                       } else {
                         skipNextEditorUpdateRef.current = false
                       }

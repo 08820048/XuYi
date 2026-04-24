@@ -10,6 +10,7 @@ import { PasswordPrompt } from '@/components/PasswordPrompt'
 import { DownloadMarkdown } from '@/components/DownloadMarkdown'
 import { TwitterEmbedsEnhancer } from '@/components/TwitterEmbedsEnhancer'
 import { CodeHighlightEnhancer } from '@/components/CodeHighlightEnhancer'
+import { MathRenderEnhancer } from '@/components/MathRenderEnhancer'
 import { getSiteHeaderData } from '@/lib/site'
 import { getRelatedPosts } from '@/lib/related-content'
 import { getPublicContentCacheNamespace } from '@/lib/cache'
@@ -287,6 +288,7 @@ export default async function PostPage({
               dangerouslySetInnerHTML={{ __html: post.html }}
             />
             <CodeHighlightEnhancer containerId={contentContainerId} html={post.html} />
+            <MathRenderEnhancer containerId={contentContainerId} html={post.html} />
             <TwitterEmbedsEnhancer containerId={contentContainerId} html={post.html} />
 
             {related.results.length > 0 && (

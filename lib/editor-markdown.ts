@@ -2,6 +2,7 @@ import { DOMParser as PMDOMParser } from '@tiptap/pm/model'
 import { TextSelection } from '@tiptap/pm/state'
 import type { EditorInstance } from 'novel'
 import markdownit from 'markdown-it'
+import { transformHtmlMathDelimiters } from '@/lib/math-html'
 
 const markdownParser = markdownit({
   html: false,
@@ -24,12 +25,12 @@ function resolveRange(editor: EditorInstance, range?: { from: number; to: number
 
 function createMarkdownSlice(editor: EditorInstance, markdown: string) {
   const wrapper = document.createElement('div')
-  wrapper.innerHTML = markdownParser.render(markdown.trim())
+  wrapper.innerHTML = transformHtmlMathDelimiters(markdownParser.render(markdown.trim()))
   return PMDOMParser.fromSchema(editor.state.schema).parseSlice(wrapper)
 }
 
 export function renderMarkdownToHtml(markdown: string) {
-  return markdownParser.render(markdown.trim())
+  return transformHtmlMathDelimiters(markdownParser.render(markdown.trim()))
 }
 
 export function replaceEditorRangeWithMarkdown(

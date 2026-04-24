@@ -76,6 +76,7 @@ import {
 } from './editor-events'
 import { shouldShowEditorBubble } from './editor-bubble'
 import { createDefaultTableContent, hasMarkdownTable, normalizeUrl } from './editor-utils'
+import { containsMathSyntax, transformHtmlMathDelimiters } from './math-html'
 
 const md = markdownit({ html: true })
 const lowlight = createLowlight(common)
@@ -504,7 +505,19 @@ export function buildEditorProps(
       const plainText = event.clipboardData?.getData('text/plain') ?? ''
       if (hasMarkdownTable(plainText)) {
         event.preventDefault()
-        const html = md.render(plainText)
+        const html = transformHtmlMathDelimiters(md.render(plainText))
+        const { state, dispatch } = view
+        const wrapper = document.createElement('div')
+        wrapper.innerHTML = html
+        const slice = PMDOMParser.fromSchema(state.schema).parseSlice(wrapper)
+        const tr = state.tr.replaceSelection(slice)
+        dispatch(tr)
+        return true
+      }
+
+      if (plainText && containsMathSyntax(plainText)) {
+        event.preventDefault()
+        const html = transformHtmlMathDelimiters(md.render(plainText))
         const { state, dispatch } = view
         const wrapper = document.createElement('div')
         wrapper.innerHTML = html

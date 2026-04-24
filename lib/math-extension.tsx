@@ -45,7 +45,7 @@ function MathComponent(props: ReactNodeViewProps) {
 
   if (editing) {
     return (
-      <NodeViewWrapper className="math-node-editing" data-type="math">
+      <NodeViewWrapper as="span" className="math-node-editing" data-type="math">
         <div className="math-editor-container">
           <label className="math-editor-label">
             {displayMode ? '块级公式 (LaTeX)' : '行内公式 (LaTeX)'}
@@ -84,6 +84,7 @@ function MathComponent(props: ReactNodeViewProps) {
 
   return (
     <NodeViewWrapper
+      as="span"
       className={`math-node-rendered ${selected ? 'math-selected' : ''}`}
       data-type="math"
       onClick={() => setEditing(true)}
@@ -97,9 +98,10 @@ function MathComponent(props: ReactNodeViewProps) {
 // ── Tiptap Node 扩展 ──
 export const MathNode = Node.create({
   name: 'mathBlock',
-  group: 'block',
+  group: 'inline',
+  inline: true,
   atom: true,
-  draggable: true,
+  draggable: false,
 
   addAttributes() {
     return {
@@ -109,7 +111,7 @@ export const MathNode = Node.create({
   },
 
   parseHTML() {
-    return [{ tag: 'div[data-math-latex]' }]
+    return [{ tag: 'div[data-math-latex]' }, { tag: 'span[data-math-latex]' }]
   },
 
   renderHTML({ HTMLAttributes }) {
@@ -122,7 +124,7 @@ export const MathNode = Node.create({
       rendered = `<code>${latex}</code>`
     }
     return [
-      'div',
+      'span',
       mergeAttributes(
         { 'data-math-latex': latex, 'data-display-mode': String(displayMode), class: 'math-block-wrapper' },
         HTMLAttributes
