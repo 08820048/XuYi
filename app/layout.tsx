@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import localFont from "next/font/local";
 import Script from "next/script";
+import { Suspense } from "react";
 import "./globals.css";
 import { GlobalShortcuts } from "@/components/GlobalShortcuts";
+import { RouteTransitionIndicator } from "@/components/RouteTransitionIndicator";
 import { ToastProvider } from "@/components/Toast";
 import { CustomJsInjector } from "@/components/CustomJsInjector";
 import {
@@ -199,6 +201,9 @@ export default async function RootLayout({
       <body className="min-h-full flex flex-col">
         <ToastProvider>
           <GlobalShortcuts />
+          <Suspense fallback={null}>
+            <RouteTransitionIndicator />
+          </Suspense>
           {children}
         </ToastProvider>
         {customJs && <CustomJsInjector code={customJs} />}

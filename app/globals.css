@@ -74,6 +74,115 @@ body {
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
 
+.route-transition {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  opacity: 0;
+  transition: opacity 140ms ease;
+}
+
+.route-transition[data-state='loading'],
+.route-transition[data-state='done'] {
+  opacity: 1;
+}
+
+.route-transition__bar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 3px;
+  width: 100%;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--editor-accent) 16%, transparent);
+}
+
+.route-transition__bar::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 42%;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--editor-accent),
+    color-mix(in srgb, var(--editor-accent) 70%, white),
+    transparent
+  );
+  animation: route-progress 1.05s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+.route-transition[data-state='done'] .route-transition__bar::before {
+  width: 100%;
+  background: var(--editor-accent);
+  animation: none;
+}
+
+.route-transition__pill {
+  position: fixed;
+  left: 50%;
+  top: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid color-mix(in srgb, var(--editor-line) 80%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--background) 88%, transparent);
+  box-shadow: 0 12px 30px rgba(20, 20, 19, 0.12);
+  color: var(--editor-ink);
+  transform: translate(-50%, -0.35rem);
+  opacity: 0;
+  backdrop-filter: blur(12px);
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
+.route-transition[data-state='loading'] .route-transition__pill {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.route-transition__spinner {
+  width: 0.72rem;
+  height: 0.72rem;
+  border: 2px solid color-mix(in srgb, var(--editor-accent) 26%, transparent);
+  border-top-color: var(--editor-accent);
+  border-radius: 50%;
+  animation: route-spin 720ms linear infinite;
+}
+
+@keyframes route-progress {
+  from {
+    transform: translateX(-110%);
+  }
+  to {
+    transform: translateX(250%);
+  }
+}
+
+@keyframes route-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-transition,
+  .route-transition__pill {
+    transition: none;
+  }
+
+  .route-transition__bar::before,
+  .route-transition__spinner {
+    animation: none;
+  }
+}
+
 /* Focus states */
 *:focus-visible {
   outline: 2px solid var(--editor-accent);
