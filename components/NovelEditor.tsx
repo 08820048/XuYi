@@ -58,6 +58,13 @@ import {
 } from '@/lib/editor-ui'
 import type { EditorImageActionTarget } from '@/lib/resizable-image'
 import { buildAutoDescription, normalizePostSlug, sanitizePostSlugInput } from '@/lib/post-utils'
+import {
+  POST_TYPE_LABELS,
+  POST_TYPES,
+  normalizePostType,
+  requiresSourceUrl,
+  type PostType,
+} from '@/lib/post-type'
 import { getSiteDisplayUrl } from '@/lib/site-config'
 import { resizeTextareaHeight, useAutoResizeTextarea } from '@/lib/textarea-autosize'
 import { transformHtmlMathDelimiters } from '@/lib/math-html'
@@ -103,6 +110,8 @@ interface NovelEditorProps {
     tags?: string[]
     description?: string | null
     cover_image?: string | null
+    post_type?: PostType
+    source_url?: string | null
   }
 }
 
@@ -113,6 +122,8 @@ type DraftMetaState = {
   tags: string[]
   description: string
   coverImage: string
+  postType: PostType
+  sourceUrl: string
 }
 
 type MetaGenerationTarget = 'summary' | 'tags' | 'slug' | 'cover'
@@ -139,6 +150,8 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
   const [tags, setTags] = useState<string[]>(initialData?.tags || [])
   const [description, setDescription] = useState(initialData?.description || '')
   const [coverImage, setCoverImage] = useState(initialData?.cover_image || '')
+  const [postType, setPostType] = useState<PostType>(normalizePostType(initialData?.post_type))
+  const [sourceUrl, setSourceUrl] = useState(initialData?.source_url || '')
   const [slug, setSlug] = useState(initialData?.slug || '')
 
   // ── UI state ──
@@ -173,6 +186,8 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
     tags: initialData?.tags || [],
     description: initialData?.description || '',
     coverImage: initialData?.cover_image || '',
+    postType: normalizePostType(initialData?.post_type),
+    sourceUrl: initialData?.source_url || '',
   })
 
   // ── Init ──
@@ -208,8 +223,10 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
       tags,
       description,
       coverImage,
+      postType,
+      sourceUrl,
     }
-  }, [editSlug, slug, category, tags, description, coverImage])
+  }, [editSlug, slug, category, tags, description, coverImage, postType, sourceUrl])
 
   // Relative time ticker
   useEffect(() => {
@@ -321,6 +338,8 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
     category: string
     tags: string[]
     coverImage: string
+    postType: PostType
+    sourceUrl: string
   }) => {
     return JSON.stringify({
       currentSlug: payload.currentSlug,
@@ -331,6 +350,8 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
       category: payload.category,
       tags: payload.tags,
       coverImage: payload.coverImage,
+      postType: payload.postType,
+      sourceUrl: payload.sourceUrl,
     })
   }, [])
 
@@ -382,7 +403,7 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
   ) => {
     if (typeof window === 'undefined' || !draftReady || !editor) return
 
-    const { editSlug: currentSlug, slug: nextSlugRaw, category, tags, description, coverImage } = latestMetaRef.current
+    const { editSlug: currentSlug, slug: nextSlugRaw, category, tags, description, coverImage, postType, sourceUrl } = latestMetaRef.current
     const nextSlug = normalizePostSlug(nextSlugRaw)
     const normalizedTitle = nextTitle.trim() || '无标题'
     const contentJson = editor.getJSON()
@@ -406,6 +427,8 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
       category,
       tags,
       coverImage,
+      postType,
+      sourceUrl,
     })
 
     if (snapshot === lastAutosaveSnapshotRef.current) {
@@ -437,6 +460,8 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
             category,
             tags,
             cover_image: coverImage,
+            post_type: postType,
+            source_url: requiresSourceUrl(postType) ? sourceUrl.trim() : null,
           }),
           signal: controller.signal,
         })
@@ -465,6 +490,8 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
             tags,
             description: normalizedDescription,
             cover_image: coverImage,
+            post_type: postType,
+            source_url: requiresSourceUrl(postType) ? sourceUrl.trim() : null,
           }),
           signal: controller.signal,
         })
@@ -751,6 +778,12 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
     const hasContent = content || /<(img|video|audio|iframe)\s/.test(html)
     if (!hasContent) { setFeedback({ type: 'error', message: '正文还是空的。' }); return }
     const normalizedDescription = (description || buildAutoDescription(content) || '').trim()
+    const normalizedSourceUrl = sourceUrl.trim()
+
+    if (requiresSourceUrl(postType) && !normalizedSourceUrl) {
+      setFeedback({ type: 'error', message: '转载和翻译文章需要填写原文地址。' })
+      return
+    }
 
     clearAutosaveTimers()
     abortAutosaveRequest()
@@ -778,6 +811,8 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
           title: normalizedTitle, content, html, category,
           ...statusFields,
           tags, description: normalizedDescription, cover_image: coverImage || null,
+          post_type: postType,
+          source_url: requiresSourceUrl(postType) ? normalizedSourceUrl : null,
         }),
       })
       const result = (await response.json()) as {
@@ -799,6 +834,8 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
         category,
         tags,
         coverImage,
+        postType,
+        sourceUrl: requiresSourceUrl(postType) ? normalizedSourceUrl : '',
       })
       lastAutosaveSnapshotRef.current = snapshot
 
@@ -821,6 +858,8 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
         setFeedback({ type: 'success', message: `${msgs[publishStatus]}`, slug: result.slug })
         setTitle('')
         latestTitleRef.current = ''
+        setPostType('original')
+        setSourceUrl('')
         lastAutosaveSnapshotRef.current = null
         editor.commands.clearContent()
       }
@@ -1130,6 +1169,8 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
                           category: initialData.category || '未分类',
                           tags: initialData.tags || [],
                           coverImage: initialData.cover_image || '',
+                          postType: normalizePostType(initialData.post_type),
+                          sourceUrl: initialData.source_url || '',
                         })
                       } else {
                         lastAutosaveSnapshotRef.current = null
@@ -1176,6 +1217,51 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
                 <button type="button" onClick={() => setSidebarOpen(false)} className="text-[var(--stone-gray)] hover:text-[var(--editor-ink)]">
                   <X className="h-4 w-4" />
                 </button>
+              </div>
+
+              {/* Post Type */}
+              <div>
+                <label className="mb-2 block text-xs font-semibold tracking-wider text-[var(--stone-gray)]">文章类型</label>
+                <div className="grid grid-cols-3 gap-1 rounded-lg border border-[var(--editor-line)] bg-[var(--editor-panel)] p-1">
+                  {POST_TYPES.map((type) => {
+                    const active = postType === type
+                    return (
+                      <button
+                        key={type}
+                        type="button"
+                        onClick={() => {
+                          setPostType(type)
+                          const nextSourceUrl = requiresSourceUrl(type) ? sourceUrl : ''
+                          if (!requiresSourceUrl(type)) setSourceUrl('')
+                          markDirty({ postType: type, sourceUrl: nextSourceUrl })
+                        }}
+                        className={`rounded-md px-2 py-1.5 text-xs font-medium transition ${
+                          active
+                            ? 'bg-[var(--editor-accent)] text-white'
+                            : 'text-[var(--editor-muted)] hover:bg-[var(--editor-soft)] hover:text-[var(--editor-ink)]'
+                        }`}
+                      >
+                        {POST_TYPE_LABELS[type]}
+                      </button>
+                    )
+                  })}
+                </div>
+                {requiresSourceUrl(postType) && (
+                  <div className="mt-3">
+                    <label className="mb-1.5 block text-xs font-semibold tracking-wider text-[var(--stone-gray)]">原文地址</label>
+                    <input
+                      type="url"
+                      value={sourceUrl}
+                      onChange={(e) => {
+                        const nextSourceUrl = e.target.value
+                        setSourceUrl(nextSourceUrl)
+                        markDirty({ sourceUrl: nextSourceUrl })
+                      }}
+                      placeholder="https://example.com/original-post"
+                      className="w-full rounded-md border border-[var(--editor-line)] bg-[var(--editor-panel)] px-2.5 py-1.5 text-sm text-[var(--editor-ink)] outline-none focus:border-[var(--editor-accent)]"
+                    />
+                  </div>
+                )}
               </div>
 
               {/* Tags */}

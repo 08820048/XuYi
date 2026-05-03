@@ -65,6 +65,8 @@ describe('/api/posts route', () => {
       status: 'draft',
       password: ' secret ',
       is_hidden: 1,
+      post_type: 'translation',
+      source_url: ' https://example.com/original ',
     })
     mocks.createPost.mockResolvedValue(42)
 
@@ -85,6 +87,8 @@ describe('/api/posts route', () => {
         description: '正文内容',
         tags: ['AI', '提示词', '编辑器', '产品', '设计', '测试', '额外', '更多', '仍然', '超出'],
         cover_image: '/covers/test.webp',
+        post_type: 'translation',
+        source_url: 'https://example.com/original',
       }),
     )
     expect(mocks.invalidatePublicContentCache).toHaveBeenCalled()
@@ -95,6 +99,8 @@ describe('/api/posts route', () => {
         id: 42,
         slug: 'custom_slug',
         category: 'AI',
+        post_type: 'translation',
+        source_url: 'https://example.com/original',
       }),
     )
   })
@@ -108,6 +114,8 @@ describe('/api/posts route', () => {
       description: '   ',
       status: 'draft',
       cover_image: '/covers/next.webp',
+      post_type: 'repost',
+      source_url: 'https://example.com/source',
     })
 
     const response = await PATCH({} as never)
@@ -123,8 +131,26 @@ describe('/api/posts route', () => {
         description: '新正文',
         status: 'draft',
         cover_image: '/covers/next.webp',
+        post_type: 'repost',
+        source_url: 'https://example.com/source',
       }),
     )
     expect(body).toEqual({ success: true, slug: 'new_slug' })
+  })
+
+  it('requires a source url for published reposts and translations', async () => {
+    mocks.parseJsonBody.mockResolvedValue({
+      title: '转载文章',
+      content: '正文',
+      post_type: 'repost',
+      status: 'published',
+    })
+
+    const response = await POST({} as never)
+    const body = await response.json()
+
+    expect(response.status).toBe(400)
+    expect(body).toEqual({ error: '转载和翻译文章需要填写有效的原文地址' })
+    expect(mocks.createPost).not.toHaveBeenCalled()
   })
 })

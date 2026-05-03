@@ -1,4 +1,5 @@
 import { searchPosts, type Post, type PostWithTags } from '@/lib/db'
+import { normalizePostType } from '@/lib/post-type'
 
 const VECTOR_NAMESPACE = 'posts'
 const DEFAULT_VECTOR_DIMENSIONS = 128
@@ -55,6 +56,8 @@ function mapPost(post: Post): PostWithTags {
     ...post,
     status: post.deleted_at ? 'deleted' : (post.status || 'published'),
     tags: parseTags(post.tags),
+    post_type: normalizePostType(post.post_type),
+    source_url: post.source_url || null,
   }
 }
 

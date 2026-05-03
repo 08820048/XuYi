@@ -1,4 +1,5 @@
 import type { Post, PostWithTags } from '@/lib/repositories/types'
+import { DEFAULT_POST_TYPE, normalizePostType } from '@/lib/post-type'
 
 export function parsePostTags(value: string | null): string[] {
   return value ? JSON.parse(value) : []
@@ -13,5 +14,7 @@ export function mapPostWithTags(post: Post): PostWithTags {
     ...post,
     status: normalizePostStatus(post),
     tags: parsePostTags(post.tags),
+    post_type: normalizePostType(post.post_type || DEFAULT_POST_TYPE),
+    source_url: post.source_url || null,
   }
 }

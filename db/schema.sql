@@ -13,6 +13,8 @@ CREATE TABLE posts (
   is_pinned INTEGER DEFAULT 0, -- 是否置顶
   is_hidden INTEGER DEFAULT 0, -- 是否隐藏（unlisted）
   cover_image TEXT, -- 封面图 URL
+  post_type TEXT NOT NULL DEFAULT 'original' CHECK(post_type IN ('original', 'repost', 'translation')), -- 文章类型
+  source_url TEXT, -- 转载/翻译原文地址
   deleted_at INTEGER, -- 软删除时间戳，NULL 表示未删除
   published_at INTEGER DEFAULT (strftime('%s', 'now')),
   updated_at INTEGER DEFAULT (strftime('%s', 'now')),

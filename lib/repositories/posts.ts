@@ -38,7 +38,7 @@ export async function getPosts(
 
   const { results } = await db
     .prepare(
-      `SELECT id, slug, title, description, category, tags, status, password, is_pinned, is_hidden, published_at, view_count
+      `SELECT id, slug, title, description, category, tags, status, password, is_pinned, is_hidden, cover_image, post_type, source_url, published_at, view_count
        , deleted_at
        FROM posts
        ${where}
@@ -131,6 +131,8 @@ export async function createPost(
     password?: string | null
     is_hidden?: number
     cover_image?: string | null
+    post_type?: Post['post_type']
+    source_url?: string | null
   },
 ): Promise<number> {
   await ensureSchema(db)
@@ -138,8 +140,8 @@ export async function createPost(
 
   const result = await db
     .prepare(
-      `INSERT INTO posts (slug, title, content, html, description, category, tags, status, password, is_hidden, cover_image)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO posts (slug, title, content, html, description, category, tags, status, password, is_hidden, cover_image, post_type, source_url)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
     .bind(
       data.slug,
@@ -153,6 +155,8 @@ export async function createPost(
       data.password ?? null,
       data.is_hidden ?? 0,
       data.cover_image ?? null,
+      data.post_type || 'original',
+      data.source_url ?? null,
     )
     .run()
 
@@ -185,6 +189,8 @@ export async function updatePostBySlug(
     is_pinned: number
     is_hidden: number
     cover_image: string | null
+    post_type: Post['post_type']
+    source_url: string | null
   }>,
 ): Promise<void> {
   await ensureSchema(db)
@@ -218,6 +224,8 @@ export async function updatePost(
     is_pinned: number
     is_hidden: number
     cover_image: string | null
+    post_type: Post['post_type']
+    source_url: string | null
   }>,
 ): Promise<void> {
   await ensureSchema(db)
@@ -286,6 +294,14 @@ export async function updatePost(
   if (data.cover_image !== undefined) {
     updates.push('cover_image = ?')
     values.push(data.cover_image)
+  }
+  if (data.post_type !== undefined) {
+    updates.push('post_type = ?')
+    values.push(data.post_type)
+  }
+  if (data.source_url !== undefined) {
+    updates.push('source_url = ?')
+    values.push(data.source_url)
   }
 
   if (updates.length === 0) return
@@ -402,7 +418,7 @@ export async function getPostsByCategory(
 ): Promise<PostWithTags[]> {
   const { results } = await db
     .prepare(
-      `SELECT id, slug, title, description, category, tags, status, password, is_pinned, is_hidden, deleted_at, published_at, view_count
+      `SELECT id, slug, title, description, category, tags, status, password, is_pinned, is_hidden, cover_image, post_type, source_url, deleted_at, published_at, view_count
        FROM posts
        WHERE category = ?
          AND status = 'published'

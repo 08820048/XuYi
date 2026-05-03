@@ -1,3 +1,5 @@
+import type { PostType } from '@/lib/post-type'
+
 export interface Post {
   id: number
   slug: string
@@ -12,6 +14,8 @@ export interface Post {
   is_pinned: number
   is_hidden: number
   cover_image: string | null
+  post_type: PostType
+  source_url: string | null
   deleted_at: number | null
   published_at: number
   updated_at: number

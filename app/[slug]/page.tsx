@@ -8,6 +8,7 @@ import { SiteFooter } from '@/components/SiteFooter'
 import { FrontPostAdminBoundary } from '@/components/FrontPostAdminBoundary'
 import { PasswordPrompt } from '@/components/PasswordPrompt'
 import { DownloadMarkdown } from '@/components/DownloadMarkdown'
+import { PostTypeBadge } from '@/components/PostTypeBadge'
 import { TwitterEmbedsEnhancer } from '@/components/TwitterEmbedsEnhancer'
 import { CodeHighlightEnhancer } from '@/components/CodeHighlightEnhancer'
 import { MathRenderEnhancer } from '@/components/MathRenderEnhancer'
@@ -252,6 +253,7 @@ export default async function PostPage({
                 {post.title}
               </h1>
               <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--stone-gray)]">
+                <PostTypeBadge type={post.post_type} />
                 {post.category && (
                   <>
                     {activeCategorySlug ? (
@@ -282,6 +284,19 @@ export default async function PostPage({
                 <span>约 {readingMinutes} 分钟</span>
                 <DownloadMarkdown title={post.title} html={post.html} />
               </div>
+              {post.source_url && post.post_type !== 'original' && (
+                <div className="mt-4 rounded-lg border border-[var(--editor-line)] bg-[var(--editor-panel)]/60 px-3 py-2 text-sm text-[var(--editor-muted)]">
+                  原文地址：
+                  <a
+                    href={post.source_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="break-all text-[var(--editor-accent)] underline underline-offset-2 hover:opacity-80"
+                  >
+                    {post.source_url}
+                  </a>
+                </div>
+              )}
             </header>
 
             <div

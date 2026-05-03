@@ -6,6 +6,7 @@ import { remark } from 'remark'
 import remarkGfm from 'remark-gfm'
 import remarkHtml from 'remark-html'
 import { buildAutoDescription, normalizePostSlug } from '@/lib/post-utils'
+import { normalizePostSourceUrl, normalizePostType, requiresSourceUrl } from '@/lib/post-type'
 import {
   ensureAuthenticatedRequest,
   getRouteContextWithDb,
@@ -34,6 +35,8 @@ export async function POST(req: NextRequest) {
     const status = payload.status === 'draft' ? 'draft' : 'published'
     const password = typeof payload.password === 'string' && payload.password.trim() ? payload.password.trim() : null
     const is_hidden = payload.is_hidden === 1 ? 1 : 0
+    const postType = normalizePostType(payload.post_type)
+    const sourceUrl = normalizePostSourceUrl(payload.source_url)
     const description = typeof payload.description === 'string' && payload.description.trim()
       ? payload.description.trim()
       : buildAutoDescription(content)
@@ -50,6 +53,9 @@ export async function POST(req: NextRequest) {
 
     if (!title || !content) {
       return jsonError('标题和内容不能为空', 400)
+    }
+    if (status === 'published' && requiresSourceUrl(postType) && !sourceUrl) {
+      return jsonError('转载和翻译文章需要填写有效的原文地址', 400)
     }
 
     // 2. 生成 slug（日期 + 随机）
@@ -79,6 +85,8 @@ export async function POST(req: NextRequest) {
       password,
       is_hidden,
       cover_image: coverImage,
+      post_type: postType,
+      source_url: sourceUrl,
     })
 
     // 6. 清除缓存
@@ -114,6 +122,8 @@ export async function POST(req: NextRequest) {
       tags,
       description,
       cover_image: coverImage,
+      post_type: postType,
+      source_url: sourceUrl,
     })
   } catch (error) {
     if (error instanceof Error && /UNIQUE constraint failed: posts\.slug/i.test(error.message)) {
@@ -160,6 +170,17 @@ export async function PATCH(req: NextRequest) {
     if (payload.category !== undefined) updates.category = payload.category
     if (payload.tags !== undefined) updates.tags = payload.tags
     if (payload.cover_image !== undefined) updates.cover_image = payload.cover_image
+    if (payload.post_type !== undefined) {
+      const postType = normalizePostType(payload.post_type)
+      const sourceUrl = payload.source_url !== undefined ? normalizePostSourceUrl(payload.source_url) : undefined
+      if (payload.status === 'published' && requiresSourceUrl(postType) && !sourceUrl) {
+        return jsonError('转载和翻译文章需要填写有效的原文地址', 400)
+      }
+      updates.post_type = postType
+      if (sourceUrl !== undefined) updates.source_url = sourceUrl
+    } else if (payload.source_url !== undefined) {
+      updates.source_url = normalizePostSourceUrl(payload.source_url)
+    }
     if (payload.status === 'draft' || payload.status === 'published' || payload.status === 'deleted') {
       updates.status = payload.status
     }

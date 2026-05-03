@@ -58,6 +58,9 @@ describe('/api/admin/posts/[slug] route', () => {
       description: '   ',
       tags: ['AI', '写作'],
       cover_image: '/covers/admin.webp',
+      status: 'published',
+      post_type: 'translation',
+      source_url: 'https://example.com/original',
     })
     mocks.invalidatePublicContentCache.mockRejectedValue(new Error('cache down'))
     mocks.enqueueBackgroundJob.mockResolvedValue(undefined)
@@ -85,9 +88,37 @@ describe('/api/admin/posts/[slug] route', () => {
         description: '更新后的正文',
         tags: ['AI', '写作'],
         cover_image: '/covers/admin.webp',
+        status: 'published',
+        post_type: 'translation',
+        source_url: 'https://example.com/original',
       }),
     )
     expect(mocks.enqueueBackgroundJob).toHaveBeenCalledTimes(1)
     expect(body).toEqual({ success: true, slug: 'next_slug' })
+  })
+
+  it('rejects published reposts without a valid source url', async () => {
+    mocks.parseJsonBody.mockResolvedValue({
+      title: '转载文章',
+      content: '正文',
+      status: 'published',
+      post_type: 'repost',
+      source_url: '',
+    })
+
+    const request = {
+      cookies: {
+        get: vi.fn(() => ({ value: 'token' })),
+      },
+    } as never
+
+    const response = await PUT(request, {
+      params: Promise.resolve({ slug: 'old-slug' }),
+    })
+    const body = await response.json()
+
+    expect(response.status).toBe(400)
+    expect(body).toEqual({ error: '转载和翻译文章需要填写有效的原文地址' })
+    expect(mocks.updatePost).not.toHaveBeenCalled()
   })
 })

@@ -10,6 +10,7 @@ import { SiteFooter } from '@/components/SiteFooter'
 import { SearchEntry } from '@/components/SearchEntry'
 import { Pagination } from '@/components/Pagination'
 import { ThemeDropdown } from '@/components/ThemeDropdown'
+import { PostTypeBadge } from '@/components/PostTypeBadge'
 import type { HomeProps } from '@/components/HomeClient'
 import type { SiteNavLink } from '@/lib/site'
 
@@ -181,6 +182,7 @@ export function HomeVariantB({
                   onMouseLeave={() => setHoverId(null)}
                 >
                   {featured.title}
+                  <PostTypeBadge type={featured.post_type} className="ml-3 align-middle" />
                   {featured.password && ' 🔒'}
                   {featured.is_pinned === 1 && (
                     <span style={{ fontSize: '0.5em', color: MUTED, marginLeft: 8 }}>置顶</span>
@@ -312,10 +314,12 @@ export function HomeVariantB({
                     color: hoverId === post.slug ? ACCENT : FG,
                     transition: 'color .2s',
                     display: 'flex',
+                    flexWrap: 'wrap',
                     alignItems: 'center',
                     gap: 6,
                   }}>
                     {post.title}
+                    <PostTypeBadge type={post.post_type} />
                     {post.password && (
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: MUTED, flexShrink: 0 }}>
                         <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>

@@ -4,6 +4,7 @@ import { invalidatePublicContentCache } from '@/lib/cache'
 import { buildAutoDescription, normalizePostSlug } from '@/lib/post-utils'
 import { enqueueBackgroundJob } from '@/lib/background-jobs'
 import { getRouteContextWithDb, jsonError, jsonOk, parseJsonBody } from '@/lib/server/route-helpers'
+import { normalizePostSourceUrl, normalizePostType, requiresSourceUrl } from '@/lib/post-type'
 import type { NextRequest } from 'next/server'
 
 async function checkAuth(req: NextRequest): Promise<boolean> {
@@ -55,6 +56,8 @@ export async function PUT(req: NextRequest, { params }: Ctx) {
       is_pinned,
       is_hidden,
       cover_image,
+      post_type,
+      source_url,
       tags,
       description,
     } = await parseJsonBody<{
@@ -68,6 +71,8 @@ export async function PUT(req: NextRequest, { params }: Ctx) {
       is_pinned?: number
       is_hidden?: number
       cover_image?: string | null
+      post_type?: unknown
+      source_url?: unknown
       tags?: string[]
       description?: string
     }>(req)
@@ -75,6 +80,16 @@ export async function PUT(req: NextRequest, { params }: Ctx) {
     const normalizedDescription = typeof description === 'string' && description.trim()
       ? description.trim()
       : buildAutoDescription(typeof content === 'string' ? content : '')
+    const normalizedPostType = post_type !== undefined ? normalizePostType(post_type) : undefined
+    const normalizedSourceUrl = source_url !== undefined ? normalizePostSourceUrl(source_url) : undefined
+    if (
+      status === 'published' &&
+      normalizedPostType !== undefined &&
+      requiresSourceUrl(normalizedPostType) &&
+      !normalizedSourceUrl
+    ) {
+      return jsonError('转载和翻译文章需要填写有效的原文地址', 400)
+    }
 
     await updatePost(db, post.id, {
       slug: nextSlug || undefined,
@@ -87,6 +102,8 @@ export async function PUT(req: NextRequest, { params }: Ctx) {
       is_pinned,
       is_hidden,
       cover_image,
+      post_type: normalizedPostType,
+      source_url: normalizedSourceUrl,
       tags,
       description: normalizedDescription,
     })

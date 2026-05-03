@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { SiteHeader } from '@/components/SiteHeader'
 import { SiteFooter } from '@/components/SiteFooter'
 import { Pagination } from '@/components/Pagination'
+import { PostTypeBadge } from '@/components/PostTypeBadge'
 import type { HomeProps } from '@/components/HomeClient'
 
 function formatDateShort(ts: number) {
@@ -150,6 +151,7 @@ export function HomeVariantA({
                           fontFamily: 'Georgia, "Noto Serif SC", serif',
                         }}>
                           {post.title}
+                          <PostTypeBadge type={post.post_type} className="ml-2 align-middle" />
                           {post.password && (
                             <svg
                               width="15" height="15" viewBox="0 0 24 24"

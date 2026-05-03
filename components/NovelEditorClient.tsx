@@ -26,6 +26,8 @@ export function NovelEditorClient(props: {
     tags?: string[]
     description?: string | null
     cover_image?: string | null
+    post_type?: 'original' | 'repost' | 'translation'
+    source_url?: string | null
   }
   skipDraftRestore?: boolean
 }) {

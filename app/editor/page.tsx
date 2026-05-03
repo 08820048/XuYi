@@ -37,6 +37,8 @@ export default async function EditorPage({
     tags?: string[]
     description?: string | null
     cover_image?: string | null
+    post_type?: 'original' | 'repost' | 'translation'
+    source_url?: string | null
   } | undefined
 
   if (edit) {
@@ -55,6 +57,8 @@ export default async function EditorPage({
           tags: post.tags,
           description: post.description,
           cover_image: post.cover_image,
+          post_type: post.post_type,
+          source_url: post.source_url,
         }
       }
     }

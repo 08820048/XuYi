@@ -3,6 +3,7 @@ import { getAppCloudflareEnv } from '@/lib/cloudflare'
 import Link from 'next/link'
 import { SiteHeader } from '@/components/SiteHeader'
 import { SiteFooter } from '@/components/SiteFooter'
+import { PostTypeBadge } from '@/components/PostTypeBadge'
 import type { SiteCategoryLink, SiteNavLink } from '@/lib/site'
 import { getSiteHeaderData } from '@/lib/site'
 import type { Theme } from '@/lib/appearance'
@@ -104,10 +105,11 @@ export default async function SearchPage({
 
                   <div className="pl-0 group-hover:pl-5 transition-[padding] duration-200">
                     <h2
-                      className="text-lg sm:text-xl font-medium text-[var(--editor-ink)] leading-snug mb-2 group-hover:text-[var(--editor-accent)] transition-colors duration-200 flex items-center gap-2"
+                      className="text-lg sm:text-xl font-medium text-[var(--editor-ink)] leading-snug mb-2 group-hover:text-[var(--editor-accent)] transition-colors duration-200 flex flex-wrap items-center gap-2"
                       style={{ fontFamily: 'Georgia, "Noto Serif SC", serif' }}
                     >
                       {post.title}
+                      <PostTypeBadge type={post.post_type} />
                       {post.password && (
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--editor-muted)] flex-shrink-0">
                           <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
