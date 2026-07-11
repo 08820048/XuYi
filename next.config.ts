@@ -2,7 +2,7 @@ import { resolve } from "node:path";
 import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 import type { NextConfig } from "next";
 
-// Local dev should not require Cloudflare auth just to boot the app.
+// Keep local development isolated from production Cloudflare resources.
 void initOpenNextCloudflareForDev({ remoteBindings: false });
 
 const nextConfig: NextConfig = {

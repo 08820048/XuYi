@@ -4,7 +4,6 @@
 // Giant serif masthead, featured headline, numbered article grid
 
 import { useState } from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SearchEntry } from '@/components/SearchEntry'
@@ -14,6 +13,7 @@ import { PostTypeBadge } from '@/components/PostTypeBadge'
 import { PostUpdateBadge } from '@/components/PostUpdateBadge'
 import type { HomeProps } from '@/components/HomeClient'
 import type { SiteNavLink } from '@/lib/site'
+import { SignatureLogo } from '@/components/SignatureLogo'
 
 const ACCENT = '#c44a2a' // editorial red-orange
 const BG = '#f6f3ed'
@@ -58,7 +58,7 @@ function EditorialNavBar({
       alignItems: 'center',
       }}>
       <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, color: MUTED, textDecoration: 'none' }}>
-        <Image src="/logo.jpg" alt="XuYi'Blog" width={32} height={32} className="site-logo-image" />
+        <SignatureLogo />
         <span style={{
           fontSize: 11,
           letterSpacing: '0.2em',
@@ -123,20 +123,7 @@ export function HomeVariantB({
       {/* Giant masthead */}
       <div className="editorial-masthead" style={{ padding: '36px 48px 20px', borderBottom: `1px solid ${BORDER}` }}>
         <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
-          <Image
-            src="/logo.jpg"
-            alt="XuYi'Blog"
-            width={160}
-            height={160}
-            className="editorial-masthead-logo"
-            style={{
-              width: 'clamp(96px, 14vw, 180px)',
-              height: 'clamp(96px, 14vw, 180px)',
-              borderRadius: 24,
-              objectFit: 'cover',
-              border: `2px solid ${FG}`,
-            }}
-          />
+          <SignatureLogo className="signature-logo--masthead" />
         </Link>
         <div className="editorial-masthead-meta" style={{
           display: 'flex',
@@ -375,7 +362,7 @@ export function HomeVariantB({
         fontFamily: '"JetBrains Mono", ui-monospace, monospace',
         letterSpacing: '0.1em',
       }}>
-        <span>© {new Date().getFullYear()} XuYi&apos;Blog</span>
+        <span>© {new Date().getFullYear()} Cerebellum</span>
         <span>独立 · 不商业化 · RSS 友好</span>
       </div>
 

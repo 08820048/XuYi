@@ -3,7 +3,6 @@
 // Variant C: AI 终端 — dark-first, monospace, terminal aesthetic
 
 import { useState, useEffect } from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SearchEntry } from '@/components/SearchEntry'
@@ -13,6 +12,7 @@ import { PostTypeBadge } from '@/components/PostTypeBadge'
 import { PostUpdateBadge } from '@/components/PostUpdateBadge'
 import type { HomeProps } from '@/components/HomeClient'
 import type { SiteNavLink } from '@/lib/site'
+import { SignatureLogo } from '@/components/SignatureLogo'
 
 const BG = '#1a1c2e'
 const FG = '#c8d3e8'
@@ -58,13 +58,7 @@ function TerminalHeader({
     }}>
       {/* Left: terminal prompt */}
       <div className="terminal-home-prompt" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-        <Image
-          src="/logo.jpg"
-          alt="XuYi'Blog"
-          width={28}
-          height={28}
-          className="site-logo-image site-logo-image--terminal"
-        />
+        <SignatureLogo className="signature-logo--terminal" />
         <Link href="/" style={{ color: MUTED, textDecoration: 'none' }}>xuyi@blog:~$</Link>
         <span style={{ color: FG }}>./serve --port=443</span>
       </div>
@@ -184,13 +178,13 @@ export function HomeVariantC({
             overflow: 'hidden',
           }}>
 {`  ┌────────────────────────────────────┐
-  │  XUYI'BLOG   ·  XUYI'BLOG          │
+  │  CEREBELLUM  ·  CEREBELLUM         │
   │  ~/posts  —  reading the future     │
   └────────────────────────────────────┘`}
           </div>
           <div className="terminal-banner-meta" style={{ marginTop: 14, fontSize: 14, display: 'flex', alignItems: 'center', gap: 10 }}>
             <span style={{ color: ACCENT2 }}>&gt;</span>
-            <span style={{ color: FG }}>XuYi&apos;Blog</span>
+            <span style={{ color: FG }}>Cerebellum</span>
             <span style={{ color: MUTED }}>{'//'}</span>
             <span style={{ color: MUTED }}>
               {typed}

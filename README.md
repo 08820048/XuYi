@@ -40,6 +40,7 @@ git clone https://github.com/08820048/XuYi-Blog.git
 cd XuYi-Blog
 npm install
 cp .env.example .env.local
+npm run db:init:local
 npm run dev
 ```
 
@@ -49,6 +50,7 @@ npm run dev
 - 后台：`http://localhost:3000/admin`
 - 编辑器：`http://localhost:3000/editor`
 
+本地开发使用独立的本地 D1 和 R2，不会读写线上数据。首次启动前运行 `npm run db:init:local` 创建表结构和默认设置。
 本地后台密码来自 `.env.local` 中的 `ADMIN_PASSWORD`。
 
 ## 环境变量
@@ -130,6 +132,7 @@ npx wrangler secret put AI_CONFIG_ENCRYPTION_SECRET -c wrangler.toml
 | 命令 | 说明 |
 | --- | --- |
 | `npm run dev` | 本地开发 |
+| `npm run db:init:local` | 初始化或修复本地 D1 数据库 |
 | `npm run lint` | 代码检查 |
 | `npm run build` | 构建 OpenNext / Cloudflare Workers 产物 |
 | `npm run preview` | 本地 Worker 预览 |

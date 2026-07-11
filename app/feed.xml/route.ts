@@ -2,7 +2,7 @@ import { getAppCloudflareEnv } from '@/lib/cloudflare'
 import { getSiteUrl } from '@/lib/site-config'
 
 const SITE_URL = getSiteUrl()
-const SITE_TITLE = "XuYi'Blog"
+const SITE_TITLE = 'Cerebellum'
 const SITE_DESCRIPTION = '记录思考，分享所学，留住当下。'
 
 interface RssPost {

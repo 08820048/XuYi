@@ -52,8 +52,8 @@ const ICON_VERSION = '20260506'
 export const metadata: Metadata = {
   metadataBase: getSiteUrlObject(),
   title: {
-    default: "XuYi'Blog",
-    template: "%s · XuYi'Blog",
+    default: "Cerebellum",
+    template: "%s · Cerebellum",
   },
   description: '记录思考，分享所学，留住当下。技术、生活、读书笔记的数字花园。',
   icons: {
@@ -76,15 +76,15 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'zh_CN',
     url: SITE_URL,
-    siteName: "XuYi'Blog",
-    title: "XuYi'Blog",
+    siteName: "Cerebellum",
+    title: "Cerebellum",
     description: '记录思考，分享所学，留住当下。技术、生活、读书笔记的数字花园。',
     images: [
       {
         url: '/icon-512.png',
         width: 512,
         height: 512,
-        alt: "XuYi'Blog",
+        alt: "Cerebellum",
       },
     ],
   },
@@ -92,7 +92,7 @@ export const metadata: Metadata = {
     card: 'summary',
     site: '@vista8',
     creator: '@vista8',
-    title: "XuYi'Blog",
+    title: "Cerebellum",
     description: '记录思考，分享所学，留住当下。技术、生活、读书笔记的数字花园。',
     images: ['/icon-512.png'],
   },

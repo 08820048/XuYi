@@ -80,20 +80,29 @@ body {
   flex-shrink: 0;
 }
 
-.site-logo-image {
+.signature-logo {
   display: block;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 8px;
-  object-fit: cover;
+  width: clamp(7.5rem, 12vw, 9rem);
+  height: 2.5rem;
   flex-shrink: 0;
+  overflow: visible;
+  color: var(--editor-ink);
 }
 
-.site-logo-image--terminal {
-  width: 1.75rem;
-  height: 1.75rem;
-  border-radius: 6px;
-  box-shadow: 0 0 12px color-mix(in srgb, var(--editor-accent) 36%, transparent);
+.signature-logo--terminal {
+  width: 7.25rem;
+  height: 2.25rem;
+  color: var(--editor-accent);
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--editor-accent) 28%, transparent));
+}
+
+.signature-logo--masthead {
+  width: clamp(12rem, 24vw, 20rem);
+  height: clamp(4rem, 8vw, 6.5rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .signature-logo { transition: none; }
 }
 
 .route-transition {

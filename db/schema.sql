@@ -1,5 +1,5 @@
 -- 文章表
-CREATE TABLE posts (
+CREATE TABLE IF NOT EXISTS posts (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   slug TEXT UNIQUE NOT NULL,
   title TEXT NOT NULL,
@@ -25,12 +25,12 @@ CREATE TABLE posts (
 );
 
 -- 索引
-CREATE INDEX idx_posts_slug ON posts(slug);
-CREATE INDEX idx_posts_category ON posts(category);
-CREATE INDEX idx_posts_published ON posts(published_at DESC);
+CREATE INDEX IF NOT EXISTS idx_posts_slug ON posts(slug);
+CREATE INDEX IF NOT EXISTS idx_posts_category ON posts(category);
+CREATE INDEX IF NOT EXISTS idx_posts_published ON posts(published_at DESC);
 
 -- 全文搜索（SQLite FTS5）
-CREATE VIRTUAL TABLE posts_fts USING fts5(
+CREATE VIRTUAL TABLE IF NOT EXISTS posts_fts USING fts5(
   title,
   content,
   content=posts,
@@ -39,22 +39,27 @@ CREATE VIRTUAL TABLE posts_fts USING fts5(
 );
 
 -- 触发器：自动同步 FTS
-CREATE TRIGGER posts_ai AFTER INSERT ON posts BEGIN
+CREATE TRIGGER IF NOT EXISTS posts_ai AFTER INSERT ON posts BEGIN
   INSERT INTO posts_fts(rowid, title, content)
   VALUES (new.id, new.title, new.content);
 END;
 
+DROP TRIGGER IF EXISTS posts_au;
 CREATE TRIGGER posts_au AFTER UPDATE ON posts BEGIN
-  UPDATE posts_fts SET title = new.title, content = new.content
-  WHERE rowid = new.id;
+  INSERT INTO posts_fts(posts_fts, rowid, title, content)
+  VALUES ('delete', old.id, old.title, old.content);
+  INSERT INTO posts_fts(rowid, title, content)
+  VALUES (new.id, new.title, new.content);
 END;
 
+DROP TRIGGER IF EXISTS posts_ad;
 CREATE TRIGGER posts_ad AFTER DELETE ON posts BEGIN
-  DELETE FROM posts_fts WHERE rowid = old.id;
+  INSERT INTO posts_fts(posts_fts, rowid, title, content)
+  VALUES ('delete', old.id, old.title, old.content);
 END;
 
 -- 分类统计表
-CREATE TABLE categories (
+CREATE TABLE IF NOT EXISTS categories (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT UNIQUE NOT NULL,
   slug TEXT UNIQUE NOT NULL,
@@ -62,7 +67,7 @@ CREATE TABLE categories (
 );
 
 -- 友联表
-CREATE TABLE friend_links (
+CREATE TABLE IF NOT EXISTS friend_links (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL,
   url TEXT NOT NULL,
@@ -74,16 +79,16 @@ CREATE TABLE friend_links (
   updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
 );
 
-CREATE INDEX idx_friend_links_visible_order ON friend_links(is_visible, sort_order, id);
+CREATE INDEX IF NOT EXISTS idx_friend_links_visible_order ON friend_links(is_visible, sort_order, id);
 
 -- 站点设置表
-CREATE TABLE site_settings (
+CREATE TABLE IF NOT EXISTS site_settings (
   key TEXT PRIMARY KEY,
   value TEXT NOT NULL
 );
 
 -- AI 操作表：编辑器 Ask AI 面板的预设操作
-CREATE TABLE ai_actions (
+CREATE TABLE IF NOT EXISTS ai_actions (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   action_key TEXT UNIQUE NOT NULL,
   label TEXT NOT NULL,
@@ -98,7 +103,7 @@ CREATE TABLE ai_actions (
   updated_at INTEGER DEFAULT (strftime('%s', 'now'))
 );
 
-INSERT INTO ai_actions
+INSERT OR IGNORE INTO ai_actions
   (action_key, label, description, prompt, temperature, sort_order, is_builtin)
 VALUES
   ('improve', '润色', '让表达更顺更自然',
@@ -121,7 +126,7 @@ VALUES
    0.2, 60, 1);
 
 -- AI Provider 配置表（API Key 使用加密存储）
-CREATE TABLE ai_provider_profiles (
+CREATE TABLE IF NOT EXISTS ai_provider_profiles (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL,
   provider TEXT NOT NULL DEFAULT 'custom',
@@ -141,7 +146,7 @@ CREATE TABLE ai_provider_profiles (
 );
 
 -- 文章元数据生成器配置（摘要 / 标签 / slug / 封面）
-CREATE TABLE ai_post_generators (
+CREATE TABLE IF NOT EXISTS ai_post_generators (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   target_key TEXT UNIQUE NOT NULL,
   label TEXT NOT NULL,
@@ -161,7 +166,7 @@ CREATE TABLE ai_post_generators (
   updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
 );
 
-INSERT INTO ai_post_generators (
+INSERT OR IGNORE INTO ai_post_generators (
   target_key, label, description, prompt, provider_mode, workers_model,
   temperature, max_tokens, aspect_ratio, resolution, is_enabled, is_builtin
 ) VALUES
@@ -232,10 +237,10 @@ CREATE TABLE IF NOT EXISTS api_tokens (
   is_active INTEGER DEFAULT 1
 );
 
-CREATE INDEX idx_api_tokens_token ON api_tokens(token);
+CREATE INDEX IF NOT EXISTS idx_api_tokens_token ON api_tokens(token);
 
 -- 插入默认分类
-INSERT INTO categories (name, slug) VALUES
+INSERT OR IGNORE INTO categories (name, slug) VALUES
   ('未分类', 'uncategorized'),
   ('AI工具', 'ai-tools'),
   ('AI', 'ai');
