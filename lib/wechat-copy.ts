@@ -1,6 +1,5 @@
 'use client'
 
-import html2pdf from 'html2pdf.js'
 import juice from 'juice'
 import { buildWechatExportCss, normalizeWechatExportHtml, type WechatExportStyleTokens } from './wechat-export-style'
 
@@ -400,6 +399,7 @@ export async function downloadArticleAsPdf(title: string, html: string) {
     | undefined
 
   try {
+    const { default: html2pdf } = await import('html2pdf.js')
     prepared = await prepareArticleExportStage(title, html)
     const pdfOptions = {
       margin: [16, 12, 16, 12],

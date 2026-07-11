@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { bind as bindCuelume } from 'cuelume'
 
 interface HeadingItem {
   id: string
@@ -33,6 +34,11 @@ export function ArticleTableOfContents({ containerId }: ArticleTableOfContentsPr
   const tocRef = useRef<HTMLElement>(null)
   const [headings, setHeadings] = useState<HeadingItem[]>([])
   const [activeId, setActiveId] = useState('')
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+
+  useEffect(() => {
+    bindCuelume()
+  }, [])
 
   useEffect(() => {
     const container = document.getElementById(containerId)
@@ -132,10 +138,11 @@ export function ArticleTableOfContents({ containerId }: ArticleTableOfContentsPr
 
   return (
     <aside ref={tocRef} className="article-toc" aria-label="文章目录">
-      <div className="article-toc__label">目录</div>
-      <nav className="article-toc__nav">
-        {visibleHeadings.map((heading) => {
+      <div className="article-toc__label">文章目录</div>
+      <nav className="article-toc__nav" onMouseLeave={() => setHoveredIndex(null)}>
+        {visibleHeadings.map((heading, index) => {
           const isActive = heading.id === activeId
+          const proximity = hoveredIndex === null ? null : Math.abs(index - hoveredIndex)
           return (
             <a
               key={heading.id}
@@ -144,9 +151,19 @@ export function ArticleTableOfContents({ containerId }: ArticleTableOfContentsPr
               data-level={heading.level}
               data-active={isActive ? 'true' : undefined}
               data-heading-id={heading.id}
+              data-proximity={proximity !== null && proximity <= 3 ? proximity : undefined}
+              data-cuelume-hover="tick"
+              onMouseEnter={() => setHoveredIndex(index)}
+              onFocus={() => setHoveredIndex(index)}
+              onBlur={() => setHoveredIndex(null)}
             >
               <span className="article-toc__rule" aria-hidden />
-              <span className="article-toc__text">{heading.text}</span>
+              <span className="article-toc__tooltip" role="tooltip">
+                <span className="article-toc__tooltip-kicker">
+                  {heading.level === 1 ? '章节' : heading.level === 2 ? '小节' : '段落'}
+                </span>
+                <span className="article-toc__text">{heading.text}</span>
+              </span>
             </a>
           )
         })}

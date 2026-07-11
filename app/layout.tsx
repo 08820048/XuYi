@@ -191,7 +191,11 @@ export default async function RootLayout({
         {font && (
           <style dangerouslySetInnerHTML={{ __html: `:root { --body-font: ${font.family}; }` }} />
         )}
-        <script dangerouslySetInnerHTML={{ __html: appearanceApplyScript }} />
+        <Script
+          id="appearance-bootstrap"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{ __html: appearanceApplyScript }}
+        />
         <Script
           defer
           src="https://cloud.umami.is/script.js"
