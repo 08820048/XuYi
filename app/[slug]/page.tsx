@@ -267,12 +267,12 @@ export default async function PostPage({
                         {activeCategorySlug ? (
                           <Link
                             href={getCategoryPath(activeCategorySlug)}
-                            className="px-2 py-0.5 rounded-full bg-[var(--editor-accent)]/8 text-[var(--editor-accent)] font-medium border border-[var(--editor-accent)]/15 hover:bg-[var(--editor-accent)]/12 transition-colors"
+                            className="font-medium text-[var(--editor-accent)] transition-colors hover:text-[var(--editor-ink)]"
                           >
                             {post.category}
                           </Link>
                         ) : (
-                          <span className="px-2 py-0.5 rounded-full bg-[var(--editor-accent)]/8 text-[var(--editor-accent)] font-medium border border-[var(--editor-accent)]/15">
+                          <span className="font-medium text-[var(--editor-accent)]">
                             {post.category}
                           </span>
                         )}

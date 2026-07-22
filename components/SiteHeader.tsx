@@ -149,7 +149,7 @@ export function SiteHeader({
         <div className="flex items-baseline gap-4 flex-shrink-0" suppressHydrationWarning>
           <Link
             href="/"
-            className="site-logo-link transition-transform duration-200 hover:scale-105"
+            className="site-logo-link transition-opacity duration-200 hover:opacity-75"
             aria-label="返回首页"
           >
             <SignatureLogo />
@@ -164,7 +164,7 @@ export function SiteHeader({
     return (
       <Link
         href="/"
-        className="site-logo-link transition-transform duration-200 hover:scale-105"
+        className="site-logo-link transition-opacity duration-200 hover:opacity-75"
         aria-label="返回首页"
       >
         <SignatureLogo />

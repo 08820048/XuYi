@@ -12,10 +12,11 @@ export function PostUpdateNotice({
   const hasDiff = diff.added.length > 0 || diff.removed.length > 0
 
   return (
-    <section className="mb-8 rounded-lg border border-emerald-500/25 bg-emerald-500/10 px-4 py-4 text-sm text-[var(--editor-ink)]">
+    <section className="mb-8 border-y border-[var(--editor-line)] py-4 text-sm text-[var(--editor-ink)]">
       <div className="flex flex-wrap items-center gap-2">
-        <span className="inline-flex items-center rounded-full border border-emerald-500/30 bg-emerald-500/12 px-2 py-0.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-          有更新
+        <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--editor-ink)]">
+          <span className="font-mono text-sm leading-none text-emerald-600 dark:text-emerald-400" aria-hidden>+</span>
+          <span>有更新</span>
         </span>
         <span className="text-xs text-[var(--editor-muted)]">
           更新于 {formatPostUpdateDate(post.content_updated_at)}

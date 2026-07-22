@@ -66,6 +66,8 @@
 
 html {
   background: var(--background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
@@ -838,6 +840,7 @@ body {
 
 .article-display-title {
   font-family: var(--body-font, Georgia, "Noto Serif SC", serif);
+  text-wrap: balance;
 }
 
 @media (min-width: 640px) {
@@ -1318,13 +1321,9 @@ body {
     padding: 24px 0 !important;
   }
 
-  .theme-home-refined .refined-post-category {
-    flex-wrap: wrap;
-    row-gap: 4px;
-  }
-
   .theme-home-refined .refined-post-title {
     font-size: 20px !important;
+    text-wrap: balance;
   }
 
   .theme-home-editorial .editorial-nav-bar {

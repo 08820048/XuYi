@@ -50,7 +50,7 @@ export function HomeDefault({
                 >
                   <Link
                     href={`/${post.slug}`}
-                    className="block py-6 sm:py-7 transition-all duration-200 hover:bg-[var(--editor-panel)] border-l-2 border-l-transparent hover:border-l-[var(--editor-accent)] pl-4"
+                    className="block py-6 pl-4 transition-colors duration-200 hover:bg-[var(--editor-panel)] sm:py-7"
                   >
                     <div>
                       <h2

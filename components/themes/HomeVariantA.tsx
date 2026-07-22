@@ -1,9 +1,8 @@
 'use client'
 
 // Variant A: 精致极简 — evolution of current design
-// Better rhythm, date/meta sidebar, category filter pills, subtle hover
+// Better rhythm, date/meta sidebar, restrained metadata, subtle hover
 
-import { useState } from 'react'
 import Link from 'next/link'
 import { SiteHeader } from '@/components/SiteHeader'
 import { SiteFooter } from '@/components/SiteFooter'
@@ -23,23 +22,6 @@ function formatYear(ts: number) {
   return new Date(ts * 1000).getFullYear()
 }
 
-// Category → color mapping (consistent palette)
-const CAT_COLORS: Record<string, string> = {
-  'AI工具': '#e07b3a',
-  'AI教程': '#c0522a',
-  '产品': '#7c5cbf',
-  '创业': '#2e8fbb',
-  '健脑房': '#3da86b',
-  '技术': '#d4a017',
-  '生活': '#e04a6e',
-}
-const DEFAULT_CAT_COLOR = '#c96442'
-
-function getCatColor(cat: string | null) {
-  if (!cat) return DEFAULT_CAT_COLOR
-  return CAT_COLORS[cat] || DEFAULT_CAT_COLOR
-}
-
 export function HomeVariantA({
   initialTheme,
   posts,
@@ -48,8 +30,6 @@ export function HomeVariantA({
   currentPage,
   totalPages,
 }: HomeProps) {
-  const [hoverId, setHoverId] = useState<string | null>(null)
-
   return (
     <div className="theme-home-refined min-h-full flex flex-col" style={{ background: 'var(--background)' }}>
       <SiteHeader
@@ -68,8 +48,6 @@ export function HomeVariantA({
           <>
             <div>
               {posts.map((post, i) => {
-                const catColor = getCatColor(post.category)
-                const isHovered = hoverId === post.slug
                 return (
                   <article
                     key={post.slug}
@@ -77,12 +55,10 @@ export function HomeVariantA({
                       borderTop: `1px solid var(--editor-line)`,
                       marginTop: i === 0 ? 20 : 0,
                     }}
-                    onMouseEnter={() => setHoverId(post.slug)}
-                    onMouseLeave={() => setHoverId(null)}
                   >
                     <Link
                       href={`/${post.slug}`}
-                      className="refined-post-link"
+                      className="group refined-post-link"
                       style={{
                         display: 'grid',
                         gridTemplateColumns: '72px 1fr',
@@ -107,48 +83,12 @@ export function HomeVariantA({
 
                       {/* Content */}
                       <div>
-                        {post.category && (
-                          <div className="refined-post-category" style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 6,
-                            marginBottom: 10,
-                          }}>
-                            <span style={{
-                              width: 6,
-                              height: 6,
-                              borderRadius: '50%',
-                              background: catColor,
-                              display: 'inline-block',
-                            }} />
-                            <span style={{
-                              fontSize: 12,
-                              color: catColor,
-                              fontWeight: 500,
-                            }}>
-                              {post.category}
-                            </span>
-                            {post.is_pinned === 1 && (
-                              <span style={{
-                                fontSize: 10,
-                                color: 'var(--stone-gray)',
-                                fontFamily: '"JetBrains Mono", ui-monospace, monospace',
-                                letterSpacing: '0.05em',
-                              }}>
-                                · 置顶
-                              </span>
-                            )}
-                          </div>
-                        )}
-
-                        <h2 className="refined-post-title" style={{
+                        <h2 className="refined-post-title text-[var(--editor-ink)] transition-colors duration-200 group-hover:text-[var(--editor-accent)]" style={{
                           margin: 0,
                           fontSize: 22,
                           fontWeight: 700,
                           lineHeight: 1.35,
-                          letterSpacing: '-0.01em',
-                          color: isHovered ? catColor : 'var(--editor-ink)',
-                          transition: 'color .25s',
+                          letterSpacing: 0,
                           fontFamily: 'Georgia, "Noto Serif SC", serif',
                         }}>
                           {post.title}
@@ -188,14 +128,22 @@ export function HomeVariantA({
                           color: 'var(--stone-gray)',
                           display: 'flex',
                           alignItems: 'center',
-                          gap: 4,
+                          gap: 8,
                         }}>
+                          {post.category && (
+                            <>
+                              <span style={{ color: 'var(--editor-accent)', fontWeight: 500 }}>{post.category}</span>
+                              <span aria-hidden>·</span>
+                            </>
+                          )}
+                          {post.is_pinned === 1 && (
+                            <>
+                              <span>置顶</span>
+                              <span aria-hidden>·</span>
+                            </>
+                          )}
                           <span>阅读全文</span>
-                          <span style={{
-                            display: 'inline-block',
-                            transition: 'transform .25s',
-                            transform: isHovered ? 'translateX(5px)' : 'translateX(0)',
-                          }}>→</span>
+                          <span aria-hidden>→</span>
                         </div>
                       </div>
                     </Link>
