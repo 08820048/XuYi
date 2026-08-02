@@ -16,7 +16,7 @@ pkill -9 -f workerd 2>/dev/null || true
 sleep 1
 
 rm -rf .next .open-next
-npx opennextjs-cloudflare build
+OPENNEXT_INTERNAL_BUILD=1 npx opennextjs-cloudflare build
 
 preview_cmd=(npx opennextjs-cloudflare preview -c "${CONFIG_PATH}")
 

@@ -12,7 +12,7 @@ echo "==> using wrangler config: ${CONFIG_PATH}"
 bash "${SCRIPT_DIR}/cf-validate-config.sh" "${CONFIG_PATH}"
 
 rm -rf .next .open-next
-npx opennextjs-cloudflare build
+OPENNEXT_INTERNAL_BUILD=1 npx opennextjs-cloudflare build
 
 echo "==> applying D1 schema"
 npx wrangler d1 execute DB \
