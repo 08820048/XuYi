@@ -1,17 +1,15 @@
 'use client'
 
 import { useState } from 'react'
-import { FONT_PRESETS, THEME_OPTIONS, type BodyFont, type Theme } from '@/lib/appearance'
+import { FONT_PRESETS, type BodyFont } from '@/lib/appearance'
 
 interface Props {
-  initialTheme: Theme
   initialFont: BodyFont
-  onSave: (values: { theme: Theme; font: BodyFont }) => void | Promise<void>
+  onSave: (font: BodyFont) => void | Promise<void>
   saving: boolean
 }
 
-export function ThemeManager({ initialTheme, initialFont, onSave, saving }: Props) {
-  const [selectedTheme, setSelectedTheme] = useState<Theme>(initialTheme)
+export function ThemeManager({ initialFont, onSave, saving }: Props) {
   const [selectedFont, setSelectedFont] = useState<BodyFont>(initialFont)
 
   const currentFont = FONT_PRESETS.find((preset) => preset.id === selectedFont) || FONT_PRESETS[0]
@@ -19,41 +17,9 @@ export function ThemeManager({ initialTheme, initialFont, onSave, saving }: Prop
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h3 className="text-base font-medium text-[var(--editor-ink)]">默认主题</h3>
-        <p className="text-sm text-[var(--editor-muted)]">
-          这里设置的是网站首次访问时的默认主题。访客后续如果自己切换主题，会优先使用本地保存的偏好。
-        </p>
-        <div className="grid gap-3 sm:grid-cols-2">
-          {THEME_OPTIONS.map((theme) => (
-            <label
-              key={theme.id}
-              className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition-colors ${
-                selectedTheme === theme.id
-                  ? 'border-[var(--editor-accent)] bg-[var(--editor-accent)]/5'
-                  : 'border-[var(--editor-line)] bg-[var(--editor-panel)] hover:border-[var(--editor-soft)]'
-              }`}
-            >
-              <input
-                type="radio"
-                name="default-theme"
-                value={theme.id}
-                checked={selectedTheme === theme.id}
-                onChange={() => setSelectedTheme(theme.id)}
-                className="mt-1 accent-[var(--editor-accent)]"
-              />
-              <div className="min-w-0 flex-1">
-                <div className="text-sm font-medium text-[var(--editor-ink)]">{theme.label}</div>
-                <p className="mt-1 text-sm leading-relaxed text-[var(--editor-muted)]">{theme.description}</p>
-              </div>
-            </label>
-          ))}
-        </div>
-      </div>
-
-      <div className="space-y-2">
         <h3 className="text-base font-medium text-[var(--editor-ink)]">正文字体</h3>
         <p className="text-sm text-[var(--editor-muted)]">
-          设置前台文章正文的字体。主题控制首页风格，字体控制阅读正文体验。
+          设置前台文章正文的字体。站点固定使用精致极简主题。
         </p>
         <div className="grid gap-3">
           {FONT_PRESETS.map((preset) => (
@@ -97,11 +63,11 @@ export function ThemeManager({ initialTheme, initialFont, onSave, saving }: Prop
       )}
 
       <button
-        onClick={() => void onSave({ theme: selectedTheme, font: selectedFont })}
+        onClick={() => void onSave(selectedFont)}
         disabled={saving}
         className="rounded-lg bg-[var(--editor-accent)] px-4 py-2 text-sm font-medium text-white hover:brightness-105 disabled:opacity-50"
       >
-        {saving ? '保存中...' : '保存主题管理设置'}
+        {saving ? '保存中...' : '保存字体设置'}
       </button>
     </div>
   )

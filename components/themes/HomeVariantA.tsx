@@ -23,7 +23,6 @@ function formatYear(ts: number) {
 }
 
 export function HomeVariantA({
-  initialTheme,
   posts,
   categories,
   navLinks,
@@ -33,7 +32,6 @@ export function HomeVariantA({
   return (
     <div className="theme-home-refined min-h-full flex flex-col" style={{ background: 'var(--background)' }}>
       <SiteHeader
-        initialTheme={initialTheme}
         navLinks={navLinks}
         categories={categories}
       />

@@ -1,6 +1,5 @@
 import { getPosts, getPostsCount } from '@/lib/db'
 import { getAppCloudflareEnv } from '@/lib/cloudflare'
-import { type Theme } from '@/lib/appearance'
 import type { SiteCategoryLink, SiteNavLink } from '@/lib/site'
 import { getSiteHeaderData } from '@/lib/site'
 import { HomeClient } from '@/components/HomeClient'
@@ -31,7 +30,7 @@ export default async function Home({
   let totalCount = 0
   let navLinks: SiteNavLink[] = []
   let categories: SiteCategoryLink[] = []
-  let defaultTheme: Theme = 'default'
+  const defaultTheme = 'refined' as const
   try {
     const env = await getAppCloudflareEnv()
     if (env?.DB) {
@@ -42,7 +41,6 @@ export default async function Home({
       ])
       navLinks = headerData.navLinks
       categories = headerData.categories
-      defaultTheme = headerData.defaultTheme
     }
   } catch (e) {
     console.error('Homepage: failed to fetch posts', e)

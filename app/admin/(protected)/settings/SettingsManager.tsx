@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Tabs } from '@/components/Tabs'
 import type { RuntimeCapabilities } from '@/lib/runtime-capabilities'
-import { normalizeTheme, type BodyFont, type Theme } from '@/lib/appearance'
+import type { BodyFont } from '@/lib/appearance'
 import { NavLinksEditor } from './NavLinksEditor'
 import { CustomJsEditor } from './CustomJsEditor'
 import { ApiTokensManager } from './ApiTokensManager'
@@ -43,7 +43,6 @@ interface Props {
   initialCategories: Category[]
   initialFriendLinks: FriendLink[]
   initialBodyFont: string
-  initialDefaultTheme: string
   initialRuntimeCapabilities: RuntimeCapabilities
 }
 
@@ -54,7 +53,6 @@ export function SettingsManager({
   initialCategories,
   initialFriendLinks,
   initialBodyFont,
-  initialDefaultTheme,
   initialRuntimeCapabilities,
 }: Props) {
   const [saving, setSaving] = useState(false)
@@ -83,12 +81,12 @@ export function SettingsManager({
     }
   }
 
-  const saveThemeSettings = async ({ theme, font }: { theme: Theme; font: BodyFont }) => {
+  const saveFontSettings = async (font: BodyFont) => {
     setSaving(true)
     setMsg('')
     try {
       await Promise.all([
-        persistSetting('default_theme', theme),
+        persistSetting('default_theme', 'refined'),
         persistSetting('body_font', font),
       ])
       setMsg('已保存')
@@ -170,12 +168,11 @@ export function SettingsManager({
     },
     {
       id: 'theme',
-      label: '主题管理',
+      label: '字体管理',
       content: (
         <ThemeManager
-          initialTheme={normalizeTheme(initialDefaultTheme)}
           initialFont={(initialBodyFont || 'default') as BodyFont}
-          onSave={saveThemeSettings}
+          onSave={saveFontSettings}
           saving={saving}
         />
       ),

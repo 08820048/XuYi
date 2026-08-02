@@ -10,7 +10,6 @@ export default async function SettingsPage() {
   let customJs = ''
   let aboutMarkdown = ''
   let bodyFont = ''
-  let defaultTheme = ''
   let categories: Awaited<ReturnType<typeof getCategories>> = []
   let friendLinks: Awaited<ReturnType<typeof getFriendLinks>> = []
   let runtimeCapabilities = detectRuntimeCapabilities()
@@ -23,7 +22,6 @@ export default async function SettingsPage() {
       customJs = (await getSetting(env.DB, 'custom_js')) || ''
       aboutMarkdown = (await getSetting(env.DB, 'about_markdown')) || ''
       bodyFont = (await getSetting(env.DB, 'body_font')) || ''
-      defaultTheme = (await getSetting(env.DB, 'default_theme')) || ''
       ;[categories, friendLinks] = await Promise.all([
         getCategories(env.DB),
         getFriendLinks(env.DB),
@@ -46,7 +44,6 @@ export default async function SettingsPage() {
         initialCategories={categories}
         initialFriendLinks={friendLinks}
         initialBodyFont={bodyFont}
-        initialDefaultTheme={defaultTheme}
         initialRuntimeCapabilities={runtimeCapabilities}
       />
     </div>

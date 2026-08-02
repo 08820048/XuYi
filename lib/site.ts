@@ -1,5 +1,4 @@
-import { cookies } from 'next/headers'
-import { THEME_COOKIE_NAME, isTheme, normalizeTheme, type Theme } from '@/lib/appearance'
+import type { Theme } from '@/lib/appearance'
 import { getPublicCategories, getSetting } from '@/lib/db'
 
 export interface SiteNavLink {
@@ -20,13 +19,12 @@ export async function getSiteHeaderData(db: D1Database): Promise<{
 }> {
   let navLinks: SiteNavLink[] = []
   let categories: SiteCategoryLink[] = []
-  let defaultTheme: Theme = 'default'
+  const defaultTheme: Theme = 'refined'
 
   try {
-    const [navJson, categoryRows, themeValue] = await Promise.all([
+    const [navJson, categoryRows] = await Promise.all([
       getSetting(db, 'nav_links'),
       getPublicCategories(db),
-      getSetting(db, 'default_theme'),
     ])
 
     if (navJson) {
@@ -44,18 +42,8 @@ export async function getSiteHeaderData(db: D1Database): Promise<{
         name: category.name,
         slug: category.slug,
       }))
-
-    defaultTheme = normalizeTheme(themeValue)
   } catch {
     // Keep graceful fallback behavior for public pages
   }
-
-  try {
-    const themeCookie = (await cookies()).get(THEME_COOKIE_NAME)?.value
-    if (isTheme(themeCookie)) {
-      defaultTheme = themeCookie
-    }
-  } catch {}
-
   return { navLinks, categories, defaultTheme }
 }

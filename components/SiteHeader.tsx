@@ -1,11 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { useState, useRef, useEffect, useSyncExternalStore, type CSSProperties } from 'react'
+import { useState, useRef, useEffect, type CSSProperties } from 'react'
 import { Menu, X, ChevronDown } from 'lucide-react'
 import { SearchEntry } from './SearchEntry'
-import { ThemeDropdown } from '@/components/ThemeDropdown'
-import { getClientThemePreference, subscribeToThemeChange, type Theme } from '@/lib/appearance'
+import type { Theme } from '@/lib/appearance'
 import { getCategoryPath } from '@/lib/route-segments'
 import type { SiteCategoryLink, SiteNavLink } from '@/lib/site'
 import { SignatureLogo } from '@/components/SignatureLogo'
@@ -28,17 +27,11 @@ const defaultNavLinks: NavLink[] = [
   { label: 'RSS', url: '/feed.xml', openInNewTab: false },
 ]
 
-function getIssueInfo() {
-  const now = new Date()
-  return { vol: now.getFullYear() - 2023, month: now.getMonth() + 1, year: now.getFullYear() }
-}
-
 export function SiteHeader({
   navLinks,
   categories = [],
   activeCategorySlug = null,
   stickyOnMobile = true,
-  initialTheme = 'default',
   forceSpread = false,
 }: SiteHeaderProps) {
   const links = navLinks && navLinks.length > 0 ? navLinks : defaultNavLinks
@@ -46,11 +39,6 @@ export function SiteHeader({
   const [categoryOpen, setCategoryOpen] = useState(false)
   const [spreadProgress, setSpreadProgress] = useState(forceSpread ? 1 : 0)
   const categoryRef = useRef<HTMLDivElement>(null)
-  const theme = useSyncExternalStore(
-    subscribeToThemeChange,
-    () => getClientThemePreference(initialTheme),
-    () => initialTheme,
-  )
 
   // 点击外部关闭分类下拉
   useEffect(() => {
@@ -126,58 +114,18 @@ export function SiteHeader({
     )
   }
 
-  // 终端主题：logo 区域显示终端提示符
-  const renderLogo = () => {
-    if (theme === 'terminal') {
-      return (
-        <Link
-          href="/"
-          className="flex items-center gap-2 flex-shrink-0 text-[var(--editor-muted)] hover:text-[var(--editor-ink)] transition-colors duration-200"
-          style={{ fontFamily: '"JetBrains Mono", ui-monospace, monospace', fontSize: 13 }}
-          suppressHydrationWarning
-        >
-          <SignatureLogo className="signature-logo--terminal" />
-          <span style={{ color: 'var(--editor-muted)' }}>xuyi@blog:~$</span>
-          <span style={{ color: 'var(--editor-ink)' }}>./home</span>
-        </Link>
-      )
-    }
-
-    if (theme === 'editorial') {
-      const { vol, month, year } = getIssueInfo()
-      return (
-        <div className="flex items-baseline gap-4 flex-shrink-0" suppressHydrationWarning>
-          <Link
-            href="/"
-            className="site-logo-link transition-opacity duration-200 hover:opacity-75"
-            aria-label="返回首页"
-          >
-            <SignatureLogo />
-          </Link>
-          <span style={{ fontFamily: '"JetBrains Mono", ui-monospace, monospace', fontSize: 11, letterSpacing: '0.15em', color: 'var(--editor-muted)' }}>
-            VOL.{vol} · {year}年{month}月
-          </span>
-        </div>
-      )
-    }
-
-    return (
-      <Link
-        href="/"
-        className="site-logo-link transition-opacity duration-200 hover:opacity-75"
-        aria-label="返回首页"
-      >
-        <SignatureLogo />
-      </Link>
-    )
-  }
-
   return (
     <header className={`site-header ${stickyOnMobile ? 'sticky' : 'sm:sticky'} top-0 z-40 border-b border-[var(--editor-line)] bg-[var(--background)]/95 backdrop-blur-sm`}>
       <div className="site-header-inner mx-auto max-w-3xl px-4 sm:px-6" style={spreadStyle}>
         <div className="site-header-row h-14 flex items-center justify-between gap-4">
           <div className="site-header-primary min-w-0 flex items-center">
-            {renderLogo()}
+            <Link
+              href="/"
+              className="site-logo-link transition-opacity duration-200 hover:opacity-75"
+              aria-label="返回首页"
+            >
+              <SignatureLogo />
+            </Link>
           </div>
 
           <div className="site-header-secondary flex flex-shrink-0 items-center justify-end gap-1">
@@ -231,7 +179,6 @@ export function SiteHeader({
               )}
 
               {links.map(link => renderLink(link))}
-              <ThemeDropdown initialTheme={initialTheme} />
               <SearchEntry />
             </nav>
 
@@ -297,27 +244,6 @@ export function SiteHeader({
                 {renderLink(link, () => setMobileMenuOpen(false))}
               </div>
             ))}
-            <div className="px-4 py-3 border-t border-[var(--editor-line)] text-[var(--editor-muted)]">
-              <ThemeDropdown
-                initialTheme={initialTheme}
-                inlineMenu
-                fullWidth
-                onThemeChange={() => setMobileMenuOpen(false)}
-                buttonStyle={{
-                  width: '100%',
-                  justifyContent: 'space-between',
-                  color: 'var(--editor-muted)',
-                  fontSize: 14,
-                }}
-                dropdownStyle={{
-                  background: 'var(--editor-panel)',
-                }}
-                itemStyle={{
-                  padding: '10px 12px',
-                  fontSize: 13,
-                }}
-              />
-            </div>
           </nav>
         </div>
       </div>

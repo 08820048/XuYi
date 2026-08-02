@@ -2,29 +2,29 @@
 @import "katex/dist/katex.min.css";
 
 :root {
-  --background: #f5f4ed;
-  --foreground: #141413;
-  --editor-app-bg: #f5f4ed;
-  --editor-panel: #faf9f5;
-  --editor-soft: #e8e6dc;
-  --editor-line: #f0eee6;
-  --editor-ink: #141413;
-  --editor-muted: #5e5d59;
-  --editor-accent: #c96442;
-  --editor-accent-ink: #faf9f5;
-  --editor-link: #c96442;
-  --editor-code-bg: #faf9f5;
-  --editor-code-border: #e8e6dc;
-  --editor-quote-bg: #faf9f5;
-  --editor-selection: #cfe6ff;
-  --stone-gray: #87867f;
-  --border-warm: #e8e6dc;
-  --coral: #d97757;
-  --article-heading: #17120d;
-  --article-body: #2b241c;
-  --article-quote: #51473a;
-  --article-quote-border: #cdb796;
-  --article-quote-nested-border: #b8a68a;
+  --background: #f7f8f6;
+  --foreground: #171918;
+  --editor-app-bg: #f7f8f6;
+  --editor-panel: #ffffff;
+  --editor-soft: #eceeeb;
+  --editor-line: #e2e5e1;
+  --editor-ink: #171918;
+  --editor-muted: #626864;
+  --editor-accent: #b5533c;
+  --editor-accent-ink: #ffffff;
+  --editor-link: #a94c37;
+  --editor-code-bg: #ffffff;
+  --editor-code-border: #dfe3df;
+  --editor-quote-bg: #f1f3f0;
+  --editor-selection: #d8e7f4;
+  --stone-gray: #8a918c;
+  --border-warm: #e2e5e1;
+  --coral: #b5533c;
+  --article-heading: #151716;
+  --article-body: #303431;
+  --article-quote: #515854;
+  --article-quote-border: #aeb5b0;
+  --article-quote-nested-border: #c4c9c6;
   --article-quote-nested-bg: rgba(0, 0, 0, 0.02);
 }
 
@@ -37,30 +37,30 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0f1115;
-    --foreground: #e8ecf3;
-    --editor-app-bg: #0f1115;
-    --editor-panel: #151a23;
-    --editor-soft: #1c2230;
-    --editor-line: #2a3243;
-    --editor-ink: #e8ecf3;
-    --editor-muted: #a5b0c5;
-    --editor-accent: #e08a67;
-    --editor-accent-ink: #151a23;
-    --editor-link: #f0a07c;
-    --editor-code-bg: #121722;
-    --editor-code-border: #2a3243;
-    --editor-quote-bg: #151a23;
-    --editor-selection: rgba(166, 190, 255, 0.35);
-    --stone-gray: #8f9ab0;
-    --border-warm: #2a3243;
-    --coral: #e08a67;
-    --article-heading: #f1f5fc;
-    --article-body: #cbd5e6;
-    --article-quote: #b5c1d8;
-    --article-quote-border: #f0a07c;
-    --article-quote-nested-border: #d38b68;
-    --article-quote-nested-bg: rgba(240, 160, 124, 0.12);
+    --background: #111311;
+    --foreground: #eef1ee;
+    --editor-app-bg: #111311;
+    --editor-panel: #181b19;
+    --editor-soft: #222724;
+    --editor-line: #303632;
+    --editor-ink: #eef1ee;
+    --editor-muted: #afb5b0;
+    --editor-accent: #d1745d;
+    --editor-accent-ink: #111311;
+    --editor-link: #df856e;
+    --editor-code-bg: #151816;
+    --editor-code-border: #303632;
+    --editor-quote-bg: #181b19;
+    --editor-selection: rgba(143, 181, 207, 0.32);
+    --stone-gray: #8e9690;
+    --border-warm: #303632;
+    --coral: #d1745d;
+    --article-heading: #f3f5f3;
+    --article-body: #d4d9d5;
+    --article-quote: #bcc3be;
+    --article-quote-border: #d1745d;
+    --article-quote-nested-border: #a86150;
+    --article-quote-nested-bg: rgba(209, 116, 93, 0.1);
   }
 }
 

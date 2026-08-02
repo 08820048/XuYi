@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import localFont from "next/font/local";
 import Script from "next/script";
 import { Suspense } from "react";
@@ -10,13 +9,6 @@ import { ToastProvider } from "@/components/Toast";
 import { CustomJsInjector } from "@/components/CustomJsInjector";
 import {
   FONT_CONFIG,
-  THEME_COOKIE_MAX_AGE,
-  THEME_COOKIE_NAME,
-  THEME_OPTIONS,
-  THEME_STORAGE_KEY,
-  isTheme,
-  normalizeTheme,
-  type Theme,
 } from "@/lib/appearance";
 import { getAppCloudflareEnv } from "@/lib/cloudflare";
 import { getSetting } from "@/lib/db";
@@ -105,44 +97,24 @@ export default async function RootLayout({
 }>) {
   let customJs = ''
   let bodyFont = ''
-  let defaultTheme: Theme = 'default'
   try {
     const env = await getAppCloudflareEnv()
     if (env?.DB) {
-      const [customJsValue, bodyFontValue, defaultThemeValue] = await Promise.all([
+      const [customJsValue, bodyFontValue] = await Promise.all([
         getSetting(env.DB, 'custom_js'),
         getSetting(env.DB, 'body_font'),
-        getSetting(env.DB, 'default_theme'),
       ])
       customJs = customJsValue || ''
       bodyFont = bodyFontValue || ''
-      defaultTheme = normalizeTheme(defaultThemeValue)
-    }
-  } catch {}
-
-  let appliedTheme = defaultTheme
-  try {
-    const themeCookie = (await cookies()).get(THEME_COOKIE_NAME)?.value
-    if (isTheme(themeCookie)) {
-      appliedTheme = themeCookie
     }
   } catch {}
 
   const font = FONT_CONFIG[bodyFont]
-  const validThemes = THEME_OPTIONS.map((theme) => theme.id)
 
   const appearanceApplyScript = `
 (function(){
   var f = ${JSON.stringify(FONT_CONFIG)};
   var k = "${bodyFont || ''}";
-  var defaultTheme = "${appliedTheme}";
-  var themeStorageKey = "${THEME_STORAGE_KEY}";
-  var themeCookieName = "${THEME_COOKIE_NAME}";
-  var themeCookieMaxAge = ${THEME_COOKIE_MAX_AGE};
-  var validThemes = ${JSON.stringify(validThemes)};
-  function isTheme(value) {
-    return validThemes.indexOf(value) !== -1;
-  }
   function applyFont(key) {
     var c = f[key];
     document.documentElement.setAttribute('data-font', key || 'default');
@@ -159,22 +131,7 @@ export default async function RootLayout({
       document.documentElement.style.removeProperty('--body-font');
     }
   }
-  function applyTheme(theme) {
-    if (isTheme(theme) && theme !== 'default') {
-      document.documentElement.setAttribute('data-theme', theme);
-    } else {
-      document.documentElement.removeAttribute('data-theme');
-    }
-  }
   applyFont(k);
-  applyTheme(defaultTheme);
-  try {
-    var savedTheme = window.localStorage.getItem(themeStorageKey);
-    if (isTheme(savedTheme)) {
-      applyTheme(savedTheme);
-      document.cookie = themeCookieName + '=' + encodeURIComponent(savedTheme) + '; path=/; max-age=' + themeCookieMaxAge + '; samesite=lax';
-    }
-  } catch (e) {}
 })();
 `
 
@@ -183,8 +140,7 @@ export default async function RootLayout({
       lang="zh-CN"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       data-font={bodyFont || 'default'}
-      data-theme={appliedTheme !== 'default' ? appliedTheme : undefined}
-      suppressHydrationWarning
+      data-theme="refined"
     >
       <head>
         {font?.link && <link rel="stylesheet" href={font.link} />}
