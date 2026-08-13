@@ -3,6 +3,8 @@
 // @ts-ignore -- generated artifact may be absent during clean Next type-checks
 import { default as handler } from './.open-next/worker.js'
 import { consumeBackgroundJobBatch, type BackgroundJob, type BackgroundJobEnv } from './lib/background-jobs'
+import { parseDiaryEmail } from './lib/diary-email'
+import { publishDiaryEmail } from './lib/diary-email-ingest'
 import { pushFeishuBlogReport, type FeishuReportEnv } from './lib/feishu-report'
 
 interface QueueMessage<T> {
@@ -13,6 +15,18 @@ interface QueueMessage<T> {
 
 interface QueueBatch<T> {
   messages: Array<QueueMessage<T>>
+}
+
+interface ForwardableEmailMessage {
+  from: string
+  to: string
+  raw: ReadableStream
+  setReject?: (reason: string) => void
+}
+
+async function readEmailRaw(stream: ReadableStream): Promise<string> {
+  const text = await new Response(stream).text()
+  return text
 }
 
 const customWorker = {
@@ -35,6 +49,25 @@ const customWorker = {
 
   async queue(batch: QueueBatch<BackgroundJob>, env: BackgroundJobEnv) {
     await consumeBackgroundJobBatch(batch, env)
+  },
+
+  async email(message: ForwardableEmailMessage, env: Partial<CloudflareEnv>) {
+    try {
+      if (!env.DB) {
+        message.setReject?.('DB is not configured')
+        return
+      }
+
+      const parsed = parseDiaryEmail(await readEmailRaw(message.raw))
+      await publishDiaryEmail(env.DB, env, {
+        ...parsed,
+        from: parsed.from || message.from,
+        to: parsed.to || message.to,
+      })
+    } catch (error) {
+      console.error('Diary email ingestion failed:', error)
+      message.setReject?.(error instanceof Error ? error.message : 'Diary email ingestion failed')
+    }
   },
 }
 

@@ -3,6 +3,7 @@ export {
   isPubliclyAccessiblePost,
   type CategoryRow,
   type CountRow,
+  type DiaryEntry,
   type FriendLinkRow,
   type Post,
   type PostAiSnapshotRow,
@@ -11,6 +12,17 @@ export {
   type SettingRow,
   type StatsRow,
 } from '@/lib/repositories/types'
+export {
+  createDiaryEntry,
+  deleteDiaryEntry,
+  getDiaryEntries,
+  getDiaryEntriesCount,
+  getDiaryEntryBySlug,
+  incrementDiaryEntryViewCount,
+  isPubliclyAccessibleDiaryEntry,
+  updateDiaryEntryBySlug,
+} from '@/lib/repositories/diary'
+export type { DiaryStatus } from '@/lib/repositories/diary'
 export { mapPostWithTags, normalizePostStatus, parsePostTags } from '@/lib/repositories/post-mappers'
 export {
   createPost,

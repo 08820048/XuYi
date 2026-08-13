@@ -29,6 +29,24 @@ export interface PostWithTags extends Omit<Post, 'tags'> {
   tags: string[]
 }
 
+export interface DiaryEntry {
+  id: number
+  slug: string
+  title: string
+  content: string
+  html: string
+  description: string | null
+  status: 'draft' | 'published' | 'deleted'
+  is_hidden: number
+  cover_image: string | null
+  source: 'admin' | 'email'
+  source_email: string | null
+  deleted_at: number | null
+  published_at: number
+  updated_at: number
+  view_count: number
+}
+
 export interface CountRow {
   count: number
 }

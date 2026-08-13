@@ -17,6 +17,7 @@ import { AiImageProviderManager } from './AiImageProviderManager'
 import { AiImageActionsManager } from './AiImageActionsManager'
 import { AiPostGeneratorsManager } from './AiPostGeneratorsManager'
 import { RuntimeCapabilitiesPanel } from './RuntimeCapabilitiesPanel'
+import { DiarySettingsManager } from './DiarySettingsManager'
 
 interface Category {
   name: string
@@ -43,6 +44,11 @@ interface Props {
   initialCategories: Category[]
   initialFriendLinks: FriendLink[]
   initialBodyFont: string
+  initialDiaryNavEnabled: string
+  initialDiaryEmailEnabled: string
+  initialDiaryInboundAddress: string
+  initialDiaryAllowedSender: string
+  initialDiaryInboundSecret: string
   initialRuntimeCapabilities: RuntimeCapabilities
 }
 
@@ -53,6 +59,11 @@ export function SettingsManager({
   initialCategories,
   initialFriendLinks,
   initialBodyFont,
+  initialDiaryNavEnabled,
+  initialDiaryEmailEnabled,
+  initialDiaryInboundAddress,
+  initialDiaryAllowedSender,
+  initialDiaryInboundSecret,
   initialRuntimeCapabilities,
 }: Props) {
   const [saving, setSaving] = useState(false)
@@ -98,6 +109,22 @@ export function SettingsManager({
     }
   }
 
+  const saveDiarySettings = async (settings: Record<string, string>) => {
+    setSaving(true)
+    setMsg('')
+    try {
+      await Promise.all(
+        Object.entries(settings).map(([key, value]) => persistSetting(key, value)),
+      )
+      setMsg('已保存')
+      setTimeout(() => setMsg(''), 2000)
+    } catch (e) {
+      setMsg(e instanceof Error ? e.message : '保存失败')
+    } finally {
+      setSaving(false)
+    }
+  }
+
   const tabs = [
     {
       id: 'nav',
@@ -126,6 +153,28 @@ export function SettingsManager({
       id: 'friend-links',
       label: '友联设置',
       content: <FriendLinksManager initialLinks={initialFriendLinks} />,
+    },
+    {
+      id: 'diary',
+      label: '日记设置',
+      content: (
+        <div className="space-y-4">
+          {msg && (
+            <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-800">
+              {msg}
+            </div>
+          )}
+          <DiarySettingsManager
+            initialNavEnabled={initialDiaryNavEnabled}
+            initialEmailEnabled={initialDiaryEmailEnabled}
+            initialInboundAddress={initialDiaryInboundAddress}
+            initialAllowedSender={initialDiaryAllowedSender}
+            initialInboundSecret={initialDiaryInboundSecret}
+            onSave={saveDiarySettings}
+            saving={saving}
+          />
+        </div>
+      ),
     },
     {
       id: 'about',

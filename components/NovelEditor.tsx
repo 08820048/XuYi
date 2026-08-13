@@ -58,6 +58,7 @@ import {
 } from '@/lib/editor-ui'
 import type { EditorImageActionTarget } from '@/lib/resizable-image'
 import { buildAutoDescription, normalizePostSlug, sanitizePostSlugInput } from '@/lib/post-utils'
+import { buildDiaryDescription, getDiaryPath, normalizeDiarySlug, sanitizeDiarySlugInput } from '@/lib/diary-utils'
 import {
   POST_TYPE_LABELS,
   POST_TYPES,
@@ -99,6 +100,7 @@ function relativeTime(ts: number): string {
 }
 
 interface NovelEditorProps {
+  contentKind?: 'post' | 'diary'
   initialData?: {
     slug: string
     title: string
@@ -128,7 +130,8 @@ type DraftMetaState = {
 
 type MetaGenerationTarget = 'summary' | 'tags' | 'slug' | 'cover'
 
-export function NovelEditor({ initialData }: NovelEditorProps = {}) {
+export function NovelEditor({ contentKind = 'post', initialData }: NovelEditorProps = {}) {
+  const isDiary = contentKind === 'diary'
   // ── Core state ──
   const [draftReady, setDraftReady] = useState(false)
   const [initialContent, setInitialContent] = useState<JSONContent>(EMPTY_DOCUMENT)
@@ -392,9 +395,10 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
     }
 
     if (persistedSlug !== previousSlug) {
-      window.history.replaceState({}, '', `/editor?edit=${encodeURIComponent(persistedSlug)}`)
+      const editorPath = isDiary ? `/admin/diary/edit?edit=${encodeURIComponent(persistedSlug)}` : `/editor?edit=${encodeURIComponent(persistedSlug)}`
+      window.history.replaceState({}, '', editorPath)
     }
-  }, [])
+  }, [isDiary])
 
   const persistDraft = useCallback(async (
     nextTitle = latestTitleRef.current,
@@ -404,7 +408,7 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
     if (typeof window === 'undefined' || !draftReady || !editor) return
 
     const { editSlug: currentSlug, slug: nextSlugRaw, category, tags, description, coverImage, postType, sourceUrl } = latestMetaRef.current
-    const nextSlug = normalizePostSlug(nextSlugRaw)
+    const nextSlug = isDiary ? normalizeDiarySlug(nextSlugRaw) : normalizePostSlug(nextSlugRaw)
     const normalizedTitle = nextTitle.trim() || '无标题'
     const contentJson = editor.getJSON()
     const html = editor.getHTML()
@@ -417,7 +421,7 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
       return
     }
 
-    const normalizedDescription = (description || buildAutoDescription(plainText) || '').trim()
+    const normalizedDescription = (description || (isDiary ? buildDiaryDescription(plainText) : buildAutoDescription(plainText)) || '').trim()
     const snapshot = buildAutosaveSnapshot({
       currentSlug,
       nextSlug,
@@ -447,7 +451,7 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
 
     try {
       if (currentSlug) {
-        const res = await fetch('/api/posts', {
+        const res = await fetch(isDiary ? '/api/diary' : '/api/posts', {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -478,7 +482,7 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
           syncPersistedSlug(persistedSlug, currentSlug)
         }
       } else {
-        const res = await fetch('/api/posts', {
+        const res = await fetch(isDiary ? '/api/diary' : '/api/posts', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -532,7 +536,7 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
         autosaveAbortRef.current = null
       }
     }
-  }, [abortAutosaveRequest, buildAutosaveSnapshot, draftReady, syncPersistedSlug])
+  }, [abortAutosaveRequest, buildAutosaveSnapshot, draftReady, isDiary, syncPersistedSlug])
 
   // ── Draft save ──
   const scheduleDraftSave = useCallback((
@@ -770,17 +774,17 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
   const handleSave = async () => {
     const editor = editorRef.current
     const normalizedTitle = title.trim()
-    const normalizedSlug = normalizePostSlug(slug)
-    if (!normalizedTitle) { setFeedback({ type: 'error', message: '先把文章标题写上。' }); return }
+    const normalizedSlug = isDiary ? normalizeDiarySlug(slug) : normalizePostSlug(slug)
+    if (!normalizedTitle) { setFeedback({ type: 'error', message: isDiary ? '先写一个日记标题。' : '先把文章标题写上。' }); return }
     if (!editor) { setFeedback({ type: 'error', message: '编辑器还没准备好。' }); return }
     const content = editor.getText({ blockSeparator: '\n\n' }).trim()
     const html = editor.getHTML()
     const hasContent = content || /<(img|video|audio|iframe)\s/.test(html)
     if (!hasContent) { setFeedback({ type: 'error', message: '正文还是空的。' }); return }
-    const normalizedDescription = (description || buildAutoDescription(content) || '').trim()
+    const normalizedDescription = (description || (isDiary ? buildDiaryDescription(content) : buildAutoDescription(content)) || '').trim()
     const normalizedSourceUrl = sourceUrl.trim()
 
-    if (requiresSourceUrl(postType) && !normalizedSourceUrl) {
+    if (!isDiary && requiresSourceUrl(postType) && !normalizedSourceUrl) {
       setFeedback({ type: 'error', message: '转载和翻译文章需要填写原文地址。' })
       return
     }
@@ -792,15 +796,18 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
 
     try {
       const isEdit = editSlug !== null
-      const url = isEdit ? `/api/admin/posts/${editSlug}` : '/api/posts'
+      const url = isEdit
+        ? (isDiary ? `/api/admin/diary/${editSlug}` : `/api/admin/posts/${editSlug}`)
+        : (isDiary ? '/api/diary' : '/api/posts')
       const method = isEdit ? 'PUT' : 'POST'
 
       let statusFields: { status: string; is_hidden: number; password?: string | null }
-      if (publishStatus === 'encrypted') {
+      if (!isDiary && publishStatus === 'encrypted') {
         statusFields = { status: 'published', is_hidden: 0, password: initialData?.password || generatePassword() }
       } else {
         const m = { public: { status: 'published', is_hidden: 0, password: null }, draft: { status: 'draft', is_hidden: 0, password: null }, unlisted: { status: 'published', is_hidden: 1, password: null } }
-        statusFields = m[publishStatus as 'public' | 'draft' | 'unlisted']
+        const statusKey = publishStatus === 'encrypted' ? 'public' : publishStatus
+        statusFields = m[statusKey as 'public' | 'draft' | 'unlisted']
       }
 
       const response = await fetch(url, {
@@ -812,7 +819,7 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
           ...statusFields,
           tags, description: normalizedDescription, cover_image: coverImage || null,
           post_type: postType,
-          source_url: requiresSourceUrl(postType) ? normalizedSourceUrl : null,
+          source_url: !isDiary && requiresSourceUrl(postType) ? normalizedSourceUrl : null,
         }),
       })
       const result = (await response.json()) as {
@@ -835,7 +842,7 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
         tags,
         coverImage,
         postType,
-        sourceUrl: requiresSourceUrl(postType) ? normalizedSourceUrl : '',
+        sourceUrl: !isDiary && requiresSourceUrl(postType) ? normalizedSourceUrl : '',
       })
       lastAutosaveSnapshotRef.current = snapshot
 
@@ -849,7 +856,7 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
         if (persistedSlug) {
           syncPersistedSlug(persistedSlug, editSlug, true)
         }
-        setFeedback({ type: 'success', message: '文章已更新。', slug: persistedSlug || editSlug || undefined })
+        setFeedback({ type: 'success', message: isDiary ? '日记已更新。' : '文章已更新。', slug: persistedSlug || editSlug || undefined })
       } else {
         if (!description && normalizedDescription) {
           setDescription(normalizedDescription)
@@ -901,10 +908,10 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
 
   // ── Status config ──
   const STATUS_CONFIG = [
-    { key: 'public' as const, label: '公开访问', desc: '所有人可见，出现在首页和搜索', Icon: Globe },
+    { key: 'public' as const, label: '公开访问', desc: isDiary ? '所有人可见，出现在日记页' : '所有人可见，出现在首页和搜索', Icon: Globe },
     { key: 'draft' as const, label: '草稿自见', desc: '仅自己可见，不会发布', Icon: Eye },
-    { key: 'encrypted' as const, label: '加密访问', desc: '需要密码才能查看', Icon: Lock },
-    { key: 'unlisted' as const, label: '链接访问', desc: '不在首页显示，但可通过链接访问', Icon: Link2 },
+    ...(!isDiary ? [{ key: 'encrypted' as const, label: '加密访问', desc: '需要密码才能查看', Icon: Lock }] : []),
+    { key: 'unlisted' as const, label: '链接访问', desc: isDiary ? '不在日记页显示，但可通过链接访问' : '不在首页显示，但可通过链接访问', Icon: Link2 },
   ]
 
   // ── Save status display ──
@@ -923,11 +930,11 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
         <div className="flex h-full items-center gap-2 px-4">
           {/* Left: Back */}
           <Link
-            href="/admin/posts"
+            href={isDiary ? '/admin/diary' : '/admin/posts'}
             className="flex items-center gap-1 shrink-0 text-sm text-[var(--editor-muted)] hover:text-[var(--editor-ink)] transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
-            <span className="hidden sm:inline">文章列表</span>
+            <span className="hidden sm:inline">{isDiary ? '日记列表' : '文章列表'}</span>
           </Link>
 
           <div className="mx-1 h-4 w-px bg-[var(--editor-line)]" />
@@ -998,7 +1005,9 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
             <div className="mx-0.5 h-5 w-px bg-[var(--editor-line)]" />
 
             {/* Category selector */}
-            <CategorySelector value={category} onChange={(val) => { setCategory(val); markDirty({ category: val }) }} />
+            {!isDiary && (
+              <CategorySelector value={category} onChange={(val) => { setCategory(val); markDirty({ category: val }) }} />
+            )}
 
             {/* Publish button + dropdown */}
             <div className="relative" ref={publishPanelRef}>
@@ -1060,7 +1069,7 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
                         disabled={saving}
                         className="px-3 py-1.5 text-sm font-semibold text-white bg-[var(--editor-accent)] rounded-lg hover:brightness-105 transition disabled:opacity-50"
                       >
-                        {saving ? '保存中…' : editSlug ? '更新文章' : '发布'}
+                        {saving ? '保存中…' : editSlug ? (isDiary ? '更新日记' : '更新文章') : '发布'}
                       </button>
                     </div>
                   </div>
@@ -1078,7 +1087,9 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
             }`}>
               <span>{feedback.message}</span>
               {feedback.slug && (
-                <a href={`/${feedback.slug}`} className="font-medium underline underline-offset-2">打开文章</a>
+                <a href={isDiary ? getDiaryPath(feedback.slug) : `/${feedback.slug}`} className="font-medium underline underline-offset-2">
+                  {isDiary ? '打开日记' : '打开文章'}
+                </a>
               )}
               <button type="button" onClick={() => setFeedback(null)} className="ml-auto"><X className="h-3.5 w-3.5" /></button>
             </div>
@@ -1213,13 +1224,14 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
             <div className="w-[280px] px-5 py-6 space-y-6">
               {/* Close button */}
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-[var(--stone-gray)] uppercase tracking-wider">文章设置</span>
+                <span className="text-xs font-semibold text-[var(--stone-gray)] uppercase tracking-wider">{isDiary ? '日记设置' : '文章设置'}</span>
                 <button type="button" onClick={() => setSidebarOpen(false)} className="text-[var(--stone-gray)] hover:text-[var(--editor-ink)]">
                   <X className="h-4 w-4" />
                 </button>
               </div>
 
               {/* Post Type */}
+              {!isDiary && (
               <div>
                 <label className="mb-2 block text-xs font-semibold tracking-wider text-[var(--stone-gray)]">文章类型</label>
                 <div className="grid grid-cols-3 gap-1 rounded-lg border border-[var(--editor-line)] bg-[var(--editor-panel)] p-1">
@@ -1263,8 +1275,10 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
                   </div>
                 )}
               </div>
+              )}
 
               {/* Tags */}
+              {!isDiary && (
               <div>
                 <div className="mb-2 flex items-center justify-between gap-2">
                   <label className="block text-xs font-semibold tracking-wider text-[var(--stone-gray)]">标签</label>
@@ -1305,8 +1319,10 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
                   />
                 )}
               </div>
+              )}
 
               {/* Description / Excerpt */}
+              {!isDiary && (
               <div>
                 <div className="mb-2 flex items-center justify-between gap-2">
                   <label className="block text-xs font-semibold tracking-wider text-[var(--stone-gray)]">摘要</label>
@@ -1334,8 +1350,10 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
                 />
                 <div className="mt-1 text-right text-[10px] text-[var(--stone-gray)]">{description.length}/160</div>
               </div>
+              )}
 
               {/* Cover Image */}
+              {!isDiary && (
               <div>
                 <div className="mb-2 flex items-center justify-between gap-2">
                   <label className="block text-xs font-semibold tracking-wider text-[var(--stone-gray)]">封面图</label>
@@ -1394,6 +1412,7 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
                   </button>
                 )}
               </div>
+              )}
 
               {/* Slug */}
               <div>
@@ -1403,6 +1422,7 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
                     type="button"
                     onClick={() => void handleGenerateMetadata('slug')}
                     disabled={isMetadataTargetPending('slug')}
+                    hidden={isDiary}
                     className="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--editor-line)] bg-[var(--editor-panel)] text-[var(--stone-gray)] transition hover:border-[var(--editor-accent)]/40 hover:text-[var(--editor-accent)] disabled:cursor-not-allowed disabled:opacity-50"
                     title="AI 生成 slug"
                     aria-label="AI 生成 slug"
@@ -1419,13 +1439,13 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
                       slugInputFocusedRef.current = true
                     }}
                     onChange={e => {
-                      const nextSlug = sanitizePostSlugInput(e.target.value)
+                      const nextSlug = isDiary ? sanitizeDiarySlugInput(e.target.value) : sanitizePostSlugInput(e.target.value)
                       setSlug(nextSlug)
                       markDirty({ slug: nextSlug })
                     }}
                     onBlur={e => {
                       slugInputFocusedRef.current = false
-                      const normalizedSlug = normalizePostSlug(e.target.value)
+                      const normalizedSlug = isDiary ? normalizeDiarySlug(e.target.value) : normalizePostSlug(e.target.value)
                       if (normalizedSlug !== slug) {
                         setSlug(normalizedSlug)
                         markDirty({ slug: normalizedSlug })
@@ -1436,7 +1456,7 @@ export function NovelEditor({ initialData }: NovelEditorProps = {}) {
                   />
                 </div>
                 <div className="mt-1 text-[10px] text-[var(--stone-gray)]">
-                  {SITE_DISPLAY_URL}/{normalizePostSlug(slug) || editSlug || '自动生成'}
+                  {SITE_DISPLAY_URL}{isDiary ? '/diary/' : '/'}{(isDiary ? normalizeDiarySlug(slug) : normalizePostSlug(slug)) || editSlug || '自动生成'}
                 </div>
               </div>
             </div>

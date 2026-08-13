@@ -38,6 +38,32 @@ export async function ensureSchema(db: Database) {
 
     try {
       await db.prepare(`
+        CREATE TABLE IF NOT EXISTS diary_entries (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          slug TEXT UNIQUE NOT NULL,
+          title TEXT NOT NULL,
+          content TEXT NOT NULL,
+          html TEXT NOT NULL,
+          description TEXT,
+          status TEXT DEFAULT 'published' CHECK(status IN ('draft', 'published', 'deleted')),
+          is_hidden INTEGER DEFAULT 0,
+          cover_image TEXT,
+          source TEXT NOT NULL DEFAULT 'admin' CHECK(source IN ('admin', 'email')),
+          source_email TEXT,
+          deleted_at INTEGER,
+          published_at INTEGER DEFAULT (strftime('%s', 'now')),
+          updated_at INTEGER DEFAULT (strftime('%s', 'now')),
+          view_count INTEGER DEFAULT 0
+        )
+      `).run()
+      await db.prepare('CREATE INDEX IF NOT EXISTS idx_diary_entries_slug ON diary_entries(slug)').run()
+      await db.prepare('CREATE INDEX IF NOT EXISTS idx_diary_entries_published ON diary_entries(published_at DESC)').run()
+    } catch {
+      // table already exists or current DB runtime does not allow this migration
+    }
+
+    try {
+      await db.prepare(`
         CREATE TABLE IF NOT EXISTS friend_links (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           name TEXT NOT NULL,

@@ -6,7 +6,7 @@ import { Menu, X, ChevronDown } from 'lucide-react'
 import { SearchEntry } from './SearchEntry'
 import type { Theme } from '@/lib/appearance'
 import { getCategoryPath } from '@/lib/route-segments'
-import type { SiteCategoryLink, SiteNavLink } from '@/lib/site'
+import { defaultSiteNavLinks, type SiteCategoryLink, type SiteNavLink } from '@/lib/site'
 import { SignatureLogo } from '@/components/SignatureLogo'
 
 export type NavLink = SiteNavLink
@@ -20,13 +20,6 @@ interface SiteHeaderProps {
   forceSpread?: boolean
 }
 
-const defaultNavLinks: NavLink[] = [
-  { label: 'GitHub', url: 'https://github.com/08820048/XuYi-Blog', openInNewTab: true },
-  { label: '关于我', url: '/about', openInNewTab: false },
-  { label: '友联', url: '/links', openInNewTab: false },
-  { label: 'RSS', url: '/feed.xml', openInNewTab: false },
-]
-
 export function SiteHeader({
   navLinks,
   categories = [],
@@ -34,7 +27,7 @@ export function SiteHeader({
   stickyOnMobile = true,
   forceSpread = false,
 }: SiteHeaderProps) {
-  const links = navLinks && navLinks.length > 0 ? navLinks : defaultNavLinks
+  const links = navLinks && navLinks.length > 0 ? navLinks : defaultSiteNavLinks
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [categoryOpen, setCategoryOpen] = useState(false)
   const [spreadProgress, setSpreadProgress] = useState(forceSpread ? 1 : 0)

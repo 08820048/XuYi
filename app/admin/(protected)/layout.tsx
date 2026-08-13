@@ -38,6 +38,7 @@ export default async function AdminProtectedLayout({
 
           <nav className="flex items-center gap-1 overflow-x-auto scrollbar-hide">
             <Link href="/admin/posts" className={navCls}>文章</Link>
+            <Link href="/admin/diary" className={navCls}>日记</Link>
             <Link href="/admin/categories" className={navCls}>分类</Link>
             <Link href="/admin/friend-links" className={navCls}>友联</Link>
             <Link href="/admin/settings" className={navCls}>设置</Link>
@@ -48,6 +49,13 @@ export default async function AdminProtectedLayout({
             >
               <PenLine className="w-4 h-4" />
               <span className="hidden md:inline">写文章</span>
+            </Link>
+            <Link
+              href="/admin/diary/edit?new=1"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-[var(--editor-line)] text-[var(--editor-ink)] rounded-lg text-sm font-medium hover:bg-[var(--editor-soft)] transition-all whitespace-nowrap"
+            >
+              <PenLine className="w-4 h-4" />
+              <span className="hidden md:inline">写日记</span>
             </Link>
             <Link
               href="/"

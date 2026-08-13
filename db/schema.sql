@@ -81,6 +81,28 @@ CREATE TABLE IF NOT EXISTS friend_links (
 
 CREATE INDEX IF NOT EXISTS idx_friend_links_visible_order ON friend_links(is_visible, sort_order, id);
 
+-- 日记表：独立于技术文章，避免混入首页、RSS、搜索和分类
+CREATE TABLE IF NOT EXISTS diary_entries (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  slug TEXT UNIQUE NOT NULL,
+  title TEXT NOT NULL,
+  content TEXT NOT NULL,
+  html TEXT NOT NULL,
+  description TEXT,
+  status TEXT DEFAULT 'published' CHECK(status IN ('draft', 'published', 'deleted')),
+  is_hidden INTEGER DEFAULT 0,
+  cover_image TEXT,
+  source TEXT NOT NULL DEFAULT 'admin' CHECK(source IN ('admin', 'email')),
+  source_email TEXT,
+  deleted_at INTEGER,
+  published_at INTEGER DEFAULT (strftime('%s', 'now')),
+  updated_at INTEGER DEFAULT (strftime('%s', 'now')),
+  view_count INTEGER DEFAULT 0
+);
+
+CREATE INDEX IF NOT EXISTS idx_diary_entries_slug ON diary_entries(slug);
+CREATE INDEX IF NOT EXISTS idx_diary_entries_published ON diary_entries(published_at DESC);
+
 -- 站点设置表
 CREATE TABLE IF NOT EXISTS site_settings (
   key TEXT PRIMARY KEY,

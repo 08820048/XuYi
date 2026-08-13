@@ -15,6 +15,7 @@ const NovelEditor = dynamic(
 )
 
 export function NovelEditorClient(props: {
+  contentKind?: 'post' | 'diary'
   initialData?: {
     slug: string
     title: string
