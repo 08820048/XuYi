@@ -19,12 +19,18 @@ export const metadata = {
 }
 
 function formatDate(ts: number) {
-  return new Date(ts * 1000).toLocaleDateString('zh-CN', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    weekday: 'short',
-  })
+  const date = new Date(ts * 1000)
+  return {
+    day: date.toLocaleDateString('zh-CN', { day: '2-digit' }),
+    monthAndYear: date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long' }),
+    weekday: date.toLocaleDateString('zh-CN', { weekday: 'short' }),
+    full: date.toLocaleDateString('zh-CN', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      weekday: 'short',
+    }),
+  }
 }
 
 export default async function DiaryPage({
@@ -66,48 +72,74 @@ export default async function DiaryPage({
         categories={headerData.categories}
       />
 
-      <main className="mx-auto w-full max-w-5xl px-4 py-10 sm:px-6 sm:py-14">
+      <main className="mx-auto w-full max-w-4xl px-4 py-10 sm:px-6 sm:py-14">
         <section className="mb-10 border-b border-[var(--editor-line)] pb-8">
           <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--editor-muted)]">Daily Notes</p>
-          <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl" style={{ fontFamily: 'Georgia, "Noto Serif SC", serif' }}>
+          <h1 className="text-4xl font-semibold sm:text-5xl [text-wrap:balance]" style={{ fontFamily: 'Georgia, "Noto Serif SC", serif' }}>
             日记
           </h1>
-          <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--editor-muted)]">
+          <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--editor-muted)] [text-wrap:pretty]">
             零散的生活、临时的念头、照片和片段。
           </p>
         </section>
 
         {entries.length === 0 ? (
-          <div className="rounded-2xl border border-[var(--editor-line)] bg-[var(--background)] px-6 py-16 text-center shadow-sm">
+          <div className="border-y border-[var(--editor-line)] px-6 py-16 text-center">
             <p className="text-sm text-[var(--editor-muted)]">还没有公开日记。</p>
           </div>
         ) : (
-          <div className="relative">
-            <div className="absolute left-3 top-0 hidden h-full w-px bg-[var(--editor-line)] sm:block" />
-            <div className="space-y-6">
-              {entries.map((entry) => (
-                <article key={entry.slug} className="relative sm:pl-12">
-                  <span className="absolute left-0 top-8 hidden h-6 w-6 rounded-full border-4 border-[var(--background)] bg-[var(--editor-accent)] sm:block" />
-                  <Link
-                    href={getDiaryPath(entry.slug)}
-                    className="group block overflow-hidden rounded-2xl border border-[var(--editor-line)] bg-[var(--background)] shadow-sm transition hover:-translate-y-0.5 hover:border-[var(--editor-accent)] hover:shadow-md"
+          <div>
+            <div className="border-t border-[var(--editor-line)]">
+              {entries.map((entry) => {
+                const date = formatDate(entry.published_at)
+                const title = entry.title?.trim()
+
+                return (
+                  <article
+                    key={entry.slug}
+                    className="grid gap-4 border-b border-[var(--editor-line)] py-8 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-8 sm:py-10"
                   >
-                    {entry.cover_image ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={entry.cover_image} alt="" className="h-56 w-full object-cover" />
-                    ) : null}
-                    <div className="p-5 sm:p-6">
-                      <time className="text-xs font-medium text-[var(--editor-muted)]">{formatDate(entry.published_at)}</time>
-                      <h2 className="mt-2 text-2xl font-semibold leading-snug text-[var(--editor-ink)] group-hover:text-[var(--editor-accent)]">
-                        {getDiaryDisplayTitle(entry)}
-                      </h2>
-                      {entry.description ? (
-                        <p className="mt-3 line-clamp-3 text-sm leading-7 text-[var(--editor-muted)]">{entry.description}</p>
+                    <time dateTime={new Date(entry.published_at * 1000).toISOString()} className="flex items-baseline gap-2 text-[var(--editor-muted)] sm:block">
+                      <span className="block text-3xl font-medium leading-none text-[var(--editor-ink)] tabular-nums" style={{ fontFamily: 'Georgia, "Noto Serif SC", serif' }}>
+                        {date.day}
+                      </span>
+                      <span className="text-xs font-medium sm:mt-2 sm:block">{date.monthAndYear}</span>
+                      <span className="text-xs sm:mt-1 sm:block">{date.weekday}</span>
+                      <span className="sr-only">{date.full}</span>
+                    </time>
+
+                    <Link
+                      href={getDiaryPath(entry.slug)}
+                      aria-label={`阅读：${getDiaryDisplayTitle(entry)}`}
+                      className="group block min-w-0 transition-transform duration-200 active:scale-[0.96]"
+                    >
+                      {entry.cover_image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={entry.cover_image}
+                          alt=""
+                          className="diary-media mb-5 aspect-[16/9] w-full rounded-[6px] object-cover sm:mb-6"
+                        />
                       ) : null}
-                    </div>
-                  </Link>
-                </article>
-              ))}
+                      {title ? (
+                        <h2 className="text-2xl font-semibold leading-snug text-[var(--editor-ink)] transition-colors duration-150 group-hover:text-[var(--editor-accent)] [text-wrap:balance] sm:text-3xl" style={{ fontFamily: 'Georgia, "Noto Serif SC", serif' }}>
+                          {title}
+                        </h2>
+                      ) : null}
+                      {entry.description ? (
+                        <p className={`${title ? 'mt-3' : ''} line-clamp-4 text-[15px] leading-7 text-[var(--editor-muted)] transition-colors duration-150 group-hover:text-[var(--editor-ink)] [text-wrap:pretty] sm:text-base`}>
+                          {entry.description}
+                        </p>
+                      ) : null}
+                      {!title && !entry.description ? (
+                        <span className="text-sm font-medium text-[var(--editor-muted)] transition-colors duration-150 group-hover:text-[var(--editor-accent)]">
+                          查看这一天的记录
+                        </span>
+                      ) : null}
+                    </Link>
+                  </article>
+                )
+              })}
             </div>
             <Pagination currentPage={currentPage} totalPages={totalPages} basePath="/diary" />
           </div>

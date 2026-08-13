@@ -521,6 +521,19 @@ body {
   border-radius: 6px;
 }
 
+.diary-media,
+.diary-content img {
+  outline: 1px solid rgba(0, 0, 0, 0.1);
+  outline-offset: -1px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .diary-media,
+  .diary-content img {
+    outline-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
 .novel-prose img:hover {
   cursor: pointer;
   filter: brightness(0.98);
