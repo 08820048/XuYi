@@ -1,10 +1,8 @@
-import Link from 'next/link'
 import { getAppCloudflareEnv } from '@/lib/cloudflare'
 import { getDiaryEntries, getDiaryEntriesCount } from '@/lib/db'
 import { SiteHeader } from '@/components/SiteHeader'
 import { SiteFooter } from '@/components/SiteFooter'
 import { Pagination } from '@/components/Pagination'
-import { getDiaryDisplayTitle, getDiaryPath } from '@/lib/diary-utils'
 import { getSiteHeaderData } from '@/lib/site'
 import { getSiteUrl } from '@/lib/site-config'
 
@@ -97,7 +95,7 @@ export default async function DiaryPage({
                 return (
                   <article
                     key={entry.slug}
-                    className="grid gap-4 border-b border-[var(--editor-line)] py-8 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-8 sm:py-10"
+                    className="grid gap-5 border-b border-[var(--editor-line)] py-10 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-8 sm:py-14"
                   >
                     <time dateTime={new Date(entry.published_at * 1000).toISOString()} className="flex items-baseline gap-2 text-[var(--editor-muted)] sm:block">
                       <span className="block text-3xl font-medium leading-none text-[var(--editor-ink)] tabular-nums" style={{ fontFamily: 'Georgia, "Noto Serif SC", serif' }}>
@@ -108,35 +106,25 @@ export default async function DiaryPage({
                       <span className="sr-only">{date.full}</span>
                     </time>
 
-                    <Link
-                      href={getDiaryPath(entry.slug)}
-                      aria-label={`阅读：${getDiaryDisplayTitle(entry)}`}
-                      className="group block min-w-0 transition-transform duration-200 active:scale-[0.96]"
-                    >
+                    <div className="min-w-0">
                       {entry.cover_image ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={entry.cover_image}
                           alt=""
-                          className="diary-media mb-5 aspect-[16/9] w-full rounded-[6px] object-cover sm:mb-6"
+                          className="diary-media mb-7 aspect-[16/9] w-full rounded-[6px] object-cover sm:mb-9"
                         />
                       ) : null}
                       {title ? (
-                        <h2 className="text-2xl font-semibold leading-snug text-[var(--editor-ink)] transition-colors duration-150 group-hover:text-[var(--editor-accent)] [text-wrap:balance] sm:text-3xl" style={{ fontFamily: 'Georgia, "Noto Serif SC", serif' }}>
+                        <h2 className="mb-6 text-2xl font-semibold leading-snug text-[var(--editor-ink)] [text-wrap:balance] sm:mb-8 sm:text-3xl" style={{ fontFamily: 'Georgia, "Noto Serif SC", serif' }}>
                           {title}
                         </h2>
                       ) : null}
-                      {entry.description ? (
-                        <p className={`${title ? 'mt-3' : ''} line-clamp-4 text-[15px] leading-7 text-[var(--editor-muted)] transition-colors duration-150 group-hover:text-[var(--editor-ink)] [text-wrap:pretty] sm:text-base`}>
-                          {entry.description}
-                        </p>
-                      ) : null}
-                      {!title && !entry.description ? (
-                        <span className="text-sm font-medium text-[var(--editor-muted)] transition-colors duration-150 group-hover:text-[var(--editor-accent)]">
-                          查看这一天的记录
-                        </span>
-                      ) : null}
-                    </Link>
+                      <div
+                        className="rich-content diary-content [text-wrap:pretty]"
+                        dangerouslySetInnerHTML={{ __html: entry.html }}
+                      />
+                    </div>
                   </article>
                 )
               })}
