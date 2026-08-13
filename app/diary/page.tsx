@@ -82,12 +82,12 @@ export default async function DiaryPage({
         </section>
 
         {entries.length === 0 ? (
-          <div className="border-y border-[var(--editor-line)] px-6 py-16 text-center">
+          <div className="px-6 py-16 text-center">
             <p className="text-sm text-[var(--editor-muted)]">还没有公开日记。</p>
           </div>
         ) : (
           <div>
-            <div className="border-t border-[var(--editor-line)]">
+            <div>
               {entries.map((entry) => {
                 const date = formatDate(entry.published_at)
                 const title = entry.title?.trim()
@@ -95,7 +95,7 @@ export default async function DiaryPage({
                 return (
                   <article
                     key={entry.slug}
-                    className="grid gap-5 border-b border-[var(--editor-line)] py-10 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-8 sm:py-14"
+                    className="grid gap-5 border-b border-[var(--editor-line)] py-10 last:border-b-0 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-8 sm:py-14"
                   >
                     <time dateTime={new Date(entry.published_at * 1000).toISOString()} className="flex items-baseline gap-2 text-[var(--editor-muted)] sm:block">
                       <span className="block text-3xl font-medium leading-none text-[var(--editor-ink)] tabular-nums" style={{ fontFamily: 'Georgia, "Noto Serif SC", serif' }}>
