@@ -10,7 +10,7 @@ import { TwitterEmbedsEnhancer } from '@/components/TwitterEmbedsEnhancer'
 
 export const metadata = {
   title: '关于我',
-  description: '关于 Cerebellum 和站点作者。',
+  description: '关于 XuYi 和站点作者。',
 }
 
 export const dynamic = 'force-dynamic'

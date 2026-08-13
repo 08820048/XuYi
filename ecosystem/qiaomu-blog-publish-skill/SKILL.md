@@ -1,11 +1,11 @@
 ---
 name: qiaomu-blog-publish
-description: 将 Markdown 文件、文本内容或 URL 发布到自己的 XuYi'Blog，支持分类选择、状态控制、本地和远程图片自动上传
+description: 将 Markdown 文件、文本内容或 URL 发布到自己的 XuYi，支持分类选择、状态控制、本地和远程图片自动上传
 trigger: /qiaomu-blog-publish
 user_invocable: true
 ---
 
-# qiaomu-blog-publish: 发布内容到 XuYi'Blog
+# qiaomu-blog-publish: 发布内容到 XuYi
 
 ## 触发方式
 
@@ -19,7 +19,7 @@ user_invocable: true
 
 - “发布到博客”
 - “发布成草稿”
-- “发到 XuYi'Blog”
+- “发到 XuYi”
 - “把这篇文章发到自己的博客”
 - “publish to blog”
 - “publish draft”

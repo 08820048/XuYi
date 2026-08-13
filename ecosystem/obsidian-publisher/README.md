@@ -1,6 +1,6 @@
 # obsidian-qiaomu-blog-publisher
 
-一键将 Obsidian 笔记发布到你自己的 XuYi'Blog 草稿箱。
+一键将 Obsidian 笔记发布到你自己的 XuYi 草稿箱。
 
 ## 功能
 
@@ -32,13 +32,13 @@ npm run build
 
 ## 配置
 
-1. 打开 Obsidian 设置 > 第三方插件 > XuYi'Blog Publisher
+1. 打开 Obsidian 设置 > 第三方插件 > XuYi Publisher
 2. 填写 API 地址（默认 `https://your-domain.com`）
 3. 填写 API Token（在你的博客后台获取）
 
 ## 使用
 
-- **命令面板**：`Ctrl/Cmd + P` > 搜索 “发布到 XuYi'Blog”
+- **命令面板**：`Ctrl/Cmd + P` > 搜索 “发布到 XuYi”
 - **侧边栏图标**：点击上传图标
 
 ## 支持的媒体格式

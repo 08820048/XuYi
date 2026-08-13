@@ -362,7 +362,7 @@ export function HomeVariantB({
         fontFamily: '"JetBrains Mono", ui-monospace, monospace',
         letterSpacing: '0.1em',
       }}>
-        <span>© {new Date().getFullYear()} Cerebellum</span>
+        <span>© {new Date().getFullYear()} XuYi</span>
         <span>独立 · 不商业化 · RSS 友好</span>
       </div>
 

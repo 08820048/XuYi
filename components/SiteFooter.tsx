@@ -60,7 +60,7 @@ export function SiteFooter() {
                 href="/admin"
                 className="hover:text-[var(--editor-ink)] transition-colors duration-150 underline-offset-2 hover:underline"
               >
-                Cerebellum
+                XuYi
               </Link>
               <span>·</span>
               <Link
@@ -81,7 +81,7 @@ export function SiteFooter() {
               onClick={() => setOpen(true)}
               className="hover:text-[var(--editor-ink)] transition-colors duration-150 underline-offset-2 hover:underline"
             >
-              Cerebellum
+              XuYi
             </button>
           )}
         </div>

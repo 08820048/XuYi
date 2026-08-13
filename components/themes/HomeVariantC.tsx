@@ -178,13 +178,13 @@ export function HomeVariantC({
             overflow: 'hidden',
           }}>
 {`  ┌────────────────────────────────────┐
-  │  CEREBELLUM  ·  CEREBELLUM         │
+  │  XUYI  ·  XUYI                     │
   │  ~/posts  —  reading the future     │
   └────────────────────────────────────┘`}
           </div>
           <div className="terminal-banner-meta" style={{ marginTop: 14, fontSize: 14, display: 'flex', alignItems: 'center', gap: 10 }}>
             <span style={{ color: ACCENT2 }}>&gt;</span>
-            <span style={{ color: FG }}>Cerebellum</span>
+            <span style={{ color: FG }}>XuYi</span>
             <span style={{ color: MUTED }}>{'//'}</span>
             <span style={{ color: MUTED }}>
               {typed}

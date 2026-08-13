@@ -24,7 +24,7 @@ interface SignatureBounds {
 
 export function SignatureLogo({
   className = '',
-  label = 'Cerebellum',
+  label = 'XuYi',
 }: SignatureLogoProps) {
   const [paths, setPaths] = useState<string[]>([])
   const [bounds, setBounds] = useState<SignatureBounds>({

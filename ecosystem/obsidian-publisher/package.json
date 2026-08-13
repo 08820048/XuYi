@@ -1,14 +1,14 @@
 {
   "name": "obsidian-qiaomu-blog-publisher",
   "version": "1.0.0",
-  "description": "Publish Obsidian notes to XuYi'Blog as drafts",
+  "description": "Publish Obsidian notes to XuYi as drafts",
   "main": "main.js",
   "scripts": {
     "dev": "node esbuild.config.mjs",
     "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production"
   },
   "keywords": [],
-  "author": "joeseesun",
+  "author": "XuYi",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.11.0",

@@ -41,14 +41,14 @@ export default class QmblogPublisher extends Plugin {
     await this.loadSettings();
 
     // 1. Ribbon icon (left sidebar)
-    this.addRibbonIcon("upload-cloud", "发布到 XuYi'Blog", async () => {
+    this.addRibbonIcon("upload-cloud", "发布到 XuYi", async () => {
       await this.publishCurrentNote();
     });
 
     // 2. Command palette
     this.addCommand({
       id: "publish-to-qiaomu-blog",
-      name: "发布到 XuYi'Blog",
+      name: "发布到 XuYi",
       editorCallback: () => {
         this.publishCurrentNote();
       },
@@ -56,7 +56,7 @@ export default class QmblogPublisher extends Plugin {
 
     // 3. Status bar (bottom)
     this.statusBarEl = this.addStatusBarItem();
-    this.statusBarEl.setText("XuYi'Blog");
+    this.statusBarEl.setText("XuYi");
     this.statusBarEl.addClass("mod-clickable");
     this.statusBarEl.onClickEvent(() => {
       this.publishCurrentNote();
@@ -67,7 +67,7 @@ export default class QmblogPublisher extends Plugin {
       this.app.workspace.on("editor-menu", (menu) => {
         menu.addItem((item) => {
           item
-            .setTitle("发布到 XuYi'Blog")
+            .setTitle("发布到 XuYi")
             .setIcon("upload-cloud")
             .onClick(() => this.publishCurrentNote());
         });
@@ -80,7 +80,7 @@ export default class QmblogPublisher extends Plugin {
         if (file instanceof TFile && file.extension === "md") {
           menu.addItem((item) => {
             item
-              .setTitle("发布到 XuYi'Blog")
+              .setTitle("发布到 XuYi")
               .setIcon("upload-cloud")
               .onClick(() => this.publishFile(file));
           });
@@ -107,7 +107,7 @@ export default class QmblogPublisher extends Plugin {
     this.statusBarEl.setText(text);
     if (revertMs) {
       setTimeout(() => {
-        if (this.statusBarEl) this.statusBarEl.setText("XuYi'Blog");
+        if (this.statusBarEl) this.statusBarEl.setText("XuYi");
       }, revertMs);
     }
   }
@@ -160,17 +160,17 @@ export default class QmblogPublisher extends Plugin {
       this,
       title,
       async (options, onProgress) => {
-        this.setStatus("XuYi'Blog \u23F3");
+        this.setStatus("XuYi \u23F3");
         try {
           const result = await this.doPublish(file, content, options, onProgress);
           if (result.success) {
-            this.setStatus("XuYi'Blog \u2713", 3000);
+            this.setStatus("XuYi \u2713", 3000);
           } else {
-            this.setStatus("XuYi'Blog \u2717", 5000);
+            this.setStatus("XuYi \u2717", 5000);
           }
           return result;
         } catch (e) {
-          this.setStatus("XuYi'Blog \u2717", 5000);
+          this.setStatus("XuYi \u2717", 5000);
           throw e;
         }
       }

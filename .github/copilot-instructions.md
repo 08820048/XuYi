@@ -1,4 +1,4 @@
-# 向阳乔木博客 - AI 协作指南
+# XuYi 博客 - AI 协作指南
 
 ## 项目概述
 
@@ -22,7 +22,7 @@
 
 ### 品牌定位
 
-**向阳乔木** - 传播 AI 工具和知识的综合性学习平台
+**XuYi** - 传播 AI 工具和知识的综合性学习平台
 
 **核心价值**：
 - 温暖而理性：有人情味，但保持专业判断
@@ -112,11 +112,11 @@
 
 ## 品牌资产
 
-- **域名**：blog.qiaomu.ai
+- **域名**：xuyi.dev
 - **X (Twitter)**：[@vista8](https://x.com/vista8)
-- **微信公众号**：向阳乔木推荐看
-- **GitHub**：[@joeseesun](https://github.com/joeseesun)
+- **微信公众号**：TechGame前沿
+- **GitHub**：[@08820048](https://github.com/08820048)
 
 ---
 
-*详细设计上下文请参考项目根目录的 `.impeccable.md` 文件*
+*详细设计上下文请参考项目根目录的 `DESIGN.md` 文件*

@@ -1,5 +1,5 @@
 /**
- * XuYi'Blog Clipper - Content Script
+ * XuYi Clipper - Content Script
  * Injected into the active tab to extract article content via Readability,
  * then convert to Markdown via Turndown.
  * Returns { title, markdown, images, url } back to the caller.

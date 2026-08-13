@@ -1,5 +1,5 @@
 /**
- * XuYi'Blog Clipper - Popup Script (Redesigned)
+ * XuYi Clipper - Popup Script (Redesigned)
  *
  * Views: clip | settings | progress | success | error
  */

@@ -81,7 +81,7 @@ export interface BlogReport {
 
 const SNAPSHOT_KEY = 'feishu_report_snapshot'
 const CHINA_TIME_OFFSET_SECONDS = 8 * 60 * 60
-const DEFAULT_REPORT_SITE_NAME = 'XuYi博客'
+const DEFAULT_REPORT_SITE_NAME = 'XuYi'
 const DEFAULT_REPORT_SITE_URL = 'https://xuyi.dev'
 
 function toNumber(value: number | null | undefined) {

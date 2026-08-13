@@ -1,6 +1,6 @@
 # qiaomu-blog-publish Skill
 
-这个目录放的是配套的 Claude Skill，用来把 Markdown、纯文本或网页内容直接发布到你自己的 XuYi'Blog。
+这个目录放的是配套的 Claude Skill，用来把 Markdown、纯文本或网页内容直接发布到你自己的 XuYi。
 
 ## 能做什么
 
@@ -59,4 +59,4 @@ API Token 可以在你自己的博客后台 `设置 -> API Token` 里生成。
 
 - “把这篇文章发布到博客”
 - “发布成草稿”
-- “发到 XuYi'Blog”
+- “发到 XuYi”

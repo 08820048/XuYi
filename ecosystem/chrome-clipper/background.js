@@ -1,5 +1,5 @@
 /**
- * XuYi'Blog Clipper - Background Service Worker
+ * XuYi Clipper - Background Service Worker
  *
  * Flow:
  * 1. Receive "clip" message from popup with { title, category, status }

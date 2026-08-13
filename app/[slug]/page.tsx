@@ -214,7 +214,7 @@ export default async function PostPage({
             description: post.description || '',
             image: ogImage,
             author: { '@type': 'Person', name: 'XuYi', url: 'https://x.com/vista8' },
-            publisher: { '@type': 'Organization', name: 'Cerebellum', url: baseUrl, logo: { '@type': 'ImageObject', url: `${baseUrl}/icon-512.png` } },
+            publisher: { '@type': 'Organization', name: 'XuYi', url: baseUrl, logo: { '@type': 'ImageObject', url: `${baseUrl}/icon-512.png` } },
             datePublished: new Date(post.published_at * 1000).toISOString(),
             dateModified: new Date(post.updated_at * 1000).toISOString(),
             mainEntityOfPage: { '@type': 'WebPage', '@id': `${baseUrl}/${post.slug}` },

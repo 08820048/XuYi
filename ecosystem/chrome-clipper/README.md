@@ -1,6 +1,6 @@
-# XuYi'Blog Clipper
+# XuYi Clipper
 
-一键把网页内容剪藏到你自己的 XuYi'Blog 草稿箱。
+一键把网页内容剪藏到你自己的 XuYi 草稿箱。
 
 ## 功能
 

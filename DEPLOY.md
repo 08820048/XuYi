@@ -1,6 +1,6 @@
 # 部署指南
 
-XuYi'Blog Open Source 的正式部署方式是 `OpenNext + Cloudflare Workers`。
+XuYi Open Source 的正式部署方式是 `OpenNext + Cloudflare Workers`。
 
 ## 首次部署
 

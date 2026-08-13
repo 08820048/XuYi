@@ -1,14 +1,14 @@
-# XuYi'Blog
+# XuYi
 
 [![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/08820048/XuYi-Blog)
 
-XuYi'Blog 是基于开源项目 [qiaomu-blog-opensource](https://github.com/joeseesun/qiaomu-blog-opensource) 二次调整的个人博客系统。
+XuYi 是基于开源项目 [qiaomu-blog-opensource](https://github.com/joeseesun/qiaomu-blog-opensource) 二次调整的个人博客系统。
 
 原项目已经提供了完整的博客前台、后台管理、编辑器、AI 写作辅助、图片上传、Cloudflare Workers / D1 / R2 部署能力。这个仓库在此基础上做了一些面向个人使用的改动和增强，让它更适合作为 `xuyi.dev` 的长期写作站点。
 
 ## 主要改动
 
-- 将站点品牌、README、仓库链接和页面展示统一调整为 `XuYi'Blog`。
+- 将站点品牌、README、仓库链接和页面展示统一为 `XuYi`。
 - 将 footer 和文章作者相关文案统一调整为 `XuYi`。
 - 修复 Cloudflare Workers Builds 部署流程，改为生成 OpenNext 产物后再部署。
 - 对齐线上 Worker 名称、D1 数据库和 R2 存储桶绑定，适配当前 Cloudflare 项目。
