@@ -18,7 +18,7 @@ export function NovelEditorClient(props: {
   contentKind?: 'post' | 'diary'
   initialData?: {
     slug: string
-    title: string
+    title: string | null
     html: string
     category?: string
     status?: 'draft' | 'published' | 'deleted'

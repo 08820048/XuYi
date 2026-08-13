@@ -27,7 +27,7 @@ export async function getDiaryEntries(
 
   const { results } = await db
     .prepare(
-      `SELECT id, slug, title, content, html, description, status, is_hidden, cover_image, source, source_email, deleted_at, published_at, updated_at, view_count
+      `SELECT id, slug, title, content, html, description, status, is_hidden, cover_image, deleted_at, published_at, updated_at, view_count
        FROM diary_entries
        ${where}
        ORDER BY published_at DESC
@@ -66,7 +66,7 @@ export async function getDiaryEntryBySlug(db: Database, slug: string): Promise<D
   await ensureSchema(db)
   const entry = await db
     .prepare(
-      `SELECT id, slug, title, content, html, description, status, is_hidden, cover_image, source, source_email, deleted_at, published_at, updated_at, view_count
+      `SELECT id, slug, title, content, html, description, status, is_hidden, cover_image, deleted_at, published_at, updated_at, view_count
        FROM diary_entries
        WHERE slug = ?`,
     )
@@ -80,35 +80,31 @@ export async function createDiaryEntry(
   db: Database,
   data: {
     slug: string
-    title: string
+    title?: string | null
     content: string
     html: string
     description?: string | null
     status?: DiaryStatus
     is_hidden?: number
     cover_image?: string | null
-    source?: DiaryEntry['source']
-    source_email?: string | null
   },
 ): Promise<number> {
   await ensureSchema(db)
 
   const result = await db
     .prepare(
-      `INSERT INTO diary_entries (slug, title, content, html, description, status, is_hidden, cover_image, source, source_email)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO diary_entries (slug, title, content, html, description, status, is_hidden, cover_image)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
     )
     .bind(
       data.slug,
-      data.title,
+      data.title ?? null,
       data.content,
       data.html,
       data.description ?? null,
       data.status || 'published',
       data.is_hidden ?? 0,
       data.cover_image ?? null,
-      data.source || 'admin',
-      data.source_email ?? null,
     )
     .run()
 
@@ -120,15 +116,13 @@ export async function updateDiaryEntryBySlug(
   slug: string,
   data: Partial<{
     slug: string
-    title: string
+    title: string | null
     content: string
     html: string
     description: string | null
     status: DiaryStatus
     is_hidden: number
     cover_image: string | null
-    source: DiaryEntry['source']
-    source_email: string | null
   }>,
 ): Promise<void> {
   await ensureSchema(db)
@@ -174,15 +168,6 @@ export async function updateDiaryEntryBySlug(
     updates.push('cover_image = ?')
     values.push(data.cover_image)
   }
-  if (data.source !== undefined) {
-    updates.push('source = ?')
-    values.push(data.source)
-  }
-  if (data.source_email !== undefined) {
-    updates.push('source_email = ?')
-    values.push(data.source_email)
-  }
-
   if (updates.length === 0) return
 
   updates.push("updated_at = strftime('%s', 'now')")

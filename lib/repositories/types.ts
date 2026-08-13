@@ -32,15 +32,13 @@ export interface PostWithTags extends Omit<Post, 'tags'> {
 export interface DiaryEntry {
   id: number
   slug: string
-  title: string
+  title: string | null
   content: string
   html: string
   description: string | null
   status: 'draft' | 'published' | 'deleted'
   is_hidden: number
   cover_image: string | null
-  source: 'admin' | 'email'
-  source_email: string | null
   deleted_at: number | null
   published_at: number
   updated_at: number

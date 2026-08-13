@@ -9,6 +9,7 @@ export async function buildDiaryEntryPayload(payload: Record<string, unknown>) {
   const rawHtml = typeof payload.html === 'string' ? payload.html.trim() : ''
   const rawContent = typeof payload.content === 'string' ? payload.content.trim() : ''
   const content = rawContent || stripHtmlForDiaryContent(rawHtml)
+  const hasMedia = /<(img|video|audio|iframe)\b/i.test(rawHtml)
   const customSlug = typeof payload.slug === 'string' ? normalizeDiarySlug(payload.slug) : ''
   const status: DiaryStatusInput = payload.status === 'draft' || payload.status === 'deleted'
     ? payload.status
@@ -21,8 +22,8 @@ export async function buildDiaryEntryPayload(payload: Record<string, unknown>) {
     ? payload.description.trim()
     : buildDiaryDescription(content)
 
-  if (!title || !content) {
-    throw new Error('标题和内容不能为空')
+  if (!content && !hasMedia) {
+    throw new Error('日记内容不能为空')
   }
 
   const date = new Date().toISOString().split('T')[0]
@@ -31,7 +32,7 @@ export async function buildDiaryEntryPayload(payload: Record<string, unknown>) {
 
   return {
     slug,
-    title,
+    title: title || null,
     content,
     html,
     description,

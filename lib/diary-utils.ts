@@ -18,6 +18,30 @@ export function buildDiaryDescription(value: string, maxLength = 120): string {
   return normalized.slice(0, maxLength)
 }
 
+export function formatDiaryDateTitle(ts: number): string {
+  return new Date(ts * 1000).toLocaleDateString('zh-CN', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
+}
+
+export function getDiaryDisplayTitle(entry: {
+  title?: string | null
+  description?: string | null
+  published_at: number
+}): string {
+  const title = entry.title?.trim()
+  if (title) return title
+
+  const description = entry.description?.trim()
+  if (description) {
+    return description.length > 24 ? `${description.slice(0, 24)}...` : description
+  }
+
+  return `${formatDiaryDateTitle(entry.published_at)}的日记`
+}
+
 export function getDiaryPath(slug: string): string {
   return `/diary/${encodeURIComponent(slug)}`
 }

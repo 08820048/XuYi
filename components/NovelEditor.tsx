@@ -103,7 +103,7 @@ interface NovelEditorProps {
   contentKind?: 'post' | 'diary'
   initialData?: {
     slug: string
-    title: string
+    title: string | null
     html: string
     category?: string
     status?: 'draft' | 'published' | 'deleted'
@@ -196,8 +196,8 @@ export function NovelEditor({ contentKind = 'post', initialData }: NovelEditorPr
   // ── Init ──
   useEffect(() => {
     if (initialData) {
-      latestTitleRef.current = initialData.title
-      setTitle(initialData.title)
+      latestTitleRef.current = initialData.title || ''
+      setTitle(initialData.title || '')
       setInitialContent(EMPTY_DOCUMENT)
     } else {
       // 新文章，使用空文档
@@ -409,7 +409,7 @@ export function NovelEditor({ contentKind = 'post', initialData }: NovelEditorPr
 
     const { editSlug: currentSlug, slug: nextSlugRaw, category, tags, description, coverImage, postType, sourceUrl } = latestMetaRef.current
     const nextSlug = isDiary ? normalizeDiarySlug(nextSlugRaw) : normalizePostSlug(nextSlugRaw)
-    const normalizedTitle = nextTitle.trim() || '无标题'
+    const normalizedTitle = isDiary ? nextTitle.trim() : (nextTitle.trim() || '无标题')
     const contentJson = editor.getJSON()
     const html = editor.getHTML()
     const plainText = editor.getText({ blockSeparator: '\n\n' }).trim()
@@ -775,11 +775,11 @@ export function NovelEditor({ contentKind = 'post', initialData }: NovelEditorPr
     const editor = editorRef.current
     const normalizedTitle = title.trim()
     const normalizedSlug = isDiary ? normalizeDiarySlug(slug) : normalizePostSlug(slug)
-    if (!normalizedTitle) { setFeedback({ type: 'error', message: isDiary ? '先写一个日记标题。' : '先把文章标题写上。' }); return }
+    if (!isDiary && !normalizedTitle) { setFeedback({ type: 'error', message: '先把文章标题写上。' }); return }
     if (!editor) { setFeedback({ type: 'error', message: '编辑器还没准备好。' }); return }
     const content = editor.getText({ blockSeparator: '\n\n' }).trim()
     const html = editor.getHTML()
-    const hasContent = content || /<(img|video|audio|iframe)\s/.test(html)
+    const hasContent = content || /<(img|video|audio|iframe)\b/i.test(html)
     if (!hasContent) { setFeedback({ type: 'error', message: '正文还是空的。' }); return }
     const normalizedDescription = (description || (isDiary ? buildDiaryDescription(content) : buildAutoDescription(content)) || '').trim()
     const normalizedSourceUrl = sourceUrl.trim()

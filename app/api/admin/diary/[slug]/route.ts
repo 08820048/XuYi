@@ -47,7 +47,7 @@ export async function PUT(req: NextRequest, { params }: Ctx) {
   try {
     const payload = await parseJsonBody<{
       slug?: string
-      title?: string
+      title?: string | null
       content?: string
       html?: string
       description?: string | null
@@ -68,7 +68,9 @@ export async function PUT(req: NextRequest, { params }: Ctx) {
 
     await updateDiaryEntryBySlug(db, slug, {
       slug: nextSlug || undefined,
-      title: payload.title,
+      title: typeof payload.title === 'string'
+        ? (payload.title.trim() || null)
+        : payload.title,
       content: payload.content,
       html: payload.html,
       description,

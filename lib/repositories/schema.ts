@@ -41,15 +41,13 @@ export async function ensureSchema(db: Database) {
         CREATE TABLE IF NOT EXISTS diary_entries (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           slug TEXT UNIQUE NOT NULL,
-          title TEXT NOT NULL,
+          title TEXT,
           content TEXT NOT NULL,
           html TEXT NOT NULL,
           description TEXT,
           status TEXT DEFAULT 'published' CHECK(status IN ('draft', 'published', 'deleted')),
           is_hidden INTEGER DEFAULT 0,
           cover_image TEXT,
-          source TEXT NOT NULL DEFAULT 'admin' CHECK(source IN ('admin', 'email')),
-          source_email TEXT,
           deleted_at INTEGER,
           published_at INTEGER DEFAULT (strftime('%s', 'now')),
           updated_at INTEGER DEFAULT (strftime('%s', 'now')),
@@ -58,6 +56,7 @@ export async function ensureSchema(db: Database) {
       `).run()
       await db.prepare('CREATE INDEX IF NOT EXISTS idx_diary_entries_slug ON diary_entries(slug)').run()
       await db.prepare('CREATE INDEX IF NOT EXISTS idx_diary_entries_published ON diary_entries(published_at DESC)').run()
+      await normalizeDiaryEntriesSchema(db)
     } catch {
       // table already exists or current DB runtime does not allow this migration
     }
@@ -87,4 +86,71 @@ export async function ensureSchema(db: Database) {
   } catch (error: unknown) {
     console.error('Schema migration failed:', error)
   }
+}
+
+async function normalizeDiaryEntriesSchema(db: Database) {
+  const info = await db.prepare('PRAGMA table_info(diary_entries)').all<{
+    name: string
+    notnull: number
+  }>()
+  const columns = info.results || []
+  if (columns.length === 0) return
+
+  const titleColumn = columns.find((column) => column.name === 'title')
+  const hasLegacyEmailColumns = columns.some((column) => column.name === 'source' || column.name === 'source_email')
+  const titleIsRequired = titleColumn?.notnull === 1
+  if (!titleIsRequired && !hasLegacyEmailColumns) return
+
+  await db.prepare('DROP TABLE IF EXISTS diary_entries_new').run()
+  await db.prepare(`
+    CREATE TABLE diary_entries_new (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      slug TEXT UNIQUE NOT NULL,
+      title TEXT,
+      content TEXT NOT NULL,
+      html TEXT NOT NULL,
+      description TEXT,
+      status TEXT DEFAULT 'published' CHECK(status IN ('draft', 'published', 'deleted')),
+      is_hidden INTEGER DEFAULT 0,
+      cover_image TEXT,
+      deleted_at INTEGER,
+      published_at INTEGER DEFAULT (strftime('%s', 'now')),
+      updated_at INTEGER DEFAULT (strftime('%s', 'now')),
+      view_count INTEGER DEFAULT 0
+    )
+  `).run()
+  await db.prepare(`
+    INSERT OR IGNORE INTO diary_entries_new (
+      id, slug, title, content, html, description, status, is_hidden,
+      cover_image, deleted_at, published_at, updated_at, view_count
+    )
+    SELECT
+      id,
+      slug,
+      NULLIF(title, ''),
+      content,
+      html,
+      description,
+      status,
+      is_hidden,
+      cover_image,
+      deleted_at,
+      published_at,
+      updated_at,
+      view_count
+    FROM diary_entries
+  `).run()
+  await db.prepare('DROP TABLE diary_entries').run()
+  await db.prepare('ALTER TABLE diary_entries_new RENAME TO diary_entries').run()
+  await db.prepare('CREATE INDEX IF NOT EXISTS idx_diary_entries_slug ON diary_entries(slug)').run()
+  await db.prepare('CREATE INDEX IF NOT EXISTS idx_diary_entries_published ON diary_entries(published_at DESC)').run()
+  await db.prepare(`
+    DELETE FROM site_settings
+    WHERE key IN (
+      'diary_email_enabled',
+      'diary_inbound_address',
+      'diary_allowed_sender',
+      'diary_inbound_secret'
+    )
+  `).run()
 }

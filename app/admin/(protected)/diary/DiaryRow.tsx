@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { Edit, ExternalLink, Trash2 } from 'lucide-react'
 import { useToast } from '@/components/Toast'
 import type { DiaryEntry } from '@/lib/db'
-import { getDiaryPath } from '@/lib/diary-utils'
+import { getDiaryDisplayTitle, getDiaryPath } from '@/lib/diary-utils'
 
 function formatDate(ts: number) {
   return new Date(ts * 1000).toLocaleDateString('zh-CN', {
@@ -21,6 +21,7 @@ export function DiaryRow({ entry }: { entry: DiaryEntry }) {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const toast = useToast()
+  const displayTitle = getDiaryDisplayTitle(entry)
 
   const toggleStatus = async () => {
     setLoading(true)
@@ -42,7 +43,7 @@ export function DiaryRow({ entry }: { entry: DiaryEntry }) {
   }
 
   const remove = async () => {
-    if (!window.confirm(`确定永久删除「${entry.title}」吗？`)) return
+    if (!window.confirm(`确定永久删除「${displayTitle}」吗？`)) return
     setLoading(true)
     try {
       const res = await fetch(`/api/admin/diary/${entry.slug}`, { method: 'DELETE' })
@@ -59,7 +60,7 @@ export function DiaryRow({ entry }: { entry: DiaryEntry }) {
   return (
     <div className="grid gap-3 px-5 py-4 md:grid-cols-[1fr_90px_120px_180px] md:items-center">
       <div className="min-w-0">
-        <div className="truncate text-sm font-medium text-[var(--editor-ink)]">{entry.title}</div>
+        <div className="truncate text-sm font-medium text-[var(--editor-ink)]">{displayTitle}</div>
         <div className="mt-1 text-xs text-[var(--editor-muted)]">
           {formatDate(entry.published_at)} · {entry.view_count} 次查看
         </div>
@@ -78,7 +79,7 @@ export function DiaryRow({ entry }: { entry: DiaryEntry }) {
       >
         {entry.status === 'published' ? '已发布' : entry.status === 'deleted' ? '已删除' : '草稿'}
       </button>
-      <span className="text-xs text-[var(--editor-muted)]">{entry.source === 'email' ? '邮件' : '后台'}</span>
+      <span className="text-xs text-[var(--editor-muted)]">后台</span>
       <div className="flex justify-start gap-2 md:justify-end">
         <Link
           href={`/admin/diary/edit?edit=${encodeURIComponent(entry.slug)}`}

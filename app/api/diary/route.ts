@@ -26,11 +26,7 @@ export async function POST(req: NextRequest) {
     const payload = await parseJsonBody<Record<string, unknown>>(req)
     const entryPayload = await buildDiaryEntryPayload(payload)
 
-    const id = await createDiaryEntry(db, {
-      ...entryPayload,
-      source: 'admin',
-      source_email: null,
-    })
+    const id = await createDiaryEntry(db, entryPayload)
 
     await invalidatePublicContentCache(env)
 
@@ -40,7 +36,7 @@ export async function POST(req: NextRequest) {
       slug: entryPayload.slug,
     })
   } catch (error) {
-    if (error instanceof Error && /标题和内容不能为空/.test(error.message)) {
+    if (error instanceof Error && /日记内容不能为空/.test(error.message)) {
       return jsonError(error.message, 400)
     }
     if (error instanceof Error && /UNIQUE constraint failed: diary_entries\.slug/i.test(error.message)) {
@@ -87,7 +83,7 @@ export async function PATCH(req: NextRequest) {
 
     return jsonOk({ success: true, slug: entryPayload.slug })
   } catch (error) {
-    if (error instanceof Error && /标题和内容不能为空/.test(error.message)) {
+    if (error instanceof Error && /日记内容不能为空/.test(error.message)) {
       return jsonError(error.message, 400)
     }
     if (error instanceof Error && /UNIQUE constraint failed: diary_entries\.slug/i.test(error.message)) {

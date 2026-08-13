@@ -17,7 +17,7 @@ export default async function DiaryEditorPage({
   let initialData:
     | {
         slug: string
-        title: string
+        title: string | null
         html: string
         status?: 'draft' | 'published' | 'deleted'
         is_hidden?: number

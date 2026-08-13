@@ -17,7 +17,6 @@ import { AiImageProviderManager } from './AiImageProviderManager'
 import { AiImageActionsManager } from './AiImageActionsManager'
 import { AiPostGeneratorsManager } from './AiPostGeneratorsManager'
 import { RuntimeCapabilitiesPanel } from './RuntimeCapabilitiesPanel'
-import { DiarySettingsManager } from './DiarySettingsManager'
 
 interface Category {
   name: string
@@ -45,10 +44,6 @@ interface Props {
   initialFriendLinks: FriendLink[]
   initialBodyFont: string
   initialDiaryNavEnabled: string
-  initialDiaryEmailEnabled: string
-  initialDiaryInboundAddress: string
-  initialDiaryAllowedSender: string
-  initialDiaryInboundSecret: string
   initialRuntimeCapabilities: RuntimeCapabilities
 }
 
@@ -60,10 +55,6 @@ export function SettingsManager({
   initialFriendLinks,
   initialBodyFont,
   initialDiaryNavEnabled,
-  initialDiaryEmailEnabled,
-  initialDiaryInboundAddress,
-  initialDiaryAllowedSender,
-  initialDiaryInboundSecret,
   initialRuntimeCapabilities,
 }: Props) {
   const [saving, setSaving] = useState(false)
@@ -100,22 +91,6 @@ export function SettingsManager({
         persistSetting('default_theme', 'refined'),
         persistSetting('body_font', font),
       ])
-      setMsg('已保存')
-      setTimeout(() => setMsg(''), 2000)
-    } catch (e) {
-      setMsg(e instanceof Error ? e.message : '保存失败')
-    } finally {
-      setSaving(false)
-    }
-  }
-
-  const saveDiarySettings = async (settings: Record<string, string>) => {
-    setSaving(true)
-    setMsg('')
-    try {
-      await Promise.all(
-        Object.entries(settings).map(([key, value]) => persistSetting(key, value)),
-      )
       setMsg('已保存')
       setTimeout(() => setMsg(''), 2000)
     } catch (e) {
@@ -164,15 +139,21 @@ export function SettingsManager({
               {msg}
             </div>
           )}
-          <DiarySettingsManager
-            initialNavEnabled={initialDiaryNavEnabled}
-            initialEmailEnabled={initialDiaryEmailEnabled}
-            initialInboundAddress={initialDiaryInboundAddress}
-            initialAllowedSender={initialDiaryAllowedSender}
-            initialInboundSecret={initialDiaryInboundSecret}
-            onSave={saveDiarySettings}
-            saving={saving}
-          />
+          <div className="rounded-lg border border-[var(--editor-line)] bg-[var(--background)] p-4">
+            <label className="flex items-center justify-between gap-4">
+              <span>
+                <span className="block text-sm font-medium text-[var(--editor-ink)]">顶部菜单显示日记</span>
+                <span className="mt-1 block text-xs text-[var(--editor-muted)]">关闭后前台顶部导航不显示“日记”，已发布日记页面仍可通过链接访问。</span>
+              </span>
+              <input
+                type="checkbox"
+                defaultChecked={initialDiaryNavEnabled === 'true'}
+                onChange={(event) => void save('diary_nav_enabled', String(event.target.checked))}
+                disabled={saving}
+                className="h-4 w-4"
+              />
+            </label>
+          </div>
         </div>
       ),
     },
