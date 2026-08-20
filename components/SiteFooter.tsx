@@ -3,12 +3,14 @@
 import Link from 'next/link'
 import { useState, useRef, useEffect } from 'react'
 import { refreshAdminSession, useAdminSession } from '@/lib/admin-session-client'
+import { isSponsorActive } from '@/lib/sponsor'
 
 export function SiteFooter() {
   const [open, setOpen] = useState(false)
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [sponsorActive] = useState(isSponsorActive)
   const inputRef = useRef<HTMLInputElement>(null)
   const { authenticated: isAdmin } = useAdminSession()
 
@@ -51,7 +53,7 @@ export function SiteFooter() {
   return (
     <>
       <footer className="border-t border-[var(--editor-line)] mt-auto">
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 py-6 flex items-center justify-center gap-2 text-xs text-[var(--stone-gray)]">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6 py-6 flex flex-wrap items-center justify-center gap-2 text-xs text-[var(--stone-gray)]">
           <span>© 2026</span>
           <span>·</span>
           {isAdmin ? (
@@ -83,6 +85,19 @@ export function SiteFooter() {
             >
               XuYi
             </button>
+          )}
+          {sponsorActive && (
+            <>
+              <span>·</span>
+              <a
+                href="https://bufancv.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-[var(--editor-accent)] transition-colors duration-150 underline-offset-2 hover:underline"
+              >
+                AI简历
+              </a>
+            </>
           )}
         </div>
       </footer>
