@@ -51,7 +51,7 @@ WORKERS_AI_MODEL = "@cf/meta/llama-3.1-8b-instruct"
 FEISHU_REPORT_SITE_NAME = "XuYi"
 # 邮件订阅发件人。需先在 Resend 验证 xuyi.dev 域名后改为自有域名地址，
 # 例如 "XuYi <blog@xuyi.dev>"；未验证前只能用 onboarding@resend.dev。
-NEWSLETTER_FROM_EMAIL = "XuYi <onboarding@resend.dev>"
+NEWSLETTER_FROM_EMAIL = "XuYi <newsletter@xuyi.dev>"
 # Optional enhancement flags. Leave unset/disabled for open-source or low-cost deployments.
 # ENABLE_BACKGROUND_JOBS = "true"
 # ENABLE_WORKERS_AI = "true"
