@@ -2,6 +2,7 @@ import { createPost, getPostBySlug, updatePostBySlug } from '@/lib/db'
 import { invalidatePublicContentCache } from '@/lib/cache'
 import { enqueueBackgroundJob } from '@/lib/background-jobs'
 import { enqueueFeishuNewPostNotification } from '@/lib/feishu-report'
+import { enqueueNewsletterNewPostNotification } from '@/lib/newsletter'
 import { nanoid } from 'nanoid'
 import { remark } from 'remark'
 import remarkGfm from 'remark-gfm'
@@ -119,6 +120,7 @@ export async function POST(req: NextRequest) {
       const createdPost = await getPostBySlug(db, slug)
       if (createdPost) {
         enqueueFeishuNewPostNotification(env, createdPost, ctx?.waitUntil?.bind(ctx))
+        enqueueNewsletterNewPostNotification(env, createdPost, ctx?.waitUntil?.bind(ctx))
       }
     }
 
@@ -207,6 +209,7 @@ export async function PATCH(req: NextRequest) {
       const publishedPost = await getPostBySlug(db, nextSlug || currentSlug)
       if (publishedPost?.status === 'published') {
         enqueueFeishuNewPostNotification(env, publishedPost, ctx?.waitUntil?.bind(ctx))
+        enqueueNewsletterNewPostNotification(env, publishedPost, ctx?.waitUntil?.bind(ctx))
       }
     }
 

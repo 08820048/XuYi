@@ -30,6 +30,7 @@ XuYi 是基于开源项目 [qiaomu-blog-opensource](https://github.com/joeseesun
 - 支持代码块、数学公式、表格、图片、音频、视频、YouTube、Twitter/X 嵌入。
 - 支持文章草稿、公开发布、密码访问、隐藏文章。
 - 支持 AI 文本改写、摘要生成、标签生成、slug 生成。
+- 支持首页邮件订阅（Resend 发送，双重确认 + 一键退订），发布新文章时邮件通知订阅者。
 - 支持图片上传到 Cloudflare R2。
 - 支持部署到 Cloudflare Workers，并使用 D1 作为数据库。
 
@@ -71,6 +72,20 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 - `ADMIN_TOKEN_SALT`
 - `AI_CONFIG_ENCRYPTION_SECRET`
 - `AI_API_KEY`，可选，用于外部 AI provider
+- `RESEND_API_KEY`，可选，启用首页邮件订阅与新文章通知
+- `NEWSLETTER_FROM_EMAIL`，可选，订阅邮件发件人地址
+
+## 邮件订阅
+
+首页分页下方有订阅表单，读者提交邮箱后会收到确认邮件（double opt-in），点击确认链接后正式订阅。之后每次发布新文章，已确认的订阅者会收到一封带文章链接和退订入口的通知邮件。
+
+启用步骤：
+
+1. 注册 [Resend](https://resend.com)，在控制台为博客域名添加 DNS 验证记录。
+2. 设置 secret：`npx wrangler secret put RESEND_API_KEY -c wrangler.toml`。
+3. 在 `wrangler.toml` 的 `[vars]` 里把 `NEWSLETTER_FROM_EMAIL` 改成自有域名发件地址，例如 `XuYi <blog@xuyi.dev>`。
+
+未配置 `RESEND_API_KEY` 时订阅表单会静默失败提示，不影响其他功能；免费额度为每天 100 封、每月 3000 封。
 
 ## Cloudflare 部署
 

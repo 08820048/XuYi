@@ -9,6 +9,7 @@ import { SiteFooter } from '@/components/SiteFooter'
 import { Pagination } from '@/components/Pagination'
 import { PostTypeBadge } from '@/components/PostTypeBadge'
 import { PostUpdateBadge } from '@/components/PostUpdateBadge'
+import { SubscribeForm } from '@/components/SubscribeForm'
 import type { HomeProps } from '@/components/HomeClient'
 
 function formatDateShort(ts: number) {
@@ -153,6 +154,8 @@ export function HomeVariantA({
             <div style={{ paddingTop: 16 }}>
               <Pagination currentPage={currentPage} totalPages={totalPages} basePath="/" />
             </div>
+
+            <SubscribeForm />
           </>
         )}
       </main>

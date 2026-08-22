@@ -75,6 +75,8 @@ declare interface CloudflareEnv {
   FEISHU_BOT_WEBHOOK?: string
   FEISHU_BOT_SECRET?: string
   FEISHU_REPORT_SITE_NAME?: string
+  RESEND_API_KEY?: string
+  NEWSLETTER_FROM_EMAIL?: string
   CLOUDFLARE_ACCOUNT_ID?: string
   CLOUDFLARE_API_TOKEN?: string
   ENABLE_BACKGROUND_JOBS?: string

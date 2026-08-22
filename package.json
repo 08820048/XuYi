@@ -112,6 +112,12 @@
       },
       "FEISHU_REPORT_SITE_NAME": {
         "description": "可选。飞书数据报告里显示的站点名称，默认使用 `XuYi`。"
+      },
+      "RESEND_API_KEY": {
+        "description": "可选。Resend API Key（https://resend.com），启用邮件订阅与新文章邮件通知。"
+      },
+      "NEWSLETTER_FROM_EMAIL": {
+        "description": "可选。订阅邮件的发件人地址，如 `XuYi <blog@xuyi.dev>`；需先在 Resend 验证发信域名。"
       }
     }
   }

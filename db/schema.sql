@@ -81,6 +81,20 @@ CREATE TABLE IF NOT EXISTS friend_links (
 
 CREATE INDEX IF NOT EXISTS idx_friend_links_visible_order ON friend_links(is_visible, sort_order, id);
 
+-- 邮件订阅表：pending 等待确认，subscribed 已确认，unsubscribed 已退订
+-- token 同时用于确认链接和退订链接
+CREATE TABLE IF NOT EXISTS subscribers (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  email TEXT UNIQUE NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending', 'subscribed', 'unsubscribed')),
+  token TEXT UNIQUE NOT NULL,
+  subscribed_at INTEGER,
+  created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_subscribers_status ON subscribers(status);
+
 -- 日记表：独立于技术文章，避免混入首页、RSS、搜索和分类
 CREATE TABLE IF NOT EXISTS diary_entries (
   id INTEGER PRIMARY KEY AUTOINCREMENT,

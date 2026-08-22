@@ -56,4 +56,13 @@ export {
   updateFriendLink,
   type FriendLinkInput,
 } from '@/lib/repositories/friend-links'
+export {
+  confirmSubscriberByToken,
+  getSubscriberByEmail,
+  getSubscriberByToken,
+  listSubscribedSubscribers,
+  unsubscribeSubscriberByToken,
+  upsertPendingSubscriber,
+  type UpsertPendingSubscriberResult,
+} from '@/lib/repositories/subscribers'
 export { getSetting, setSetting } from '@/lib/repositories/settings'
