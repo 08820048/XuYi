@@ -10,7 +10,7 @@ function htmlResponse(html: string, status = 200) {
   })
 }
 
-// 双重确认第二步：邮件里的确认链接
+// 兼容改为直接订阅前已发送的历史确认链接
 export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get('token')?.trim() || ''
 

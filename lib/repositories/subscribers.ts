@@ -3,17 +3,6 @@ import type { Database } from '@/lib/repositories/schema'
 import { ensureSchema } from '@/lib/repositories/schema'
 import type { SubscriberRow } from '@/lib/repositories/types'
 
-// 确认邮件重发冷却：同一邮箱 60 秒内只发一封，防止接口被刷
-const RESEND_COOLDOWN_SECONDS = 60
-
-export interface UpsertPendingSubscriberResult {
-  token: string
-  /** 已经是订阅状态，无需再发确认邮件 */
-  alreadySubscribed: boolean
-  /** 处于冷却期，本次未重发确认邮件 */
-  skippedCooldown: boolean
-}
-
 export async function getSubscriberByEmail(db: Database, email: string): Promise<SubscriberRow | null> {
   await ensureSchema(db)
   return db
@@ -22,90 +11,28 @@ export async function getSubscriberByEmail(db: Database, email: string): Promise
     .first<SubscriberRow>()
 }
 
-async function insertPendingSubscriber(db: Database, email: string): Promise<string> {
+/** 直接订阅；重复提交保持幂等，重新订阅时更换退订 token。 */
+export async function upsertSubscribedSubscriber(db: Database, email: string): Promise<void> {
+  await ensureSchema(db)
   const token = nanoid(32)
   await db
     .prepare(`
-      INSERT INTO subscribers (email, status, token)
-      VALUES (?, 'pending', ?)
+      INSERT INTO subscribers (email, status, token, subscribed_at)
+      VALUES (?, 'subscribed', ?, strftime('%s', 'now'))
+      ON CONFLICT(email) DO UPDATE SET
+        status = 'subscribed',
+        token = CASE
+          WHEN subscribers.status = 'subscribed' THEN subscribers.token
+          ELSE excluded.token
+        END,
+        subscribed_at = CASE
+          WHEN subscribers.status = 'subscribed' THEN subscribers.subscribed_at
+          ELSE excluded.subscribed_at
+        END,
+        updated_at = strftime('%s', 'now')
     `)
     .bind(email, token)
     .run()
-  return token
-}
-
-async function resetToPending(db: Database, id: number): Promise<string> {
-  const token = nanoid(32)
-  await db
-    .prepare(`
-      UPDATE subscribers
-      SET status = 'pending', token = ?, subscribed_at = NULL, updated_at = strftime('%s', 'now')
-      WHERE id = ?
-    `)
-    .bind(token, id)
-    .run()
-  return token
-}
-
-async function refreshPendingToken(db: Database, id: number): Promise<string> {
-  const token = nanoid(32)
-  await db
-    .prepare(`
-      UPDATE subscribers
-      SET token = ?, updated_at = strftime('%s', 'now')
-      WHERE id = ?
-    `)
-    .bind(token, id)
-    .run()
-  return token
-}
-
-function isUniqueEmailConflict(error: unknown) {
-  return error instanceof Error && /UNIQUE constraint failed: subscribers\.email/i.test(error.message)
-}
-
-/**
- * 双重确认第一步：把邮箱置为待确认状态并返回确认 token。
- * - 新邮箱：插入 pending 记录（并发插入冲突时回退到已存在分支）
- * - 已订阅：直接返回，不再发确认邮件
- * - 待确认且在冷却期内：跳过重发（时钟偏移导致的负差值也算冷却期内）
- * - 已退订 / 冷却期外的待确认：换新 token 并允许重发
- */
-export async function upsertPendingSubscriber(
-  db: Database,
-  email: string,
-  now = new Date(),
-): Promise<UpsertPendingSubscriberResult> {
-  await ensureSchema(db)
-
-  let existing = await getSubscriberByEmail(db, email)
-
-  if (!existing) {
-    try {
-      const token = await insertPendingSubscriber(db, email)
-      return { token, alreadySubscribed: false, skippedCooldown: false }
-    } catch (error) {
-      // 并发请求同时插入同一邮箱：后者撞 UNIQUE 约束，按已存在分支继续处理
-      if (!isUniqueEmailConflict(error)) throw error
-      existing = await getSubscriberByEmail(db, email)
-      if (!existing) throw error
-    }
-  }
-
-  if (existing.status === 'subscribed') {
-    return { token: existing.token, alreadySubscribed: true, skippedCooldown: false }
-  }
-
-  // 不设下界：DB 时钟略超前于应用时钟时 elapsedSeconds 为负，仍应视为冷却期内
-  const elapsedSeconds = Math.floor(now.getTime() / 1000) - existing.updated_at
-  if (existing.status === 'pending' && elapsedSeconds < RESEND_COOLDOWN_SECONDS) {
-    return { token: existing.token, alreadySubscribed: false, skippedCooldown: true }
-  }
-
-  const token = existing.status === 'unsubscribed'
-    ? await resetToPending(db, existing.id)
-    : await refreshPendingToken(db, existing.id)
-  return { token, alreadySubscribed: false, skippedCooldown: false }
 }
 
 /** 双重确认第二步：点击邮件里的确认链接 */

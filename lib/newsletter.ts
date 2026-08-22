@@ -1,7 +1,7 @@
-import { listSubscribedSubscribers, upsertPendingSubscriber } from '@/lib/repositories/subscribers'
+import { listSubscribedSubscribers, upsertSubscribedSubscriber } from '@/lib/repositories/subscribers'
 import type { PostWithTags } from '@/lib/repositories/types'
 
-// 邮件订阅（Resend 发送）：订阅确认 + 新文章通知
+// 邮件订阅（Resend 发送）：直接订阅 + 新文章通知
 // API key 属于部署者级 secret，照 FEISHU_BOT_WEBHOOK 惯例放 wrangler secret
 
 export interface NewsletterEnv extends Partial<CloudflareEnv> {
@@ -123,22 +123,6 @@ function buildEmailShell(contentHtml: string, footerHtml: string) {
 </html>`
 }
 
-export function buildSubscribeConfirmationEmail(options: {
-  siteName: string
-  confirmUrl: string
-}): NewsletterEmailContent {
-  const { siteName, confirmUrl } = options
-  const subject = `确认订阅 ${siteName}`
-  const html = buildEmailShell(
-    `<p style="margin:0 0 16px;">你好，</p>` +
-    `<p style="margin:0 0 20px;">有人使用这个邮箱在 <strong>${escapeHtml(siteName)}</strong> 订阅了博客更新。如果是你本人操作，请点击下面的按钮完成确认：</p>` +
-    `<p style="margin:0 0 24px;"><a href="${confirmUrl}" style="display:inline-block;background:#b5533c;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;padding:10px 24px;border-radius:8px;">确认订阅</a></p>` +
-    `<p style="margin:0;color:#626864;font-size:13px;">如果按钮无法点击，也可以复制以下链接到浏览器打开：<br /><a href="${confirmUrl}" style="color:#b5533c;word-break:break-all;">${confirmUrl}</a></p>`,
-    `<p style="margin:0;">如果你没有订阅过 ${escapeHtml(siteName)}，忽略这封邮件即可，不会添加任何订阅。</p>`,
-  )
-  return { subject, html }
-}
-
 export function buildNewPostNotificationEmail(options: {
   post: Pick<PostWithTags, 'title' | 'description' | 'slug'>
   siteName: string
@@ -155,8 +139,8 @@ export function buildNewPostNotificationEmail(options: {
     `<p style="margin:0 0 8px;color:#8a918c;font-size:12px;letter-spacing:0.5px;">${escapeHtml(siteName)} · 新文章</p>` +
     `<h1 style="margin:0;font-size:20px;line-height:1.45;font-family:Georgia,'Noto Serif SC',serif;font-weight:700;">${escapeHtml(post.title)}</h1>` +
     descriptionHtml +
-    `<p style="margin:20px 0 0;"><a href="${postUrl}" style="display:inline-block;background:#b5533c;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;padding:10px 24px;border-radius:8px;">阅读全文</a></p>` +
-    `<p style="margin:16px 0 0;color:#626864;font-size:13px;">或复制链接到浏览器打开：<br /><a href="${postUrl}" style="color:#b5533c;word-break:break-all;">${postUrl}</a></p>`,
+    `<p style="margin:20px 0 0;"><a href="${postUrl}" style="display:inline-block;background:#171717;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;padding:10px 24px;border-radius:8px;">阅读全文</a></p>` +
+    `<p style="margin:16px 0 0;color:#626864;font-size:13px;">或复制链接到浏览器打开：<br /><a href="${postUrl}" style="color:#262626;word-break:break-all;">${postUrl}</a></p>`,
     `<p style="margin:0 0 4px;">你收到这封邮件是因为订阅了 ${escapeHtml(siteName)} 的更新。</p>` +
     `<p style="margin:0;"><a href="${unsubscribeUrl}" style="color:#8a918c;">退订</a></p>`,
   )
@@ -172,7 +156,7 @@ export function renderSubscriptionResultPage(options: {
   siteUrl: string
 }) {
   const { title, message, success, siteName, siteUrl } = options
-  const accentColor = success ? '#b5533c' : '#8a918c'
+  const accentColor = success ? '#171717' : '#8a8a8a'
   const icon = success ? '✓' : '!'
   return `<!DOCTYPE html>
 <html lang="zh-CN">
@@ -222,10 +206,7 @@ export async function sendEmailViaResend(
   }
 }
 
-/**
- * 双重确认第一步：记录 pending 订阅并发送确认邮件。
- * 无论邮箱是否已存在，对外都返回成功，避免被用来探测订阅状态。
- */
+/** 直接订阅；重复提交保持幂等。 */
 export async function subscribeEmail(
   env: NewsletterEnv,
   rawEmail: unknown,
@@ -235,29 +216,7 @@ export async function subscribeEmail(
     return { ok: false, reason: 'invalid_email' }
   }
 
-  // 先检查配置再写库，避免未配置时往 subscribers 表塞脏数据
-  const apiKey = env.RESEND_API_KEY?.trim()
-  if (!apiKey) {
-    throw new Error('缺少 RESEND_API_KEY，无法发送订阅确认邮件。')
-  }
-
-  const { token, alreadySubscribed } = await upsertPendingSubscriber(env.DB, email)
-
-  if (alreadySubscribed) {
-    return { ok: true }
-  }
-
-  const siteName = getSiteName(env)
-  const siteUrl = getNewsletterSiteUrl(env)
-  const confirmUrl = `${siteUrl}/api/subscribe/confirm?token=${encodeURIComponent(token)}`
-  const content = buildSubscribeConfirmationEmail({ siteName, confirmUrl })
-
-  await sendEmailViaResend(apiKey, getFromAddress(env), {
-    to: email,
-    subject: content.subject,
-    html: content.html,
-  })
-
+  await upsertSubscribedSubscriber(env.DB, email)
   return { ok: true }
 }
 

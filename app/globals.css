@@ -2,29 +2,29 @@
 @import "katex/dist/katex.min.css";
 
 :root {
-  --background: #f7f8f6;
-  --foreground: #171918;
-  --editor-app-bg: #f7f8f6;
+  --background: #ffffff;
+  --foreground: #171717;
+  --editor-app-bg: #ffffff;
   --editor-panel: #ffffff;
-  --editor-soft: #eceeeb;
-  --editor-line: #e2e5e1;
-  --editor-ink: #171918;
-  --editor-muted: #626864;
-  --editor-accent: #b5533c;
+  --editor-soft: #f5f5f5;
+  --editor-line: #e5e5e5;
+  --editor-ink: #171717;
+  --editor-muted: #737373;
+  --editor-accent: #171717;
   --editor-accent-ink: #ffffff;
-  --editor-link: #a94c37;
-  --editor-code-bg: #ffffff;
-  --editor-code-border: #dfe3df;
-  --editor-quote-bg: #f1f3f0;
-  --editor-selection: #d8e7f4;
-  --stone-gray: #8a918c;
-  --border-warm: #e2e5e1;
-  --coral: #b5533c;
-  --article-heading: #151716;
-  --article-body: #303431;
-  --article-quote: #515854;
-  --article-quote-border: #aeb5b0;
-  --article-quote-nested-border: #c4c9c6;
+  --editor-link: #262626;
+  --editor-code-bg: #f7f7f7;
+  --editor-code-border: #e5e5e5;
+  --editor-quote-bg: #fafafa;
+  --editor-selection: #e5e7eb;
+  --stone-gray: #8a8a8a;
+  --border-warm: #e5e5e5;
+  --coral: #171717;
+  --article-heading: #171717;
+  --article-body: #333333;
+  --article-quote: #525252;
+  --article-quote-border: #a3a3a3;
+  --article-quote-nested-border: #d4d4d4;
   --article-quote-nested-bg: rgba(0, 0, 0, 0.02);
 }
 
@@ -37,30 +37,30 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #111311;
-    --foreground: #eef1ee;
-    --editor-app-bg: #111311;
-    --editor-panel: #181b19;
-    --editor-soft: #222724;
-    --editor-line: #303632;
-    --editor-ink: #eef1ee;
-    --editor-muted: #afb5b0;
-    --editor-accent: #d1745d;
-    --editor-accent-ink: #111311;
-    --editor-link: #df856e;
-    --editor-code-bg: #151816;
-    --editor-code-border: #303632;
-    --editor-quote-bg: #181b19;
-    --editor-selection: rgba(143, 181, 207, 0.32);
-    --stone-gray: #8e9690;
-    --border-warm: #303632;
-    --coral: #d1745d;
-    --article-heading: #f3f5f3;
-    --article-body: #d4d9d5;
-    --article-quote: #bcc3be;
-    --article-quote-border: #d1745d;
-    --article-quote-nested-border: #a86150;
-    --article-quote-nested-bg: rgba(209, 116, 93, 0.1);
+    --background: #0f0f0f;
+    --foreground: #f5f5f5;
+    --editor-app-bg: #0f0f0f;
+    --editor-panel: #171717;
+    --editor-soft: #242424;
+    --editor-line: #333333;
+    --editor-ink: #f5f5f5;
+    --editor-muted: #b3b3b3;
+    --editor-accent: #404040;
+    --editor-accent-ink: #ffffff;
+    --editor-link: #e5e5e5;
+    --editor-code-bg: #141414;
+    --editor-code-border: #333333;
+    --editor-quote-bg: #171717;
+    --editor-selection: rgba(255, 255, 255, 0.16);
+    --stone-gray: #8c8c8c;
+    --border-warm: #333333;
+    --coral: #404040;
+    --article-heading: #f5f5f5;
+    --article-body: #d4d4d4;
+    --article-quote: #bdbdbd;
+    --article-quote-border: #737373;
+    --article-quote-nested-border: #525252;
+    --article-quote-nested-bg: rgba(255, 255, 255, 0.04);
   }
 }
 
@@ -596,7 +596,7 @@ body {
 }
 
 .resizable-image.selected {
-  outline: 2px solid var(--editor-accent, #c96442);
+  outline: 2px solid var(--editor-accent, #171717);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -611,7 +611,7 @@ body {
   bottom: 0;
   width: 8px;
   cursor: col-resize;
-  background: var(--editor-accent, #c96442);
+  background: var(--editor-accent, #171717);
   opacity: 0;
   transition: opacity 0.15s;
   border-radius: 4px;

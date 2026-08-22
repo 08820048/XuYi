@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   buildNewPostNotificationEmail,
-  buildSubscribeConfirmationEmail,
   getNewsletterSiteUrl,
   isPublicNewsletterPost,
   normalizeSubscriberEmail,
@@ -10,7 +9,6 @@ import {
   subscribeEmail,
   type NewsletterEnv,
 } from '@/lib/newsletter'
-import { upsertPendingSubscriber } from '@/lib/repositories/subscribers'
 import type { PostWithTags } from '@/lib/repositories/types'
 
 function createEnv(overrides: Partial<NewsletterEnv> = {}): NewsletterEnv {
@@ -75,17 +73,6 @@ describe('newsletter helpers', () => {
     expect(isPublicNewsletterPost(createPost({ deleted_at: 1770000100 }))).toBe(false)
   })
 
-  it('builds a confirmation email with the confirm link', () => {
-    const content = buildSubscribeConfirmationEmail({
-      siteName: 'XuYi',
-      confirmUrl: 'https://blog.qiaomu.dev/api/subscribe/confirm?token=tok',
-    })
-
-    expect(content.subject).toContain('XuYi')
-    expect(content.html).toContain('https://blog.qiaomu.dev/api/subscribe/confirm?token=tok')
-    expect(content.html).toContain('确认订阅')
-  })
-
   it('escapes html-sensitive characters in post titles and links unsubscribe', () => {
     const content = buildNewPostNotificationEmail({
       post: createPost({ title: '<script>alert("x")</script>' }),
@@ -145,12 +132,31 @@ describe('newsletter helpers', () => {
     expect(result).toEqual({ ok: false, reason: 'invalid_email' })
   })
 
-  it('throws before any database write when RESEND_API_KEY is missing', async () => {
-    const prepare = vi.fn()
-    const env = createEnv({ RESEND_API_KEY: undefined, DB: { prepare } as unknown as D1Database })
+  it('subscribes immediately without sending a confirmation email', async () => {
+    const statements: Array<{ sql: string; values: unknown[] }> = []
+    const prepare = vi.fn().mockImplementation((sql: string) => ({
+      run: () => Promise.resolve({ meta: {} }),
+      bind: (...values: unknown[]) => {
+        statements.push({ sql, values })
+        return { run: () => Promise.resolve({ meta: {} }) }
+      },
+    }))
+    const fetchMock = vi.fn()
+    vi.stubGlobal('fetch', fetchMock)
 
-    await expect(subscribeEmail(env, 'reader@example.com')).rejects.toThrow('RESEND_API_KEY')
-    expect(prepare).not.toHaveBeenCalled()
+    const result = await subscribeEmail(
+      createEnv({ RESEND_API_KEY: undefined, DB: { prepare } as unknown as D1Database }),
+      ' Reader@Example.COM ',
+    )
+
+    expect(result).toEqual({ ok: true })
+    expect(statements).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        sql: expect.stringContaining("VALUES (?, 'subscribed'"),
+        values: expect.arrayContaining(['reader@example.com']),
+      }),
+    ]))
+    expect(fetchMock).not.toHaveBeenCalled()
   })
 })
 
@@ -224,92 +230,6 @@ describe('pushNewsletterNewPostNotification', () => {
 
     const [, secondInit] = fetchMock.mock.calls[1]
     expect(JSON.parse(secondInit.body).html).toContain('unsubscribe?token=tok-b')
-  })
-})
-
-describe('upsertPendingSubscriber', () => {
-  beforeEach(() => {
-    vi.restoreAllMocks()
-  })
-
-  it('falls back to the existing row when a concurrent insert hits the UNIQUE constraint', async () => {
-    const existingRow = {
-      id: 7,
-      email: 'reader@example.com',
-      status: 'pending' as const,
-      token: 'old-token',
-      subscribed_at: null,
-      created_at: 1770000000 - 3600,
-      updated_at: 1770000000 - 3600,
-    }
-    let emailLookups = 0
-    const prepare = vi.fn().mockImplementation((sql: string) => ({
-      run: () => {
-        if (sql.includes('INSERT INTO subscribers')) {
-          return Promise.reject(new Error('UNIQUE constraint failed: subscribers.email'))
-        }
-        return Promise.resolve({ meta: {} })
-      },
-      all: () => Promise.resolve({ results: [] }),
-      first: () =>
-        Promise.resolve(sql.includes('WHERE email = ?')
-          ? (() => {
-              emailLookups += 1
-              return emailLookups >= 2 ? existingRow : null
-            })()
-          : null),
-      bind: () => ({
-        run: () =>
-          sql.includes('INSERT INTO subscribers')
-            ? Promise.reject(new Error('UNIQUE constraint failed: subscribers.email'))
-            : Promise.resolve({ meta: {} }),
-        first: () =>
-          Promise.resolve(
-            sql.includes('WHERE email = ?')
-              ? (() => {
-                  emailLookups += 1
-                  return emailLookups >= 2 ? existingRow : null
-                })()
-              : null,
-          ),
-      }),
-    }))
-    const env = { DB: { prepare } as unknown as D1Database }
-
-    const result = await upsertPendingSubscriber(env.DB, 'reader@example.com', new Date(1770000000 * 1000))
-
-    expect(result.alreadySubscribed).toBe(false)
-    expect(result.skippedCooldown).toBe(false)
-    expect(result.token).toBeTruthy()
-    expect(result.token).not.toBe('old-token')
-    expect(emailLookups).toBe(2)
-  })
-
-  it('treats a negative elapsed time (db clock ahead) as still within cooldown', async () => {
-    const existingRow = {
-      id: 7,
-      email: 'reader@example.com',
-      status: 'pending' as const,
-      token: 'old-token',
-      subscribed_at: null,
-      created_at: 1770000100,
-      updated_at: 1770000100, // 比传入的 now 晚 100 秒，模拟 DB 时钟超前
-    }
-    const prepare = vi.fn().mockImplementation((sql: string) => ({
-      run: () => Promise.resolve({ meta: {} }),
-      all: () => Promise.resolve({ results: [] }),
-      first: () => Promise.resolve(null),
-      bind: () => ({
-        run: () => Promise.resolve({ meta: {} }),
-        first: () =>
-          Promise.resolve(sql.includes('WHERE email = ?') ? existingRow : null),
-      }),
-    }))
-    const env = { DB: { prepare } as unknown as D1Database }
-
-    const result = await upsertPendingSubscriber(env.DB, 'reader@example.com', new Date(1770000000 * 1000))
-
-    expect(result).toEqual({ token: 'old-token', alreadySubscribed: false, skippedCooldown: true })
   })
 })
 

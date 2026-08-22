@@ -62,7 +62,6 @@ export {
   getSubscriberByToken,
   listSubscribedSubscribers,
   unsubscribeSubscriberByToken,
-  upsertPendingSubscriber,
-  type UpsertPendingSubscriberResult,
+  upsertSubscribedSubscriber,
 } from '@/lib/repositories/subscribers'
 export { getSetting, setSetting } from '@/lib/repositories/settings'

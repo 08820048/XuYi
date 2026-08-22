@@ -81,8 +81,8 @@ CREATE TABLE IF NOT EXISTS friend_links (
 
 CREATE INDEX IF NOT EXISTS idx_friend_links_visible_order ON friend_links(is_visible, sort_order, id);
 
--- 邮件订阅表：pending 等待确认，subscribed 已确认，unsubscribed 已退订
--- token 同时用于确认链接和退订链接
+-- 邮件订阅表：新提交直接 subscribed；pending 保留用于兼容历史确认链接
+-- token 用于退订，历史 pending 记录也用于确认
 CREATE TABLE IF NOT EXISTS subscribers (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   email TEXT UNIQUE NOT NULL,
