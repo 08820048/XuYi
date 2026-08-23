@@ -1,0 +1,179 @@
+.page {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background: #e9efed;
+  color: #172022;
+}
+
+.textureInput {
+  position: fixed;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.switcher {
+  position: fixed;
+  top: 1.25rem;
+  right: 1.25rem;
+  z-index: 10;
+  display: flex;
+  gap: 0.2rem;
+  padding: 0.25rem;
+  border: 1px solid rgb(23 32 34 / 14%);
+  border-radius: 6px;
+  background: rgb(239 244 242 / 88%);
+  box-shadow: 0 8px 24px rgb(19 36 39 / 8%);
+  backdrop-filter: blur(10px);
+}
+
+.switcher label {
+  display: flex;
+  min-height: 2rem;
+  align-items: center;
+  padding: 0.35rem 0.7rem;
+  border-radius: 4px;
+  color: #5d6a6d;
+  cursor: pointer;
+  font-size: 0.72rem;
+  font-weight: 600;
+  transition: background-color 140ms ease, color 140ms ease;
+}
+
+.switcher label:hover {
+  background: rgb(14 116 144 / 8%);
+  color: #172022;
+}
+
+.page:has(.fiberInput:checked) .fiberLabel,
+.page:has(.pulpInput:checked) .pulpLabel,
+.page:has(.sandInput:checked) .sandLabel,
+.page:has(.mineralInput:checked) .mineralLabel {
+  background: #0e7490;
+  color: #ffffff;
+}
+
+.texture {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.textureVariant {
+  display: none;
+}
+
+.page:has(.fiberInput:checked) .fiberTexture,
+.page:has(.pulpInput:checked) .pulpTexture,
+.page:has(.sandInput:checked) .sandTexture,
+.page:has(.mineralInput:checked) .mineralTexture {
+  display: block;
+}
+
+.specimen {
+  position: relative;
+  width: min(100% - 3rem, 52rem);
+  margin: 0 auto;
+  padding: 11vh 0 5rem;
+}
+
+.kicker {
+  margin: 0 0 2.25rem;
+  color: #0e7490;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.specimen h1 {
+  max-width: 11ch;
+  margin: 0;
+  color: #12191a;
+  font-size: 3.5rem;
+  font-weight: 720;
+  line-height: 1.08;
+}
+
+.lead {
+  max-width: 36rem;
+  margin: 2rem 0 0;
+  color: #334043;
+  font-size: 1.1rem;
+  line-height: 1.9;
+}
+
+.bodyCopy {
+  max-width: 39rem;
+  margin-top: 4.5rem;
+  color: #364245;
+  font-size: 1rem;
+  line-height: 1.9;
+}
+
+.bodyCopy p {
+  margin: 0;
+}
+
+.bodyCopy blockquote {
+  margin: 2rem 0;
+  padding-left: 1.25rem;
+  border-left: 3px solid #0e7490;
+  color: #263336;
+  font-weight: 560;
+}
+
+.bodyCopy pre {
+  margin: 2.5rem 0 0;
+  overflow-x: auto;
+  padding: 1.25rem 1.4rem;
+  border-radius: 4px;
+  background: rgb(18 25 26 / 92%);
+  color: #dce9e7;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.82rem;
+  line-height: 1.7;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5rem;
+  color: #667477;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.68rem;
+}
+
+@media (max-width: 639px) {
+  .switcher {
+    right: 0.75rem;
+    left: 0.75rem;
+    overflow-x: auto;
+  }
+
+  .switcher label {
+    flex: 1 0 auto;
+    justify-content: center;
+  }
+
+  .specimen {
+    width: min(100% - 2rem, 52rem);
+    padding-top: 5rem;
+  }
+
+  .specimen h1 {
+    font-size: 2.5rem;
+  }
+
+  .lead {
+    font-size: 1rem;
+  }
+
+  .bodyCopy {
+    margin-top: 3.5rem;
+  }
+}

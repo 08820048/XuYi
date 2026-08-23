@@ -2,9 +2,9 @@
 @import "katex/dist/katex.min.css";
 
 :root {
-  --background: #f5f8f8;
+  --background: #e8efee;
   --foreground: #151a1b;
-  --editor-app-bg: #f5f8f8;
+  --editor-app-bg: #e8efee;
   --editor-panel: #ffffff;
   --editor-soft: #edf3f3;
   --editor-line: #d9e3e4;
@@ -25,11 +25,8 @@
   --article-quote: #536164;
   --article-quote-border: transparent;
   --article-quote-nested-border: transparent;
-  --article-quote-nested-bg: #f5f8f8;
+  --article-quote-nested-bg: #e8efee;
   --ambient-line: rgba(14, 116, 144, 0.1);
-  --ambient-stripe: rgba(14, 116, 144, 0.045);
-  --noise-cyan: rgba(14, 116, 144, 0.42);
-  --noise-white: rgba(255, 255, 255, 0.9);
 }
 
 @theme inline {
@@ -40,7 +37,11 @@
 }
 
 html {
-  background: var(--background);
+  background-color: var(--background);
+  background-image: url('/textures/sand-cyan.svg');
+  background-repeat: repeat;
+  background-size: 180px 180px;
+  background-attachment: fixed;
   color-scheme: light;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -52,18 +53,12 @@ body {
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
 
-body:has(.site-header)::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 80;
-  pointer-events: none;
-  background-image:
-    radial-gradient(circle, var(--noise-cyan) 0 0.55px, transparent 0.75px),
-    radial-gradient(circle, var(--noise-white) 0 0.6px, transparent 0.8px);
-  background-position: 0 0, 4px 6px;
-  background-size: 9px 13px, 17px 19px;
-  opacity: 0.2;
+body:has(.site-header) {
+  background: transparent;
+}
+
+body:has(.site-header) > :has(> .site-header) {
+  background: transparent !important;
 }
 
 .site-logo-link {
@@ -1135,12 +1130,10 @@ body:has(.site-header)::after {
 
 .site-header,
 .site-footer {
-  background-color: color-mix(in srgb, var(--background) 95%, transparent);
-  background-image: repeating-linear-gradient(
-    135deg,
-    var(--ambient-stripe) 0 1px,
-    transparent 1px 9px
-  );
+  background-color: color-mix(in srgb, var(--background) 88%, transparent);
+  background-image: url('/textures/sand-cyan.svg');
+  background-repeat: repeat;
+  background-size: 180px 180px;
 }
 
 .site-footer {
@@ -1149,17 +1142,6 @@ body:has(.site-header)::after {
 }
 
 @media (min-width: 1280px) {
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: 20;
-    pointer-events: none;
-    background:
-      repeating-linear-gradient(135deg, var(--ambient-stripe) 0 1px, transparent 1px 9px) left top / calc(50% - 600px) 100% no-repeat,
-      repeating-linear-gradient(135deg, var(--ambient-stripe) 0 1px, transparent 1px 9px) right top / calc(50% - 600px) 100% no-repeat;
-  }
-
   .site-category-rail {
     position: fixed;
     top: 6rem;

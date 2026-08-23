@@ -114,6 +114,7 @@ export default async function RootLayout({
   return (
     <html
       lang="zh-CN"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       data-font={bodyFont || 'default'}
       data-theme="refined"
