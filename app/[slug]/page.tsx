@@ -295,15 +295,22 @@ export default async function PostPage({
                   </dl>
                   {post.source_url && post.post_type !== 'original' && (
                     <div className="article-record-source">
-                      原文地址：
-                      <a
-                        href={post.source_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="break-all text-[var(--editor-accent)] underline underline-offset-2 hover:opacity-80"
-                      >
-                        {post.source_url}
-                      </a>
+                      <p>
+                        {post.post_type === 'repost'
+                          ? '原文著作权归原作者或相关权利人所有。本站仅在授权范围内转载，不代表原作者对本站观点或内容的认可。'
+                          : '原作品著作权归原作者或相关权利人所有。本译文由本站完成，译文相关权利的行使仍受原作品授权条款约束。'}
+                      </p>
+                      <p className="mt-1">
+                        原文链接：
+                        <a
+                          href={post.source_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="break-all text-[var(--editor-accent)] underline underline-offset-2 hover:opacity-80"
+                        >
+                          {post.source_url}
+                        </a>
+                      </p>
                     </div>
                   )}
                 </header>
