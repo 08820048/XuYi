@@ -30,6 +30,7 @@ export function HomeVariantA({
       <SiteHeader
         navLinks={navLinks}
         categories={categories}
+        showCategoryRail
       />
 
       <main className="refined-home-main flex-1 mx-auto w-full" style={{ maxWidth: 860, padding: '32px 32px 120px' }}>

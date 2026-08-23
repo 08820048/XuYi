@@ -27,7 +27,7 @@ export function SiteHeader({
   activeCategorySlug = null,
   stickyOnMobile = true,
   forceSpread = false,
-  showCategoryRail = true,
+  showCategoryRail = false,
 }: SiteHeaderProps) {
   const links = navLinks && navLinks.length > 0 ? navLinks : defaultSiteNavLinks
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
