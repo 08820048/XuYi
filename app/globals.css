@@ -27,6 +27,9 @@
   --article-quote-nested-border: transparent;
   --article-quote-nested-bg: #e8efee;
   --ambient-line: rgba(14, 116, 144, 0.1);
+  --interaction-hover: color-mix(in srgb, var(--editor-accent) 5%, transparent);
+  --interaction-active: color-mix(in srgb, var(--editor-accent) 9%, transparent);
+  --interaction-border: color-mix(in srgb, var(--editor-accent) 18%, transparent);
 }
 
 @theme inline {
@@ -724,18 +727,12 @@ body:has(.site-header) > :has(> .site-header) {
   height: 0.55rem;
   color: color-mix(in srgb, var(--editor-muted) 78%, transparent);
   text-decoration: none;
-  transition:
-    color 160ms ease,
-    scale 150ms ease-out;
+  transition: color 140ms ease;
 }
 
 .article-toc__link:hover,
 .article-toc__link[data-active='true'] {
-  color: var(--editor-ink);
-}
-
-.article-toc__link:active {
-  scale: 0.96;
+  color: var(--editor-accent);
 }
 
 .article-toc__rule {
@@ -770,11 +767,11 @@ body:has(.site-header) > :has(> .site-header) {
   width: 1.72rem;
   height: 2px;
   opacity: 1;
-  background: var(--editor-ink);
+  background: var(--editor-accent);
 }
 
 .article-toc__nav:not(:hover) .article-toc__link[data-active='true'] .article-toc__rule {
-  background: var(--editor-ink);
+  background: var(--editor-accent);
   opacity: 1;
 }
 
@@ -785,34 +782,33 @@ body:has(.site-header) > :has(> .site-header) {
   left: 2.25rem;
   width: 14rem;
   padding: 0.75rem 0.85rem 0.8rem;
-  border-radius: 0.75rem;
-  background: var(--editor-panel);
+  border: 1px solid var(--interaction-border);
+  border-radius: 4px;
+  background-color: color-mix(in srgb, var(--background) 94%, white);
+  background-image: url('/textures/sand-cyan.svg');
+  background-repeat: repeat;
+  background-size: 180px 180px;
   color: var(--editor-ink);
   opacity: 0;
-  scale: 0.98;
-  translate: 0.35rem -50%;
-  box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.06),
-    0 8px 24px rgba(0, 0, 0, 0.09);
+  translate: 4px -50%;
+  box-shadow: 0 6px 18px rgba(15, 35, 39, 0.07);
   transition:
-    opacity 150ms ease-out,
-    scale 150ms ease-out,
-    translate 150ms ease-out;
+    opacity 140ms ease-out,
+    translate 140ms ease-out;
 }
 
 .article-toc__link[data-proximity='0'] .article-toc__tooltip {
   opacity: 1;
-  scale: 1;
   translate: 0 -50%;
 }
 
 .article-toc__tooltip-kicker {
   display: block;
   margin-bottom: 0.2rem;
-  color: var(--editor-muted);
+  color: var(--editor-accent);
   font-size: 0.66rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0;
 }
 
 .article-toc__text {
@@ -907,10 +903,10 @@ body:has(.site-header) > :has(> .site-header) {
 .related-record {
   min-width: 0;
   padding: 1rem;
-  background: var(--editor-panel);
-  border-radius: 8px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-  transition: background-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+  background: color-mix(in srgb, var(--editor-panel) 72%, transparent);
+  border-radius: 4px;
+  box-shadow: none;
+  transition: background-color 140ms ease;
 }
 
 .related-record:first-child {
@@ -921,14 +917,16 @@ body:has(.site-header) > :has(> .site-header) {
   padding-right: 1rem;
 }
 
-.related-record:hover {
-  background: var(--editor-panel);
+.related-record:is(:hover, :focus-visible) {
+  background: var(--interaction-hover);
   color: inherit;
-  box-shadow: 0 10px 28px rgba(20, 24, 32, 0.1);
-  transform: translateY(-2px);
 }
 
-.related-record:hover .related-record-title {
+.related-record:is(:hover, :focus-visible) .related-record-title {
+  color: var(--editor-ink);
+}
+
+.related-record:is(:hover, :focus-visible) .related-record-meta {
   color: var(--editor-accent);
 }
 
@@ -961,13 +959,17 @@ body:has(.site-header) > :has(> .site-header) {
   padding: 1.75rem 1rem;
   color: var(--editor-ink);
   text-decoration: none;
-  border-radius: 8px;
-  transition: background-color 160ms ease;
+  border-radius: 4px;
+  transition: background-color 140ms ease;
 }
 
-.archive-post-link:hover {
-  background: var(--editor-soft);
+.archive-post-link:is(:hover, :focus-visible) {
+  background: var(--interaction-hover);
   color: var(--editor-ink);
+}
+
+.archive-post-link:is(:hover, :focus-visible) .archive-post-index strong {
+  color: var(--editor-accent);
 }
 
 .archive-post-index {
@@ -984,6 +986,7 @@ body:has(.site-header) > :has(> .site-header) {
   color: var(--editor-ink);
   font-size: 0.76rem;
   font-weight: 650;
+  transition: color 140ms ease;
 }
 
 .archive-post-title {
@@ -1051,13 +1054,17 @@ body:has(.site-header) > :has(> .site-header) {
   gap: 1rem;
   margin: 0 -1rem;
   padding: 1.35rem 1rem;
-  border-radius: 8px;
-  transition: background-color 160ms ease;
+  border-radius: 4px;
+  transition: background-color 140ms ease;
 }
 
-.record-list-link:hover {
-  background: var(--editor-soft);
+.record-list-link:is(:hover, :focus-visible) {
+  background: var(--interaction-hover);
   color: var(--editor-ink);
+}
+
+.record-list-link:is(:hover, :focus-visible) .record-list-index {
+  color: var(--editor-accent);
 }
 
 .record-list-index {
@@ -1066,6 +1073,7 @@ body:has(.site-header) > :has(> .site-header) {
   font-family: var(--font-geist-mono), ui-monospace, monospace;
   font-size: 0.72rem;
   font-weight: 700;
+  transition: color 140ms ease;
 }
 
 .record-list-title {
@@ -1094,24 +1102,26 @@ body:has(.site-header) > :has(> .site-header) {
 }
 
 .diary-record:hover {
-  background: var(--editor-panel);
+  background: var(--interaction-hover);
 }
 
 .friend-record {
-  background: var(--editor-panel);
-  border-radius: 8px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-  transition: box-shadow 160ms ease, transform 160ms ease;
+  background: color-mix(in srgb, var(--editor-panel) 72%, transparent);
+  border-radius: 4px;
+  box-shadow: none;
+  transition: background-color 140ms ease;
 }
 
-.friend-record:hover {
-  background: var(--editor-panel);
+.friend-record:is(:hover, :focus-visible) {
+  background: var(--interaction-hover);
   color: inherit;
-  box-shadow: 0 10px 28px rgba(20, 24, 32, 0.1);
-  transform: translateY(-2px);
 }
 
-.friend-record:hover h2 {
+.friend-record:is(:hover, :focus-visible) h2 {
+  color: var(--editor-ink);
+}
+
+.friend-record:is(:hover, :focus-visible) span:first-child {
   color: var(--editor-accent);
 }
 
@@ -1176,21 +1186,21 @@ body:has(.site-header) > :has(> .site-header) {
     min-height: 2.25rem;
     align-items: center;
     padding: 0.5rem 0.65rem;
-    border-radius: 6px;
+    border-radius: 4px;
     color: var(--editor-muted);
     font-size: 0.8rem;
     font-weight: 500;
     line-height: 1.4;
-    transition: background-color 160ms ease, color 160ms ease;
+    transition: background-color 140ms ease, color 140ms ease;
   }
 
   .site-category-rail__nav a:hover {
-    background: var(--editor-soft);
+    background: var(--interaction-hover);
     color: var(--editor-ink);
   }
 
   .site-category-rail__nav a.is-active {
-    background: var(--editor-panel);
+    background: var(--interaction-active);
     color: var(--editor-accent);
     font-weight: 600;
   }

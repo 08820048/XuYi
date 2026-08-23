@@ -58,7 +58,7 @@ export default async function LinksPage() {
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="friend-record group p-4"
+                className="friend-record p-4"
               >
                 <div className="flex items-start gap-3">
                   <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-sm bg-[var(--background)] text-base font-semibold text-[var(--editor-muted)]">
@@ -71,7 +71,7 @@ export default async function LinksPage() {
                   </div>
                   <div className="min-w-0">
                     <span className="mb-1 block font-mono text-[9px] text-[var(--stone-gray)]">LINK {String(index + 1).padStart(2, '0')}</span>
-                    <h2 className="truncate text-base font-semibold text-[var(--editor-ink)] transition group-hover:text-[var(--editor-accent)]">
+                    <h2 className="truncate text-base font-semibold text-[var(--editor-ink)] transition-colors duration-150">
                       {link.name}
                     </h2>
                     <p className="mt-1 line-clamp-2 text-sm leading-6 text-[var(--editor-muted)]">
