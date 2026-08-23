@@ -295,6 +295,10 @@ export default async function PostPage({
                   </dl>
                   {post.source_url && post.post_type !== 'original' && (
                     <div className="article-record-source">
+                      <div className="article-record-source-label">
+                        <span aria-hidden>©</span>
+                        <span>版权与来源</span>
+                      </div>
                       <p>
                         {post.post_type === 'repost'
                           ? '原文著作权归原作者或相关权利人所有。本站仅在授权范围内转载，不代表原作者对本站观点或内容的认可。'
