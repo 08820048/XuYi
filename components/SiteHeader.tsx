@@ -18,6 +18,7 @@ interface SiteHeaderProps {
   stickyOnMobile?: boolean
   initialTheme?: Theme
   forceSpread?: boolean
+  showCategoryRail?: boolean
 }
 
 export function SiteHeader({
@@ -26,6 +27,7 @@ export function SiteHeader({
   activeCategorySlug = null,
   stickyOnMobile = true,
   forceSpread = false,
+  showCategoryRail = true,
 }: SiteHeaderProps) {
   const links = navLinks && navLinks.length > 0 ? navLinks : defaultSiteNavLinks
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -243,7 +245,7 @@ export function SiteHeader({
       </div>
     </header>
 
-    {categories.length > 0 && (
+    {showCategoryRail && categories.length > 0 && (
       <aside className="site-category-rail" aria-label="文章分类">
         <p className="site-category-rail__label">分类</p>
         <nav className="site-category-rail__nav">

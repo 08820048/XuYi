@@ -2,32 +2,34 @@
 @import "katex/dist/katex.min.css";
 
 :root {
-  --background: #f7f8fa;
-  --foreground: #16181d;
-  --editor-app-bg: #f7f8fa;
+  --background: #f5f8f8;
+  --foreground: #151a1b;
+  --editor-app-bg: #f5f8f8;
   --editor-panel: #ffffff;
-  --editor-soft: #eef0f4;
-  --editor-line: #dfe3e8;
-  --editor-ink: #16181d;
-  --editor-muted: #707784;
-  --editor-accent: #526cff;
+  --editor-soft: #edf3f3;
+  --editor-line: #d9e3e4;
+  --editor-ink: #151a1b;
+  --editor-muted: #687477;
+  --editor-accent: #0e7490;
   --editor-accent-ink: #ffffff;
-  --editor-link: #405bd8;
-  --editor-code-bg: #f0f2f6;
-  --editor-code-border: #dfe3e8;
+  --editor-link: #0e7490;
+  --editor-code-bg: #edf3f4;
+  --editor-code-border: #d9e3e4;
   --editor-quote-bg: #ffffff;
-  --editor-selection: #dce3ff;
-  --stone-gray: #8c939e;
-  --border-warm: #dfe3e8;
-  --coral: #526cff;
-  --article-heading: #16181d;
-  --article-body: #343841;
-  --article-quote: #59606b;
+  --editor-selection: #cce8ed;
+  --stone-gray: #849194;
+  --border-warm: #d9e3e4;
+  --coral: #0e7490;
+  --article-heading: #151a1b;
+  --article-body: #303a3c;
+  --article-quote: #536164;
   --article-quote-border: transparent;
   --article-quote-nested-border: transparent;
-  --article-quote-nested-bg: #f7f8fa;
-  --ambient-line: rgba(22, 24, 29, 0.07);
-  --ambient-stripe: rgba(22, 24, 29, 0.035);
+  --article-quote-nested-bg: #f5f8f8;
+  --ambient-line: rgba(14, 116, 144, 0.1);
+  --ambient-stripe: rgba(14, 116, 144, 0.045);
+  --noise-cyan: rgba(14, 116, 144, 0.42);
+  --noise-white: rgba(255, 255, 255, 0.9);
 }
 
 @theme inline {
@@ -37,39 +39,9 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #17181c;
-    --foreground: #f1f3f6;
-    --editor-app-bg: #17181c;
-    --editor-panel: #1d1f24;
-    --editor-soft: #24272e;
-    --editor-line: #30343c;
-    --editor-ink: #f1f3f6;
-    --editor-muted: #9aa2ad;
-    --editor-accent: #7186ff;
-    --editor-accent-ink: #ffffff;
-    --editor-link: #9aabff;
-    --editor-code-bg: #202228;
-    --editor-code-border: #30343c;
-    --editor-quote-bg: #1d1f24;
-    --editor-selection: rgba(113, 134, 255, 0.28);
-    --stone-gray: #7f8792;
-    --border-warm: #30343c;
-    --coral: #7186ff;
-    --article-heading: #f1f3f6;
-    --article-body: #c9ced6;
-    --article-quote: #aab1bc;
-    --article-quote-border: transparent;
-    --article-quote-nested-border: transparent;
-    --article-quote-nested-bg: #24272e;
-    --ambient-line: rgba(255, 255, 255, 0.07);
-    --ambient-stripe: rgba(255, 255, 255, 0.035);
-  }
-}
-
 html {
   background: var(--background);
+  color-scheme: light;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -78,6 +50,20 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+body:has(.site-header)::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle, var(--noise-cyan) 0 0.55px, transparent 0.75px),
+    radial-gradient(circle, var(--noise-white) 0 0.6px, transparent 0.8px);
+  background-position: 0 0, 4px 6px;
+  background-size: 9px 13px, 17px 19px;
+  opacity: 0.2;
 }
 
 .site-logo-link {
@@ -532,20 +518,13 @@ body {
   outline-offset: -1px;
 }
 
-@media (prefers-color-scheme: dark) {
-  .diary-media,
-  .diary-content img {
-    outline-color: rgba(255, 255, 255, 0.1);
-  }
-}
-
 .novel-prose img:hover {
   cursor: pointer;
   filter: brightness(0.98);
 }
 
 .novel-prose img.ProseMirror-selectednode {
-  outline: 3px solid #8cb7ff;
+  outline: 3px solid color-mix(in srgb, var(--editor-accent) 62%, white);
 }
 
 .novel-prose .ProseMirror-selectednode {
@@ -848,12 +827,6 @@ body {
   font-weight: 520;
   line-height: 1.5;
   text-wrap: pretty;
-}
-
-@media (prefers-color-scheme: dark) {
-  .article-toc__tooltip {
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
-  }
 }
 
 .article-display-title {
@@ -1246,12 +1219,6 @@ body {
   outline-offset: -1px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :is(.diary-media, .rich-content img) {
-    outline-color: rgba(255, 255, 255, 0.1);
-  }
-}
-
 @media (min-width: 640px) {
   .rich-content {
     font-size: 1.06rem;
@@ -1420,7 +1387,7 @@ body {
 }
 .math-editor-input:focus {
   border-color: var(--editor-accent);
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--editor-accent) 15%, transparent);
 }
 .math-node-rendered {
   margin: 1rem 0;
@@ -1430,10 +1397,10 @@ body {
   transition: background 0.15s;
 }
 .math-node-rendered:hover {
-  background: #f0f4ff;
+  background: color-mix(in srgb, var(--editor-accent) 7%, white);
 }
 .math-selected {
-  background: #e8f0fe;
+  background: color-mix(in srgb, var(--editor-accent) 12%, white);
 }
 .math-display {
   text-align: center;
