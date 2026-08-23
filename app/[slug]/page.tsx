@@ -16,6 +16,7 @@ import { ArticleTableOfContents } from '@/components/ArticleTableOfContents'
 import { TwitterEmbedsEnhancer } from '@/components/TwitterEmbedsEnhancer'
 import { CodeHighlightEnhancer } from '@/components/CodeHighlightEnhancer'
 import { MathRenderEnhancer } from '@/components/MathRenderEnhancer'
+import { ArticleCopyrightNotice } from '@/components/ArticleCopyrightNotice'
 import { getSiteHeaderData } from '@/lib/site'
 import { getRelatedPosts } from '@/lib/related-content'
 import { getPublicContentCacheNamespace } from '@/lib/cache'
@@ -191,6 +192,7 @@ export default async function PostPage({
     ? await getRelatedPosts(db, env, post, 3).catch(() => ({ strategy: 'fts' as const, source: 'rules' as const, results: [] }))
     : { strategy: 'fts' as const, source: 'rules' as const, results: [] }
   const contentContainerId = `post-content-${post.slug}`
+  const articleUrl = `${getSiteUrl()}/${post.slug}`
   const publishedDate = new Date(post.published_at * 1000).toISOString().slice(0, 10).replaceAll('-', '.')
 
   return (
@@ -330,6 +332,13 @@ export default async function PostPage({
                 <CodeHighlightEnhancer containerId={contentContainerId} html={post.html} />
                 <MathRenderEnhancer containerId={contentContainerId} html={post.html} />
                 <TwitterEmbedsEnhancer containerId={contentContainerId} html={post.html} />
+
+                <ArticleCopyrightNotice
+                  containerId={contentContainerId}
+                  title={post.title}
+                  articleUrl={articleUrl}
+                  sourceUrl={post.source_url}
+                />
 
                 {related.results.length > 0 && (
                   <section className="related-records mt-14 sm:mt-16 pt-6 sm:pt-8">

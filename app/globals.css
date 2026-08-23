@@ -914,6 +914,10 @@ body:has(.site-header) > :has(> .site-header) {
   font-size: 0.82rem;
 }
 
+.article-copyright-notice {
+  margin-top: 3.5rem;
+}
+
 .related-record-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
