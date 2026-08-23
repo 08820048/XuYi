@@ -82,7 +82,7 @@ export function DownloadMarkdown({ title, html }: { title: string; html: string 
       <button
         onClick={handleDownload}
         title="下载 Markdown"
-        className="inline-flex items-center justify-center rounded p-1 text-[var(--stone-gray)] hover:text-[var(--editor-accent)] hover:bg-[var(--editor-accent)]/8 transition-colors"
+        className="inline-flex items-center justify-center rounded-sm p-1 text-[var(--stone-gray)] hover:text-[var(--editor-ink)] hover:bg-[var(--editor-soft)] transition-colors"
       >
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -93,14 +93,14 @@ export function DownloadMarkdown({ title, html }: { title: string; html: string 
       <button
         onClick={handleCopyWechat}
         title="复制公众号格式"
-        className="inline-flex items-center justify-center rounded p-1 text-[var(--stone-gray)] hover:text-[var(--editor-accent)] hover:bg-[var(--editor-accent)]/8 transition-colors"
+        className="inline-flex items-center justify-center rounded-sm p-1 text-[var(--stone-gray)] hover:text-[var(--editor-ink)] hover:bg-[var(--editor-soft)] transition-colors"
       >
         <Copy className="h-3.5 w-3.5" />
       </button>
       <button
         onClick={handleDownloadPdf}
         title="下载 PDF"
-        className="inline-flex items-center justify-center rounded p-1 text-[var(--stone-gray)] hover:text-[var(--editor-accent)] hover:bg-[var(--editor-accent)]/8 transition-colors"
+        className="inline-flex items-center justify-center rounded-sm p-1 text-[var(--stone-gray)] hover:text-[var(--editor-ink)] hover:bg-[var(--editor-soft)] transition-colors"
       >
         <FileDown className="h-3.5 w-3.5" />
       </button>

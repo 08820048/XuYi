@@ -75,14 +75,14 @@ export default async function DiaryEntryPage({
   const title = entry.title?.trim()
 
   return (
-    <div className="min-h-full bg-[var(--background)] text-[var(--foreground)]">
+    <div className="flex min-h-full flex-col bg-[var(--background)] text-[var(--foreground)]">
       <SiteHeader
         initialTheme={headerData.defaultTheme}
         navLinks={headerData.navLinks}
         categories={headerData.categories}
       />
 
-      <main className="mx-auto w-full max-w-4xl px-4 py-8 sm:px-6 sm:py-12">
+      <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8 sm:px-6 sm:py-12">
         <Link
           href="/diary"
           className="inline-flex min-h-10 items-center gap-2 text-sm font-medium text-[var(--editor-muted)] transition-colors duration-150 hover:text-[var(--editor-accent)] active:scale-[0.96]"
@@ -96,7 +96,7 @@ export default async function DiaryEntryPage({
             // eslint-disable-next-line @next/next/no-img-element
             <img src={entry.cover_image} alt="" className="diary-media aspect-[16/9] w-full rounded-[6px] object-cover" />
           ) : null}
-          <header className={`${entry.cover_image ? 'mt-8 sm:mt-10' : ''} mx-auto max-w-3xl border-b border-[var(--editor-line)] pb-6 sm:pb-8`}>
+          <header className={`${entry.cover_image ? 'mt-8 sm:mt-10' : ''} mx-auto max-w-3xl pb-4 sm:pb-6`}>
             <time
               dateTime={new Date(entry.published_at * 1000).toISOString()}
               className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--editor-muted)] tabular-nums"
@@ -104,7 +104,7 @@ export default async function DiaryEntryPage({
               {formatDate(entry.published_at)}
             </time>
             {title ? (
-              <h1 className="mt-4 text-3xl font-semibold leading-tight [text-wrap:balance] sm:text-4xl" style={{ fontFamily: 'Georgia, "Noto Serif SC", serif' }}>
+              <h1 className="mt-4 text-3xl font-extrabold leading-tight [text-wrap:balance] sm:text-4xl">
                 {title}
               </h1>
             ) : null}

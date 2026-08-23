@@ -107,7 +107,6 @@ export default async function PostPage({
   if (!isPubliclyAccessiblePost(post)) notFound()
 
   const headerData = await getSiteHeaderData(db)
-  const categorySlugMap = new Map(headerData.categories.map((category) => [category.name, category.slug]))
   const activeCategorySlug = headerData.categories.find((category) => category.name === post.category)?.slug ?? null
 
   // 密码保护逻辑保持公开路径纯粹，由前台管理员增强层在客户端接管编辑能力
@@ -190,6 +189,7 @@ export default async function PostPage({
     ? await getRelatedPosts(db, env, post, 3).catch(() => ({ strategy: 'fts' as const, source: 'rules' as const, results: [] }))
     : { strategy: 'fts' as const, source: 'rules' as const, results: [] }
   const contentContainerId = `post-content-${post.slug}`
+  const publishedDate = new Date(post.published_at * 1000).toISOString().slice(0, 10).replaceAll('-', '.')
 
   return (
     <div className="min-h-screen bg-[var(--background)] flex flex-col">
@@ -252,48 +252,46 @@ export default async function PostPage({
             >
               <article>
                 <PostUpdateSeenMarker post={post} />
-                <header className="mb-10 sm:mb-12">
-                  <h1
-                    data-admin-edit-trigger
-                    className="article-display-title text-2xl sm:text-3xl lg:text-4xl font-bold text-[var(--editor-ink)] leading-snug mb-4 sm:mb-5"
-                  >
-                    {post.title}
-                  </h1>
-                  <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--stone-gray)]">
-                    <PostTypeBadge type={post.post_type} />
-                    <PostUpdateBadge post={post} />
-                    {post.category && (
-                      <>
-                        {activeCategorySlug ? (
-                          <Link
-                            href={getCategoryPath(activeCategorySlug)}
-                            className="font-medium text-[var(--editor-accent)] transition-colors hover:text-[var(--editor-ink)]"
-                          >
-                            {post.category}
-                          </Link>
-                        ) : (
-                          <span className="font-medium text-[var(--editor-accent)]">
-                            {post.category}
-                          </span>
-                        )}
-                        <span aria-hidden>·</span>
-                      </>
-                    )}
-                    <time>
-                      {new Date(post.published_at * 1000).toLocaleDateString('zh-CN', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                      })}
-                    </time>
-                    <span aria-hidden>·</span>
-                    <span>{post.view_count} 次阅读</span>
-                    <span aria-hidden>·</span>
-                    <span>约 {readingMinutes} 分钟</span>
-                    <DownloadMarkdown title={post.title} html={post.html} />
+                <header className="article-record-header mb-10 sm:mb-12">
+                  <div className="article-record-main">
+                    <div className="article-record-kicker">
+                      <span>ARTICLE{post.category ? ` / ${post.category}` : ''}</span>
+                      <span className="flex items-center gap-2">
+                        <PostTypeBadge type={post.post_type} />
+                        <PostUpdateBadge post={post} />
+                      </span>
+                    </div>
+                    <h1
+                      data-admin-edit-trigger
+                      className="article-display-title"
+                    >
+                      {post.title}
+                    </h1>
                   </div>
+
+                  <dl className="article-record-meta">
+                    <div>
+                      <dt>DATE</dt>
+                      <dd><time dateTime={publishedDate.replaceAll('.', '-')}>{publishedDate}</time></dd>
+                    </div>
+                    <div>
+                      <dt>CATEGORY</dt>
+                      <dd>
+                        {post.category && activeCategorySlug ? (
+                          <Link href={getCategoryPath(activeCategorySlug)}>{post.category}</Link>
+                        ) : post.category || '未分类'}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>READ</dt>
+                      <dd>{readingMinutes} MIN / {post.view_count} VIEWS</dd>
+                    </div>
+                    <div className="article-record-download">
+                      <DownloadMarkdown title={post.title} html={post.html} />
+                    </div>
+                  </dl>
                   {post.source_url && post.post_type !== 'original' && (
-                    <div className="mt-4 rounded-lg border border-[var(--editor-line)] bg-[var(--editor-panel)]/60 px-3 py-2 text-sm text-[var(--editor-muted)]">
+                    <div className="article-record-source">
                       原文地址：
                       <a
                         href={post.source_url}
@@ -320,34 +318,27 @@ export default async function PostPage({
                 <TwitterEmbedsEnhancer containerId={contentContainerId} html={post.html} />
 
                 {related.results.length > 0 && (
-                  <section className="mt-14 sm:mt-16 border-t border-[var(--editor-line)] pt-8 sm:pt-10">
-                    <div className="flex items-center justify-between gap-3 mb-5">
+                  <section className="related-records mt-14 sm:mt-16 pt-6 sm:pt-8">
+                    <div className="flex items-end justify-between gap-3 mb-6">
                       <div>
-                        <h2 className="text-lg sm:text-xl font-semibold text-[var(--editor-ink)]">继续阅读</h2>
-                        <p className="text-xs text-[var(--stone-gray)] mt-1">
-                          {related.source === 'vectorize' ? '基于向量召回' : '基于全文检索与主题相似度'}
-                        </p>
+                        <p className="font-mono text-[10px] text-[var(--editor-muted)] mb-1">RELATED / 关联记录</p>
+                        <h2 className="text-lg sm:text-xl font-bold text-[var(--editor-ink)]">继续阅读</h2>
                       </div>
+                      <p className="hidden text-right font-mono text-[10px] text-[var(--stone-gray)] sm:block">
+                          {related.source === 'vectorize' ? '基于向量召回' : '基于全文检索与主题相似度'}
+                      </p>
                     </div>
-                    <div className="grid gap-4 sm:grid-cols-3">
-                      {related.results.map((item) => {
-                        const itemCategorySlug = item.category ? categorySlugMap.get(item.category) : null
+                    <div className="related-record-grid">
+                      {related.results.map((item, index) => {
                         return (
                           <Link
                             key={item.slug}
                             href={`/${item.slug}`}
-                            className="group rounded-2xl border border-[var(--editor-line)] bg-[var(--editor-panel)]/55 p-4 transition-colors hover:border-[var(--editor-accent)]/35 hover:bg-[var(--editor-panel)]"
+                            className="group related-record"
                           >
-                            <div className="text-xs text-[var(--stone-gray)] mb-3 flex items-center gap-2 flex-wrap">
-                              {item.category && (
-                                itemCategorySlug ? (
-                                  <span className="rounded-full border border-[var(--editor-accent)]/15 bg-[var(--editor-accent)]/8 px-2 py-0.5 text-[var(--editor-accent)]">
-                                    {item.category}
-                                  </span>
-                                ) : (
-                                  <span>{item.category}</span>
-                                )
-                              )}
+                            <div className="related-record-meta">
+                              <span>{String(index + 1).padStart(2, '0')}</span>
+                              {item.category && <span>[{item.category}]</span>}
                               <time>
                                 {new Date(item.published_at * 1000).toLocaleDateString('zh-CN', {
                                   year: 'numeric',
@@ -356,7 +347,7 @@ export default async function PostPage({
                                 })}
                               </time>
                             </div>
-                            <h3 className="text-base font-semibold leading-snug text-[var(--editor-ink)] group-hover:text-[var(--editor-accent)] transition-colors">
+                            <h3 className="related-record-title">
                               {item.title}
                             </h3>
                             {item.description && (

@@ -1,7 +1,6 @@
 'use client'
 
-// Variant A: 精致极简 — evolution of current design
-// Better rhythm, date/meta sidebar, restrained metadata, subtle hover
+// Variant A: 精致极简 / 工程档案
 
 import Link from 'next/link'
 import { SiteHeader } from '@/components/SiteHeader'
@@ -19,10 +18,6 @@ function formatDateShort(ts: number) {
   return `${m}.${day}`
 }
 
-function formatYear(ts: number) {
-  return new Date(ts * 1000).getFullYear()
-}
-
 export function HomeVariantA({
   posts,
   categories,
@@ -37,7 +32,7 @@ export function HomeVariantA({
         categories={categories}
       />
 
-      <main className="refined-home-main flex-1 mx-auto w-full" style={{ maxWidth: 860, padding: '0 32px 120px' }}>
+      <main className="refined-home-main flex-1 mx-auto w-full" style={{ maxWidth: 860, padding: '32px 32px 120px' }}>
         {/* Post list */}
         {posts.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--stone-gray)', fontSize: 14 }}>
@@ -50,46 +45,19 @@ export function HomeVariantA({
                 return (
                   <article
                     key={post.slug}
-                    style={{
-                      borderTop: `1px solid var(--editor-line)`,
-                      marginTop: i === 0 ? 20 : 0,
-                    }}
+                    className="archive-post"
                   >
                     <Link
                       href={`/${post.slug}`}
-                      className="group refined-post-link"
-                      style={{
-                        display: 'grid',
-                        gridTemplateColumns: '72px 1fr',
-                        gap: 28,
-                        padding: '32px 0',
-                        textDecoration: 'none',
-                        cursor: 'pointer',
-                      }}
+                      className="group archive-post-link refined-post-link"
                     >
-                      {/* Date sidebar */}
-                      <div style={{
-                        paddingTop: 5,
-                        fontSize: 12,
-                        color: 'var(--stone-gray)',
-                        fontFamily: '"JetBrains Mono", ui-monospace, monospace',
-                        lineHeight: 1.6,
-                        flexShrink: 0,
-                      }}>
+                      <div className="archive-post-index" aria-hidden="true">
+                        <strong>{String((currentPage - 1) * 25 + i + 1).padStart(2, '0')}</strong>
                         <div>{formatDateShort(post.published_at)}</div>
-                        <div style={{ fontSize: 11, opacity: 0.7 }}>{formatYear(post.published_at)}</div>
                       </div>
 
-                      {/* Content */}
-                      <div>
-                        <h2 className="refined-post-title text-[var(--editor-ink)] transition-colors duration-200 group-hover:text-[var(--editor-accent)]" style={{
-                          margin: 0,
-                          fontSize: 22,
-                          fontWeight: 700,
-                          lineHeight: 1.35,
-                          letterSpacing: 0,
-                          fontFamily: 'Georgia, "Noto Serif SC", serif',
-                        }}>
+                      <div className="min-w-0">
+                        <h2 className="archive-post-title refined-post-title">
                           {post.title}
                           <PostTypeBadge type={post.post_type} className="ml-2 align-middle" />
                           <PostUpdateBadge post={post} className="ml-2 align-middle" />
@@ -107,42 +75,18 @@ export function HomeVariantA({
                         </h2>
 
                         {post.description && (
-                          <p style={{
-                            margin: '10px 0 0',
-                            fontSize: 14,
-                            lineHeight: 1.75,
-                            color: 'var(--editor-muted)',
-                            display: '-webkit-box',
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: 'vertical',
-                            overflow: 'hidden',
-                          }}>
+                          <p className="archive-post-description">
                             {post.description}
                           </p>
                         )}
 
-                        <div style={{
-                          marginTop: 12,
-                          fontSize: 12,
-                          color: 'var(--stone-gray)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 8,
-                        }}>
+                        <div className="archive-post-meta">
                           {post.category && (
-                            <>
-                              <span style={{ color: 'var(--editor-accent)', fontWeight: 500 }}>{post.category}</span>
-                              <span aria-hidden>·</span>
-                            </>
+                            <span>{post.category}</span>
                           )}
                           {post.is_pinned === 1 && (
-                            <>
-                              <span>置顶</span>
-                              <span aria-hidden>·</span>
-                            </>
+                            <span>置顶</span>
                           )}
-                          <span>阅读全文</span>
-                          <span aria-hidden>→</span>
                         </div>
                       </div>
                     </Link>

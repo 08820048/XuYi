@@ -12,9 +12,9 @@ export function PostTypeBadge({
 
   return (
     <span
-      className={`inline-flex shrink-0 items-center rounded-full border border-[var(--editor-accent)]/20 bg-[var(--editor-accent)]/8 px-2 py-0.5 text-xs font-medium text-[var(--editor-accent)] ${className}`}
+      className={`inline-flex shrink-0 items-center font-mono text-[10px] font-semibold text-[var(--editor-muted)] ${className}`}
     >
-      {POST_TYPE_LABELS[normalizedType]}
+      [{POST_TYPE_LABELS[normalizedType]}]
     </span>
   )
 }

@@ -108,7 +108,8 @@ export function SiteHeader({
   }
 
   return (
-    <header className={`site-header ${stickyOnMobile ? 'sticky' : 'sm:sticky'} top-0 z-40 border-b border-[var(--editor-line)] bg-[var(--background)]/95 backdrop-blur-sm`}>
+    <>
+    <header className={`site-header ${stickyOnMobile ? 'sticky' : 'sm:sticky'} top-0 z-40 bg-[var(--background)]/95 backdrop-blur-sm`}>
       <div className="site-header-inner mx-auto max-w-3xl px-4 sm:px-6" style={spreadStyle}>
         <div className="site-header-row h-14 flex items-center justify-between gap-4">
           <div className="site-header-primary min-w-0 flex items-center">
@@ -126,7 +127,7 @@ export function SiteHeader({
             <nav className="hidden sm:flex items-center gap-3 text-sm flex-shrink-0">
               {/* Category dropdown */}
               {categories.length > 0 && (
-                <div ref={categoryRef} className="relative">
+                <div ref={categoryRef} className="relative xl:hidden">
                   <button
                     onClick={() => setCategoryOpen(!categoryOpen)}
                     className={`inline-flex items-center gap-1 transition-colors duration-150 ${
@@ -140,7 +141,7 @@ export function SiteHeader({
                   </button>
 
                   {categoryOpen && (
-                    <div className="absolute top-full left-0 mt-2 min-w-[140px] rounded-lg border border-[var(--editor-line)] bg-[var(--background)] shadow-lg py-1 z-50">
+                    <div className="absolute top-full left-0 z-50 mt-2 min-w-[140px] rounded-sm border border-[var(--editor-line)] bg-[var(--background)] py-1 shadow-lg">
                       <Link
                         href="/"
                         onClick={() => setCategoryOpen(false)}
@@ -194,18 +195,18 @@ export function SiteHeader({
       <div
         className={`
           sm:hidden transition-all duration-300 ease-in-out
-          ${mobileMenuOpen ? 'max-h-[70vh] overflow-visible border-t border-[var(--editor-line)]' : 'max-h-0 overflow-hidden'}
+          ${mobileMenuOpen ? 'max-h-[70vh] overflow-visible' : 'max-h-0 overflow-hidden'}
         `}
       >
         <div className="bg-[var(--background)]">
           {/* Mobile categories as horizontal pills */}
           {categories.length > 0 && (
-            <div className="px-4 py-3 border-b border-[var(--editor-line)]">
+            <div className="px-4 py-3">
               <div className="flex flex-wrap gap-2">
                 <Link
                   href="/"
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                  className={`rounded-sm px-3 py-1.5 text-xs font-medium transition-colors ${
                     activeCategorySlug === null
                       ? 'bg-[var(--editor-accent)] text-white'
                       : 'bg-[var(--editor-panel)] text-[var(--editor-muted)]'
@@ -218,7 +219,7 @@ export function SiteHeader({
                     key={category.slug}
                     href={getCategoryPath(category.slug)}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                    className={`rounded-sm px-3 py-1.5 text-xs font-medium transition-colors ${
                       activeCategorySlug === category.slug
                         ? 'bg-[var(--editor-accent)] text-white'
                         : 'bg-[var(--editor-panel)] text-[var(--editor-muted)]'
@@ -231,9 +232,9 @@ export function SiteHeader({
             </div>
           )}
 
-          <nav className="flex flex-col text-sm">
+          <nav className="flex flex-col gap-1 px-4 pb-3 text-sm">
             {links.map(link => (
-              <div key={link.label} className="px-4 py-3 border-b border-[var(--editor-line)]">
+              <div key={link.label} className="bg-[var(--editor-soft)] px-3 py-2.5">
                 {renderLink(link, () => setMobileMenuOpen(false))}
               </div>
             ))}
@@ -241,5 +242,31 @@ export function SiteHeader({
         </div>
       </div>
     </header>
+
+    {categories.length > 0 && (
+      <aside className="site-category-rail" aria-label="文章分类">
+        <p className="site-category-rail__label">分类</p>
+        <nav className="site-category-rail__nav">
+          <Link
+            href="/"
+            aria-current={activeCategorySlug === null ? 'page' : undefined}
+            className={activeCategorySlug === null ? 'is-active' : undefined}
+          >
+            全部文章
+          </Link>
+          {categories.map((category) => (
+            <Link
+              key={category.slug}
+              href={getCategoryPath(category.slug)}
+              aria-current={activeCategorySlug === category.slug ? 'page' : undefined}
+              className={activeCategorySlug === category.slug ? 'is-active' : undefined}
+            >
+              {category.name}
+            </Link>
+          ))}
+        </nav>
+      </aside>
+    )}
+    </>
   )
 }

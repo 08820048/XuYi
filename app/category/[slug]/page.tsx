@@ -88,18 +88,16 @@ export default async function CategoryPage({
         activeCategorySlug={slug}
       />
 
-      <main className="page-main flex-1 mx-auto max-w-3xl w-full px-4 sm:px-6 py-10 sm:py-14">
-        <div className="mb-8 border-b border-[var(--editor-line)] pb-6">
-          <div className="text-xs uppercase tracking-[0.18em] text-[var(--stone-gray)] mb-3">
-            分类
-          </div>
-          <h1 className="article-display-title text-3xl sm:text-4xl font-bold text-[var(--editor-ink)] leading-tight">
+      <main className="page-main public-main flex-1 mx-auto max-w-3xl w-full px-4 sm:px-6 py-10 sm:py-14">
+        <header className="public-page-header">
+          <p className="public-page-kicker">CATEGORY / 分类</p>
+          <h1 className="public-page-title">
             {category.name}
           </h1>
           <p className="mt-3 text-sm text-[var(--editor-muted)]">
             共 {totalCount} 篇文章
           </p>
-        </div>
+        </header>
 
         {posts.length === 0 ? (
           <div className="py-20 text-center">
@@ -113,18 +111,20 @@ export default async function CategoryPage({
           </div>
         ) : (
           <>
-            <div className="space-y-0">
+            <div className="record-list">
               {posts.map((post, index) => (
                 <article
                   key={post.slug}
-                  className="group border-t border-[var(--editor-line)] first:border-t-0"
+                  className="group record-list-item"
                   style={{ animation: `fadeInUp 0.4s ease-out ${index * 0.05}s both` }}
                 >
                   <Link
                     href={`/${post.slug}`}
-                    className="block py-6 sm:py-7 transition-all duration-200 hover:bg-[var(--editor-panel)] border-l-2 border-l-transparent hover:border-l-[var(--editor-accent)] pl-4"
+                    className="record-list-link"
                   >
-                    <h2 className="flex flex-wrap items-center gap-2 text-xl sm:text-2xl font-bold text-[var(--editor-ink)] leading-snug mb-2 group-hover:text-[var(--editor-accent)] transition-colors duration-200">
+                    <span className="record-list-index">{String((currentPage - 1) * PAGE_SIZE + index + 1).padStart(2, '0')}</span>
+                    <div className="min-w-0">
+                    <h2 className="record-list-title">
                       {post.title}
                       <PostTypeBadge type={post.post_type} />
                       <PostUpdateBadge post={post} />
@@ -134,12 +134,10 @@ export default async function CategoryPage({
                         {post.description}
                       </p>
                     ) : null}
-                    <div className="flex items-center gap-2 text-xs text-[var(--stone-gray)]">
+                    <div className="record-list-meta">
                       <time>{formatDate(post.published_at)}</time>
-                      <span aria-hidden>·</span>
-                      <span className="px-2 py-0.5 rounded-full bg-[var(--editor-accent)]/8 text-[var(--editor-accent)] font-medium border border-[var(--editor-accent)]/15">
-                        {category.name}
-                      </span>
+                      <span>[{category.name}]</span>
+                    </div>
                     </div>
                   </Link>
                 </article>

@@ -41,11 +41,7 @@ export function SubscribeForm() {
   return (
     <section
       aria-label="邮件订阅"
-      style={{
-        borderTop: '1px solid var(--editor-line)',
-        marginTop: 48,
-        paddingTop: 28,
-      }}
+      className="subscribe-panel"
     >
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
         <div className="shrink-0">
@@ -56,7 +52,7 @@ export function SubscribeForm() {
               fontWeight: 700,
               lineHeight: 1.4,
               color: 'var(--editor-ink)',
-              fontFamily: 'Georgia, "Noto Serif SC", serif',
+              fontFamily: 'var(--font-geist-sans), -apple-system, "PingFang SC", sans-serif',
             }}
           >
             订阅博客更新
@@ -81,12 +77,12 @@ export function SubscribeForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 aria-label="邮箱地址"
-                className="min-w-0 flex-1 rounded-lg border border-[var(--editor-line)] bg-[var(--editor-panel)] px-3 py-2.5 text-sm text-[var(--editor-ink)] outline-none focus:border-[var(--editor-accent)] focus:ring-2 focus:ring-[var(--editor-accent)]/15 transition-all duration-150"
+                className="min-w-0 flex-1 rounded-[7px] border border-[var(--editor-line)] bg-[var(--editor-panel)] px-3 py-2.5 text-sm text-[var(--editor-ink)] outline-none transition-[border-color,box-shadow] duration-150 focus:border-[var(--editor-accent)] focus:ring-2 focus:ring-[var(--editor-accent)]/15"
               />
               <button
                 type="submit"
                 disabled={loading || !email.trim()}
-                className="shrink-0 rounded-lg bg-[var(--editor-accent)] px-5 py-2.5 text-sm font-semibold text-white hover:brightness-105 transition-all duration-150 disabled:opacity-50"
+                className="shrink-0 rounded-[7px] bg-[var(--editor-accent)] px-5 py-2.5 text-sm font-semibold text-white transition-[opacity,scale] duration-150 hover:opacity-90 active:scale-[0.96] disabled:opacity-50"
               >
                 {loading ? '提交中…' : '订阅'}
               </button>

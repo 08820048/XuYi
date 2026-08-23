@@ -87,11 +87,11 @@ export function PostUpdateBadge({
     <span
       title={`更新于 ${new Date(post.content_updated_at * 1000).toLocaleDateString('zh-CN')}`}
       className={[
-        'inline-flex flex-shrink-0 items-center rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-semibold leading-none text-emerald-600 dark:text-emerald-400',
+        'inline-flex flex-shrink-0 items-center border border-emerald-600/40 px-1.5 py-0.5 font-mono text-[10px] font-semibold leading-none text-emerald-600 dark:text-emerald-400',
         className,
       ].filter(Boolean).join(' ')}
     >
-      有更新
+      + 有更新
     </span>
   )
 }

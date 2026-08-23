@@ -111,30 +111,6 @@ export default async function RootLayout({
 
   const font = FONT_CONFIG[bodyFont]
 
-  const appearanceApplyScript = `
-(function(){
-  var f = ${JSON.stringify(FONT_CONFIG)};
-  var k = "${bodyFont || ''}";
-  function applyFont(key) {
-    var c = f[key];
-    document.documentElement.setAttribute('data-font', key || 'default');
-    if (c) {
-      document.documentElement.style.setProperty('--body-font', c.family);
-      if (c.link && !document.getElementById('qm-font-link')) {
-        var l = document.createElement('link');
-        l.id = 'qm-font-link';
-        l.rel = 'stylesheet';
-        l.href = c.link;
-        document.head.appendChild(l);
-      }
-    } else {
-      document.documentElement.style.removeProperty('--body-font');
-    }
-  }
-  applyFont(k);
-})();
-`
-
   return (
     <html
       lang="zh-CN"
@@ -148,18 +124,13 @@ export default async function RootLayout({
           <style dangerouslySetInnerHTML={{ __html: `:root { --body-font: ${font.family}; }` }} />
         )}
         <Script
-          id="appearance-bootstrap"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{ __html: appearanceApplyScript }}
-        />
-        <Script
           defer
           src="https://cloud.umami.is/script.js"
           data-website-id="66b435e0-5ca6-4001-9716-7faa4760ca9d"
           strategy="afterInteractive"
         />
       </head>
-      <body className="min-h-full flex flex-col">
+      <body className="h-full flex flex-col">
         <ToastProvider>
           <GlobalShortcuts />
           <Suspense fallback={null}>

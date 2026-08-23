@@ -26,7 +26,7 @@ export function Pagination({ currentPage, totalPages, basePath }: PaginationProp
       {currentPage > 1 && (
         <Link
           href={href(currentPage - 1)}
-          className="px-2.5 sm:px-3 py-2 text-sm rounded-lg text-[var(--editor-muted)] hover:text-[var(--editor-ink)] hover:bg-[var(--editor-soft)] transition-all duration-150"
+          className="rounded-sm px-2.5 py-2 text-sm text-[var(--editor-muted)] transition-colors duration-150 hover:bg-[var(--editor-soft)] hover:text-[var(--editor-ink)] sm:px-3"
         >
           ← <span className="hidden xs:inline">上一页</span>
         </Link>
@@ -41,7 +41,7 @@ export function Pagination({ currentPage, totalPages, basePath }: PaginationProp
           <Link
             key={p}
             href={href(p)}
-            className={`min-w-[2rem] sm:min-w-[2.25rem] px-2 sm:px-3 py-2 text-sm text-center rounded-lg transition-all duration-150 ${
+            className={`min-w-[2rem] rounded-sm px-2 py-2 text-center font-mono text-sm transition-colors duration-150 sm:min-w-[2.25rem] sm:px-3 ${
               p === currentPage
                 ? 'bg-[var(--editor-ink)] text-[var(--editor-panel)] font-semibold shadow-sm'
                 : 'text-[var(--editor-muted)] hover:text-[var(--editor-ink)] hover:bg-[var(--editor-soft)]'
@@ -55,7 +55,7 @@ export function Pagination({ currentPage, totalPages, basePath }: PaginationProp
       {currentPage < totalPages && (
         <Link
           href={href(currentPage + 1)}
-          className="px-2.5 sm:px-3 py-2 text-sm rounded-lg text-[var(--editor-muted)] hover:text-[var(--editor-ink)] hover:bg-[var(--editor-soft)] transition-all duration-150"
+          className="rounded-sm px-2.5 py-2 text-sm text-[var(--editor-muted)] transition-colors duration-150 hover:bg-[var(--editor-soft)] hover:text-[var(--editor-ink)] sm:px-3"
         >
           <span className="hidden xs:inline">下一页</span> →
         </Link>
@@ -63,4 +63,3 @@ export function Pagination({ currentPage, totalPages, basePath }: PaginationProp
     </nav>
   )
 }
-

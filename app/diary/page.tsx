@@ -63,17 +63,17 @@ export default async function DiaryPage({
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE))
 
   return (
-    <div className="min-h-full bg-[var(--background)] text-[var(--foreground)]">
+    <div className="flex min-h-full flex-col bg-[var(--background)] text-[var(--foreground)]">
       <SiteHeader
         initialTheme={headerData.defaultTheme}
         navLinks={headerData.navLinks}
         categories={headerData.categories}
       />
 
-      <main className="mx-auto w-full max-w-4xl px-4 py-10 sm:px-6 sm:py-14">
-        <section className="mb-10 border-b border-[var(--editor-line)] pb-8">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--editor-muted)]">Daily Notes</p>
-          <h1 className="text-4xl font-semibold sm:text-5xl [text-wrap:balance]" style={{ fontFamily: 'Georgia, "Noto Serif SC", serif' }}>
+      <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-10 sm:px-6 sm:py-14">
+        <section className="public-page-header">
+          <p className="public-page-kicker">LOG / DAILY NOTES</p>
+          <h1 className="public-page-title">
             日记
           </h1>
           <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--editor-muted)] [text-wrap:pretty]">
@@ -95,10 +95,10 @@ export default async function DiaryPage({
                 return (
                   <article
                     key={entry.slug}
-                    className="grid gap-5 border-b border-[var(--editor-line)] py-10 last:border-b-0 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-8 sm:py-14"
+                    className="diary-record grid gap-5 py-10 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-8 sm:py-14"
                   >
                     <time dateTime={new Date(entry.published_at * 1000).toISOString()} className="flex items-baseline gap-2 text-[var(--editor-muted)] sm:block">
-                      <span className="block text-3xl font-medium leading-none text-[var(--editor-ink)] tabular-nums" style={{ fontFamily: 'Georgia, "Noto Serif SC", serif' }}>
+                      <span className="block font-mono text-3xl font-bold leading-none text-[var(--editor-ink)] tabular-nums">
                         {date.day}
                       </span>
                       <span className="text-xs font-medium sm:mt-2 sm:block">{date.monthAndYear}</span>
@@ -116,7 +116,7 @@ export default async function DiaryPage({
                         />
                       ) : null}
                       {title ? (
-                        <h2 className="mb-6 text-2xl font-semibold leading-snug text-[var(--editor-ink)] [text-wrap:balance] sm:mb-8 sm:text-3xl" style={{ fontFamily: 'Georgia, "Noto Serif SC", serif' }}>
+                        <h2 className="mb-6 text-2xl font-bold leading-snug text-[var(--editor-ink)] [text-wrap:balance] sm:mb-8 sm:text-3xl">
                           {title}
                         </h2>
                       ) : null}

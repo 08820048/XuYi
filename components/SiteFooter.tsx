@@ -52,7 +52,7 @@ export function SiteFooter() {
 
   return (
     <>
-      <footer className="border-t border-[var(--editor-line)] mt-auto">
+      <footer className="site-footer mt-auto">
         <div className="relative mx-auto max-w-5xl px-4 py-6 text-xs text-[var(--stone-gray)] sm:px-6">
           <div className="flex flex-wrap items-center justify-center gap-2">
             <span>© 2026</span>
@@ -114,7 +114,7 @@ export function SiteFooter() {
           className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--editor-ink)]/30 px-4 backdrop-blur-sm"
           onClick={(e) => e.target === e.currentTarget && setOpen(false)}
         >
-          <div className="bg-[var(--editor-panel)] rounded-xl shadow-xl p-4 sm:p-6 w-full max-w-[90vw] sm:max-w-xs border border-[var(--editor-line)]">
+          <div className="w-full max-w-[90vw] rounded-sm border border-[var(--editor-line)] bg-[var(--editor-panel)] p-4 shadow-xl sm:max-w-xs sm:p-6">
             <h2 className="text-sm font-semibold text-[var(--editor-ink)] mb-4">进入管理后台</h2>
             <form onSubmit={handleSubmit} className="flex flex-col gap-3">
               <input
@@ -123,21 +123,21 @@ export function SiteFooter() {
                 placeholder="请输入密码"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-lg border border-[var(--editor-line)] bg-white px-3 py-2.5 text-sm text-[var(--editor-ink)] outline-none focus:border-[var(--editor-accent)] focus:ring-2 focus:ring-[var(--editor-accent)]/15 transition-all duration-150"
+                className="w-full rounded-sm border border-[var(--editor-line)] bg-[var(--background)] px-3 py-2.5 text-sm text-[var(--editor-ink)] outline-none transition-[border-color,box-shadow] duration-150 focus:border-[var(--editor-ink)] focus:ring-2 focus:ring-[var(--editor-ink)]/10"
               />
               {error && <p className="text-xs text-rose-500">{error}</p>}
               <div className="flex gap-2">
                 <button
                   type="submit"
                   disabled={loading || !password}
-                  className="flex-1 rounded-lg bg-[var(--editor-accent)] py-2.5 text-sm font-semibold text-white hover:brightness-105 transition-all duration-150 disabled:opacity-50"
+                  className="flex-1 rounded-sm bg-[var(--editor-ink)] py-2.5 text-sm font-semibold text-[var(--background)] transition-opacity duration-150 hover:opacity-80 disabled:opacity-50"
                 >
                   {loading ? '验证中…' : '登录'}
                 </button>
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  className="rounded-lg border border-[var(--editor-line)] px-4 py-2.5 text-sm text-[var(--editor-muted)] hover:bg-[var(--editor-soft)] transition-all duration-150"
+                  className="rounded-sm border border-[var(--editor-line)] px-4 py-2.5 text-sm text-[var(--editor-muted)] transition-colors duration-150 hover:bg-[var(--editor-soft)]"
                 >
                   取消
                 </button>

@@ -40,11 +40,9 @@ export default async function LinksPage() {
       />
 
       <main className="page-main mx-auto w-full max-w-3xl flex-1 px-4 py-10 sm:px-6 sm:py-14">
-        <header className="mb-8">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--editor-accent)]">
-            Links
-          </p>
-          <h1 className="text-3xl font-semibold tracking-tight text-[var(--editor-ink)] sm:text-4xl">
+        <header className="public-page-header">
+          <p className="public-page-kicker">DIRECTORY / LINKS</p>
+          <h1 className="public-page-title">
             友联
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--editor-muted)]">
@@ -53,17 +51,17 @@ export default async function LinksPage() {
         </header>
 
         {links.length > 0 ? (
-          <div className="grid gap-4 sm:grid-cols-2">
-            {links.map((link) => (
+          <div className="grid gap-2 sm:grid-cols-2">
+            {links.map((link, index) => (
               <a
                 key={link.id}
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group rounded-xl border border-[var(--editor-line)] bg-[var(--editor-panel)]/65 p-4 transition hover:border-[var(--editor-accent)]/40 hover:bg-[var(--editor-panel)]"
+                className="friend-record group p-4"
               >
                 <div className="flex items-start gap-3">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[var(--editor-line)] bg-[var(--editor-soft)] text-base font-semibold text-[var(--editor-muted)]">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-sm bg-[var(--background)] text-base font-semibold text-[var(--editor-muted)]">
                     {link.avatar_url ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={link.avatar_url} alt="" className="h-full w-full object-cover" />
@@ -72,6 +70,7 @@ export default async function LinksPage() {
                     )}
                   </div>
                   <div className="min-w-0">
+                    <span className="mb-1 block font-mono text-[9px] text-[var(--stone-gray)]">LINK {String(index + 1).padStart(2, '0')}</span>
                     <h2 className="truncate text-base font-semibold text-[var(--editor-ink)] transition group-hover:text-[var(--editor-accent)]">
                       {link.name}
                     </h2>
@@ -84,7 +83,7 @@ export default async function LinksPage() {
             ))}
           </div>
         ) : (
-          <div className="rounded-xl border border-dashed border-[var(--editor-line)] bg-[var(--editor-panel)]/45 px-5 py-10 text-center">
+          <div className="bg-[var(--editor-soft)] px-5 py-10 text-center">
             <p className="text-sm text-[var(--editor-muted)]">还没有公开显示的友联。</p>
           </div>
         )}

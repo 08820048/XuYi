@@ -73,11 +73,9 @@ function AboutContent({
 }) {
   return (
     <article>
-      <header className="mb-8">
-        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--editor-accent)]">
-          About
-        </p>
-        <h1 className="text-3xl font-semibold tracking-tight text-[var(--editor-ink)] sm:text-4xl">
+      <header className="public-page-header">
+        <p className="public-page-kicker">PROFILE / ABOUT</p>
+        <h1 className="public-page-title">
           关于我
         </h1>
       </header>

@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { SiteHeader } from '@/components/SiteHeader'
 import { SiteFooter } from '@/components/SiteFooter'
 import { PostTypeBadge } from '@/components/PostTypeBadge'
-import { getCategoryPath } from '@/lib/route-segments'
 import type { SiteCategoryLink, SiteNavLink } from '@/lib/site'
 import { getSiteHeaderData } from '@/lib/site'
 import type { Theme } from '@/lib/appearance'
@@ -51,8 +50,6 @@ export default async function SearchPage({
     console.error('Search page error:', e)
   }
 
-  const categorySlugMap = new Map(categories.map((category) => [category.name, category.slug]))
-
   return (
     <div className="min-h-full flex flex-col bg-[var(--background)]">
       <SiteHeader
@@ -61,9 +58,10 @@ export default async function SearchPage({
         categories={categories}
       />
 
-      <main className="page-main flex-1 mx-auto max-w-3xl w-full px-4 sm:px-6 py-10 sm:py-14">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-[var(--editor-ink)] mb-2">
+      <main className="page-main public-main flex-1 mx-auto max-w-3xl w-full px-4 sm:px-6 py-10 sm:py-14">
+        <header className="public-page-header">
+          <p className="public-page-kicker">QUERY / SEARCH</p>
+          <h1 className="public-page-title">
             搜索结果
           </h1>
           {query ? (
@@ -75,39 +73,32 @@ export default async function SearchPage({
               请输入搜索关键词
             </p>
           )}
-        </div>
+        </header>
 
         {query && posts.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[var(--editor-soft)] flex items-center justify-center">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--stone-gray)]">
-                <circle cx="11" cy="11" r="8"></circle>
-                <path d="m21 21-4.35-4.35"></path>
-              </svg>
-            </div>
+          <div className="py-20 text-center">
+            <div className="mb-4 font-mono text-4xl font-bold text-[var(--stone-gray)]">00</div>
             <p className="text-[var(--editor-muted)] mb-2">未找到相关文章</p>
             <p className="text-sm text-[var(--stone-gray)]">试试其他关键词</p>
           </div>
         ) : query ? (
-          <div className="space-y-0">
+          <div className="record-list">
             {posts.map((post, index) => (
               <article
                 key={post.slug}
-                className="group border-t border-[var(--editor-line)] first:border-t-0"
+                className="group record-list-item"
                 style={{
                   animation: `fadeInUp 0.4s ease-out ${index * 0.05}s both`
                 }}
               >
                 <Link
                   href={`/${post.slug}`}
-                  className="block py-6 sm:py-7 relative transition-colors duration-200 hover:bg-[var(--editor-panel)]"
+                  className="record-list-link"
                 >
-                  <div className="absolute left-0 top-6 bottom-6 w-1 bg-[var(--editor-accent)] opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-
-                  <div className="pl-0 group-hover:pl-5 transition-[padding] duration-200">
+                  <span className="record-list-index">{String(index + 1).padStart(2, '0')}</span>
+                  <div className="min-w-0">
                     <h2
-                      className="text-lg sm:text-xl font-medium text-[var(--editor-ink)] leading-snug mb-2 group-hover:text-[var(--editor-accent)] transition-colors duration-200 flex flex-wrap items-center gap-2"
-                      style={{ fontFamily: 'Georgia, "Noto Serif SC", serif' }}
+                      className="record-list-title"
                     >
                       {post.title}
                       <PostTypeBadge type={post.post_type} />
@@ -129,26 +120,11 @@ export default async function SearchPage({
                         {post.description}
                       </p>
                     )}
-                    <div className="flex items-center gap-2 text-xs text-[var(--stone-gray)]">
+                    <div className="record-list-meta">
                       <time>{formatDate(post.published_at)}</time>
                       {post.category && (
                         <>
-                          <span aria-hidden>·</span>
-                          {(() => {
-                            const categorySlug = post.category ? categorySlugMap.get(post.category) : null
-                            return categorySlug ? (
-                              <Link
-                                href={getCategoryPath(categorySlug)}
-                                className="px-2 py-0.5 rounded-full bg-[var(--editor-accent)]/8 text-[var(--editor-accent)] font-medium border border-[var(--editor-accent)]/15 hover:bg-[var(--editor-accent)]/12 transition-colors"
-                              >
-                                {post.category}
-                              </Link>
-                            ) : (
-                              <span className="px-2 py-0.5 rounded-full bg-[var(--editor-accent)]/8 text-[var(--editor-accent)] font-medium border border-[var(--editor-accent)]/15">
-                                {post.category}
-                              </span>
-                            )
-                          })()}
+                          <span>[{post.category}]</span>
                           </>
                         )}
                     </div>
