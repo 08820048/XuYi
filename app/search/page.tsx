@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { SiteHeader } from '@/components/SiteHeader'
 import { SiteFooter } from '@/components/SiteFooter'
 import { PostTypeBadge } from '@/components/PostTypeBadge'
-import type { SiteCategoryLink, SiteNavLink } from '@/lib/site'
+import type { SiteNavLink } from '@/lib/site'
 import { getSiteHeaderData } from '@/lib/site'
 import type { Theme } from '@/lib/appearance'
 
@@ -31,7 +31,6 @@ export default async function SearchPage({
 
   let posts: Awaited<ReturnType<typeof searchPosts>> = []
   let navLinks: SiteNavLink[] = []
-  let categories: SiteCategoryLink[] = []
   let defaultTheme: Theme = 'default'
 
   try {
@@ -39,7 +38,6 @@ export default async function SearchPage({
     if (env?.DB) {
       const headerData = await getSiteHeaderData(env.DB)
       navLinks = headerData.navLinks
-      categories = headerData.categories
       defaultTheme = headerData.defaultTheme
 
       if (query) {
@@ -55,7 +53,6 @@ export default async function SearchPage({
       <SiteHeader
         initialTheme={defaultTheme}
         navLinks={navLinks}
-        categories={categories}
       />
 
       <main className="page-main public-main flex-1 mx-auto max-w-3xl w-full px-4 sm:px-6 py-10 sm:py-14">
@@ -122,11 +119,6 @@ export default async function SearchPage({
                     )}
                     <div className="record-list-meta">
                       <time>{formatDate(post.published_at)}</time>
-                      {post.category && (
-                        <>
-                          <span>[{post.category}]</span>
-                          </>
-                        )}
                     </div>
                   </div>
                 </Link>

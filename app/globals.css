@@ -976,15 +976,15 @@ body:has(.site-header) > :has(> .site-header) {
 }
 
 .archive-post {
-  margin-top: 0.35rem;
+  margin-top: 0.15rem;
 }
 
 .archive-post-link {
-  display: grid;
-  grid-template-columns: 5rem minmax(0, 1fr);
-  gap: 1.5rem;
-  margin: 0 -1rem;
-  padding: 1.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin: 0 -0.75rem;
+  padding: 0.7rem 0.75rem;
   color: var(--editor-ink);
   text-decoration: none;
   border-radius: 4px;
@@ -996,45 +996,50 @@ body:has(.site-header) > :has(> .site-header) {
   color: var(--editor-ink);
 }
 
-.archive-post-link:is(:hover, :focus-visible) .archive-post-index strong {
+.archive-post-link:is(:hover, :focus-visible) .archive-post-title {
   color: var(--editor-accent);
 }
 
-.archive-post-index {
-  padding-top: 0.15rem;
-  color: var(--editor-muted);
-  font-family: var(--font-geist-mono), ui-monospace, monospace;
-  font-size: 0.68rem;
-  line-height: 1.5;
-}
-
-.archive-post-index strong {
-  display: block;
-  margin-bottom: 0.65rem;
-  color: var(--editor-ink);
-  font-size: 0.76rem;
-  font-weight: 650;
-  transition: color 140ms ease;
+.archive-post-heading {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.6rem;
 }
 
 .archive-post-title {
   margin: 0;
   color: inherit;
   font-family: var(--font-geist-sans), -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
-  font-size: 1.35rem;
-  font-weight: 720;
+  font-size: 1.08rem;
+  font-weight: 620;
   letter-spacing: 0;
-  line-height: 1.35;
+  line-height: 1.45;
+  transition: color 140ms ease;
 }
 
-.archive-post-meta {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-top: 0.8rem;
+.archive-post-pinned {
+  border: 1px solid var(--editor-line);
+  padding: 0.12rem 0.35rem;
   color: var(--editor-muted);
   font-family: var(--font-geist-mono), ui-monospace, monospace;
-  font-size: 0.64rem;
+  font-size: 0.62rem;
+  line-height: 1.2;
+}
+
+.archive-post-leader {
+  min-width: 2rem;
+  flex: 1;
+  border-top: 1px dotted color-mix(in srgb, var(--editor-muted) 45%, transparent);
+}
+
+.archive-post-date {
+  flex-shrink: 0;
+  color: var(--editor-muted);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
 }
 
 .public-page-header {
@@ -1151,10 +1156,6 @@ body:has(.site-header) > :has(> .site-header) {
   color: var(--editor-accent);
 }
 
-.site-category-rail {
-  display: none;
-}
-
 .site-header,
 .site-footer {
   background-color: color-mix(in srgb, var(--background) 88%, transparent);
@@ -1166,61 +1167,6 @@ body:has(.site-header) > :has(> .site-header) {
 .site-footer {
   position: relative;
   z-index: 21;
-}
-
-@media (min-width: 1280px) {
-  .site-category-rail {
-    position: fixed;
-    top: 6rem;
-    left: max(1.5rem, calc(50vw - 600px));
-    z-index: 30;
-    display: block;
-    width: 9.375rem;
-    max-height: calc(100vh - 8rem);
-    overflow-y: auto;
-    scrollbar-width: none;
-  }
-
-  .site-category-rail::-webkit-scrollbar {
-    display: none;
-  }
-
-  .site-category-rail__label {
-    margin: 0 0 0.6rem 0.65rem;
-    color: var(--stone-gray);
-    font-family: var(--font-geist-mono), ui-monospace, monospace;
-    font-size: 0.62rem;
-    font-weight: 600;
-  }
-
-  .site-category-rail__nav {
-    display: grid;
-    gap: 0.2rem;
-  }
-
-  .site-category-rail__nav a {
-    display: flex;
-    min-height: 2.25rem;
-    align-items: center;
-    padding: 0.5rem 0.65rem;
-    border-radius: 4px;
-    color: var(--editor-muted);
-    font-size: 0.8rem;
-    font-weight: 500;
-    line-height: 1.4;
-    transition: background-color 140ms ease, color 140ms ease;
-  }
-
-  .site-category-rail__nav a:hover {
-    background: var(--interaction-hover);
-    color: var(--editor-ink);
-  }
-
-  .site-category-rail__nav a.is-active {
-    background: var(--interaction-active);
-    color: var(--editor-accent);
-    font-weight: 600;
-  }
 }
 
 :is(.diary-media, .rich-content img) {
@@ -1701,15 +1647,13 @@ body:has(.site-header) > :has(> .site-header) {
   }
 
   .theme-home-refined .refined-post-link {
-    grid-template-columns: 56px minmax(0, 1fr) !important;
-    gap: 16px !important;
+    gap: 8px !important;
     margin: 0 -8px;
-    padding: 24px 8px !important;
+    padding: 10px 8px !important;
   }
 
   .theme-home-refined .refined-post-title {
-    font-size: 20px !important;
-    text-wrap: balance;
+    font-size: 16px !important;
   }
 
   .archive-post-open {

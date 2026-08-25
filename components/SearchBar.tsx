@@ -188,11 +188,6 @@ export function SearchBar() {
                           {result.description}
                         </p>
                       )}
-                      {result.category && (
-                        <span className="inline-block mt-1 px-1.5 py-0.5 rounded text-[10px] bg-[var(--editor-accent)]/8 text-[var(--editor-accent)]">
-                          {result.category}
-                        </span>
-                      )}
                     </Link>
                   ))}
                 </div>

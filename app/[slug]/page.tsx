@@ -122,11 +122,8 @@ export default async function PostPage({
           <SiteHeader
             initialTheme={headerData.defaultTheme}
             navLinks={headerData.navLinks}
-            categories={headerData.categories}
-            activeCategorySlug={activeCategorySlug}
             stickyOnMobile={false}
             forceSpread
-            showCategoryRail={false}
           />
           <main className="page-main mx-auto w-full max-w-3xl px-4 sm:px-6 flex-1 py-8 sm:py-12">
             <FrontPostAdminBoundary
@@ -156,11 +153,8 @@ export default async function PostPage({
           <SiteHeader
             initialTheme={headerData.defaultTheme}
             navLinks={headerData.navLinks}
-            categories={headerData.categories}
-            activeCategorySlug={activeCategorySlug}
             stickyOnMobile={false}
             forceSpread
-            showCategoryRail={false}
           />
           <main className="page-main mx-auto w-full max-w-3xl px-4 sm:px-6 flex-1 py-8 sm:py-12">
             <FrontPostAdminBoundary
@@ -201,11 +195,8 @@ export default async function PostPage({
       <SiteHeader
         initialTheme={headerData.defaultTheme}
         navLinks={headerData.navLinks}
-        categories={headerData.categories}
-        activeCategorySlug={activeCategorySlug}
         stickyOnMobile={false}
         forceSpread
-        showCategoryRail={false}
       />
 
       <main className="page-main mx-auto w-full max-w-[52rem] px-4 sm:px-6 flex-1 py-8 sm:py-12">
@@ -261,7 +252,7 @@ export default async function PostPage({
                 <header className="article-record-header mb-10 sm:mb-12">
                   <div className="article-record-main">
                     <div className="article-record-kicker">
-                      <span>ARTICLE{post.category ? ` / ${post.category}` : ''}</span>
+                      <span>ARTICLE</span>
                       <span className="flex items-center gap-2">
                         <PostTypeBadge type={post.post_type} />
                         <PostUpdateBadge post={post} />
@@ -279,14 +270,6 @@ export default async function PostPage({
                     <div>
                       <dt>DATE</dt>
                       <dd><time dateTime={publishedDate.replaceAll('.', '-')}>{publishedDate}</time></dd>
-                    </div>
-                    <div>
-                      <dt>CATEGORY</dt>
-                      <dd>
-                        {post.category && activeCategorySlug ? (
-                          <Link href={getCategoryPath(activeCategorySlug)}>{post.category}</Link>
-                        ) : post.category || '未分类'}
-                      </dd>
                     </div>
                     <div>
                       <dt>READ</dt>
@@ -364,7 +347,6 @@ export default async function PostPage({
                           >
                             <div className="related-record-meta">
                               <span>{String(index + 1).padStart(2, '0')}</span>
-                              {item.category && <span>[{item.category}]</span>}
                               <time>
                                 {new Date(item.published_at * 1000).toLocaleDateString('zh-CN', {
                                   year: 'numeric',

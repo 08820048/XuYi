@@ -36,7 +36,6 @@ export default async function LinksPage() {
       <SiteHeader
         initialTheme={headerData.defaultTheme}
         navLinks={headerData.navLinks}
-        categories={headerData.categories}
       />
 
       <main className="page-main mx-auto w-full max-w-3xl flex-1 px-4 py-10 sm:px-6 sm:py-14">

@@ -84,9 +84,6 @@ export default async function CategoryPage({
       <SiteHeader
         initialTheme={headerData.defaultTheme}
         navLinks={headerData.navLinks}
-        categories={headerData.categories}
-        activeCategorySlug={slug}
-        showCategoryRail
       />
 
       <main className="page-main public-main flex-1 mx-auto max-w-3xl w-full px-4 sm:px-6 py-10 sm:py-14">

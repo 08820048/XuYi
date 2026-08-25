@@ -20,7 +20,6 @@ function formatDate(ts: number) {
 export function HomeDefault({
   initialTheme,
   posts,
-  categories,
   navLinks,
   currentPage,
   totalPages,
@@ -31,7 +30,6 @@ export function HomeDefault({
       <SiteHeader
         initialTheme={initialTheme}
         navLinks={navLinks}
-        categories={categories}
       />
       <main className="flex-1 mx-auto max-w-3xl w-full px-4 sm:px-6 py-10 sm:py-14">
         {posts.length === 0 ? (

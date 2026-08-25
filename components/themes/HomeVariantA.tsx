@@ -20,7 +20,6 @@ function formatDateShort(ts: number) {
 
 export function HomeVariantA({
   posts,
-  categories,
   navLinks,
   currentPage,
   totalPages,
@@ -29,8 +28,6 @@ export function HomeVariantA({
     <div className="theme-home-refined min-h-full flex flex-col" style={{ background: 'var(--background)' }}>
       <SiteHeader
         navLinks={navLinks}
-        categories={categories}
-        showCategoryRail
       />
 
       <main className="refined-home-main flex-1 mx-auto w-full" style={{ maxWidth: 860, padding: '32px 32px 120px' }}>
@@ -42,7 +39,7 @@ export function HomeVariantA({
         ) : (
           <>
             <div>
-              {posts.map((post, i) => {
+              {posts.map((post) => {
                 return (
                   <article
                     key={post.slug}
@@ -52,38 +49,35 @@ export function HomeVariantA({
                       href={`/${post.slug}`}
                       className="group archive-post-link refined-post-link"
                     >
-                      <div className="archive-post-index" aria-hidden="true">
-                        <strong>{String((currentPage - 1) * 25 + i + 1).padStart(2, '0')}</strong>
-                        <div>{formatDateShort(post.published_at)}</div>
-                      </div>
-
-                      <div className="min-w-0">
+                      <div className="archive-post-heading">
                         <h2 className="archive-post-title refined-post-title">
                           {post.title}
-                          <PostTypeBadge type={post.post_type} className="ml-2 align-middle" />
-                          <PostUpdateBadge post={post} className="ml-2 align-middle" />
-                          {post.password && (
-                            <svg
-                              width="15" height="15" viewBox="0 0 24 24"
-                              fill="none" stroke="currentColor" strokeWidth="2"
-                              strokeLinecap="round" strokeLinejoin="round"
-                              style={{ display: 'inline', marginLeft: 8, verticalAlign: 'middle', color: 'var(--stone-gray)' }}
-                            >
-                              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                            </svg>
-                          )}
                         </h2>
-
-                        <div className="archive-post-meta">
-                          {post.category && (
-                            <span>{post.category}</span>
-                          )}
-                          {post.is_pinned === 1 && (
-                            <span>置顶</span>
-                          )}
-                        </div>
+                        <PostTypeBadge type={post.post_type} />
+                        <PostUpdateBadge post={post} />
+                        {post.is_pinned === 1 && (
+                          <span className="archive-post-pinned">置顶</span>
+                        )}
+                        {post.password && (
+                          <svg
+                            width="14" height="14" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" strokeWidth="2"
+                            strokeLinecap="round" strokeLinejoin="round"
+                            aria-label="加密文章"
+                          >
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                          </svg>
+                        )}
                       </div>
+
+                      <span className="archive-post-leader" aria-hidden="true" />
+                      <time
+                        className="archive-post-date"
+                        dateTime={new Date(post.published_at * 1000).toISOString()}
+                      >
+                        {formatDateShort(post.published_at)}
+                      </time>
                     </Link>
                   </article>
                 )

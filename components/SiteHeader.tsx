@@ -1,50 +1,30 @@
 'use client'
 
 import Link from 'next/link'
-import { useState, useRef, useEffect, type CSSProperties } from 'react'
-import { Menu, X, ChevronDown } from 'lucide-react'
+import { useState, useEffect, type CSSProperties } from 'react'
+import { Menu, X } from 'lucide-react'
 import { SearchEntry } from './SearchEntry'
 import type { Theme } from '@/lib/appearance'
-import { getCategoryPath } from '@/lib/route-segments'
-import { defaultSiteNavLinks, type SiteCategoryLink, type SiteNavLink } from '@/lib/site'
+import { defaultSiteNavLinks, type SiteNavLink } from '@/lib/site'
 import { SignatureLogo } from '@/components/SignatureLogo'
 
 export type NavLink = SiteNavLink
 
 interface SiteHeaderProps {
   navLinks?: NavLink[]
-  categories?: SiteCategoryLink[]
-  activeCategorySlug?: string | null
   stickyOnMobile?: boolean
   initialTheme?: Theme
   forceSpread?: boolean
-  showCategoryRail?: boolean
 }
 
 export function SiteHeader({
   navLinks,
-  categories = [],
-  activeCategorySlug = null,
   stickyOnMobile = true,
   forceSpread = false,
-  showCategoryRail = false,
 }: SiteHeaderProps) {
   const links = navLinks && navLinks.length > 0 ? navLinks : defaultSiteNavLinks
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [categoryOpen, setCategoryOpen] = useState(false)
   const [spreadProgress, setSpreadProgress] = useState(forceSpread ? 1 : 0)
-  const categoryRef = useRef<HTMLDivElement>(null)
-
-  // 点击外部关闭分类下拉
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (categoryRef.current && !categoryRef.current.contains(e.target as Node)) {
-        setCategoryOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  }, [])
 
   useEffect(() => {
     if (forceSpread) {
@@ -73,7 +53,6 @@ export function SiteHeader({
     }
   }, [forceSpread])
 
-  const activeCategory = categories.find(c => c.slug === activeCategorySlug)
   const effectiveSpreadProgress = forceSpread ? 1 : spreadProgress
   const spreadStyle = {
     '--site-header-spread-progress': effectiveSpreadProgress.toFixed(3),
@@ -110,7 +89,6 @@ export function SiteHeader({
   }
 
   return (
-    <>
     <header className={`site-header ${stickyOnMobile ? 'sticky' : 'sm:sticky'} top-0 z-40 bg-[var(--background)]/95 backdrop-blur-sm`}>
       <div className="site-header-inner mx-auto max-w-3xl px-4 sm:px-6" style={spreadStyle}>
         <div className="site-header-row h-14 flex items-center justify-between gap-4">
@@ -127,53 +105,6 @@ export function SiteHeader({
           <div className="site-header-secondary flex flex-shrink-0 items-center justify-end gap-1">
             {/* Desktop nav */}
             <nav className="hidden sm:flex items-center gap-3 text-sm flex-shrink-0">
-              {/* Category dropdown */}
-              {categories.length > 0 && (
-                <div ref={categoryRef} className="relative xl:hidden">
-                  <button
-                    onClick={() => setCategoryOpen(!categoryOpen)}
-                    className={`inline-flex items-center gap-1 transition-colors duration-150 ${
-                      activeCategorySlug
-                        ? 'text-[var(--editor-accent)]'
-                        : 'text-[var(--editor-muted)] hover:text-[var(--editor-ink)]'
-                    }`}
-                  >
-                    {activeCategory?.name || '分类'}
-                    <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-150 ${categoryOpen ? 'rotate-180' : ''}`} />
-                  </button>
-
-                  {categoryOpen && (
-                    <div className="absolute top-full left-0 z-50 mt-2 min-w-[140px] rounded-sm border border-[var(--editor-line)] bg-[var(--background)] py-1 shadow-lg">
-                      <Link
-                        href="/"
-                        onClick={() => setCategoryOpen(false)}
-                        className={`block px-3 py-2 text-sm transition-colors ${
-                          activeCategorySlug === null
-                            ? 'text-[var(--editor-accent)] bg-[var(--editor-accent)]/5 font-medium'
-                            : 'text-[var(--editor-muted)] hover:text-[var(--editor-ink)] hover:bg-[var(--editor-panel)]'
-                        }`}
-                      >
-                        全部文章
-                      </Link>
-                      {categories.map(cat => (
-                        <Link
-                          key={cat.slug}
-                          href={getCategoryPath(cat.slug)}
-                          onClick={() => setCategoryOpen(false)}
-                          className={`block px-3 py-2 text-sm transition-colors ${
-                            activeCategorySlug === cat.slug
-                              ? 'text-[var(--editor-accent)] bg-[var(--editor-accent)]/5 font-medium'
-                              : 'text-[var(--editor-muted)] hover:text-[var(--editor-ink)] hover:bg-[var(--editor-panel)]'
-                          }`}
-                        >
-                          {cat.name}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-
               {links.map(link => renderLink(link))}
               <SearchEntry />
             </nav>
@@ -201,39 +132,6 @@ export function SiteHeader({
         `}
       >
         <div className="bg-[var(--background)]">
-          {/* Mobile categories as horizontal pills */}
-          {categories.length > 0 && (
-            <div className="px-4 py-3">
-              <div className="flex flex-wrap gap-2">
-                <Link
-                  href="/"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`rounded-sm px-3 py-1.5 text-xs font-medium transition-colors ${
-                    activeCategorySlug === null
-                      ? 'bg-[var(--editor-accent)] text-white'
-                      : 'bg-[var(--editor-panel)] text-[var(--editor-muted)]'
-                  }`}
-                >
-                  全部
-                </Link>
-                {categories.map((category) => (
-                  <Link
-                    key={category.slug}
-                    href={getCategoryPath(category.slug)}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`rounded-sm px-3 py-1.5 text-xs font-medium transition-colors ${
-                      activeCategorySlug === category.slug
-                        ? 'bg-[var(--editor-accent)] text-white'
-                        : 'bg-[var(--editor-panel)] text-[var(--editor-muted)]'
-                    }`}
-                  >
-                    {category.name}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
-
           <nav className="flex flex-col gap-1 px-4 pb-3 text-sm">
             {links.map(link => (
               <div key={link.label} className="bg-[var(--editor-soft)] px-3 py-2.5">
@@ -244,31 +142,5 @@ export function SiteHeader({
         </div>
       </div>
     </header>
-
-    {showCategoryRail && categories.length > 0 && (
-      <aside className="site-category-rail" aria-label="文章分类">
-        <p className="site-category-rail__label">分类</p>
-        <nav className="site-category-rail__nav">
-          <Link
-            href="/"
-            aria-current={activeCategorySlug === null ? 'page' : undefined}
-            className={activeCategorySlug === null ? 'is-active' : undefined}
-          >
-            全部文章
-          </Link>
-          {categories.map((category) => (
-            <Link
-              key={category.slug}
-              href={getCategoryPath(category.slug)}
-              aria-current={activeCategorySlug === category.slug ? 'page' : undefined}
-              className={activeCategorySlug === category.slug ? 'is-active' : undefined}
-            >
-              {category.name}
-            </Link>
-          ))}
-        </nav>
-      </aside>
-    )}
-    </>
   )
 }

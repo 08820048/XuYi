@@ -79,7 +79,6 @@ export default async function DiaryEntryPage({
       <SiteHeader
         initialTheme={headerData.defaultTheme}
         navLinks={headerData.navLinks}
-        categories={headerData.categories}
       />
 
       <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8 sm:px-6 sm:py-12">
