@@ -17,6 +17,7 @@ import { TwitterEmbedsEnhancer } from '@/components/TwitterEmbedsEnhancer'
 import { CodeHighlightEnhancer } from '@/components/CodeHighlightEnhancer'
 import { MathRenderEnhancer } from '@/components/MathRenderEnhancer'
 import { ArticleCopyrightNotice } from '@/components/ArticleCopyrightNotice'
+import { SubscribeForm } from '@/components/SubscribeForm'
 import { getSiteHeaderData } from '@/lib/site'
 import { getRelatedPosts } from '@/lib/related-content'
 import { getPublicContentCacheNamespace } from '@/lib/cache'
@@ -332,6 +333,8 @@ export default async function PostPage({
                 <CodeHighlightEnhancer containerId={contentContainerId} html={post.html} />
                 <MathRenderEnhancer containerId={contentContainerId} html={post.html} />
                 <TwitterEmbedsEnhancer containerId={contentContainerId} html={post.html} />
+
+                <SubscribeForm />
 
                 <ArticleCopyrightNotice
                   containerId={contentContainerId}

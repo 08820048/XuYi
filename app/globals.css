@@ -918,6 +918,10 @@ body:has(.site-header) > :has(> .site-header) {
   margin-top: 3.5rem;
 }
 
+.subscribe-panel + .article-copyright-notice {
+  margin-top: 1rem;
+}
+
 .related-record-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

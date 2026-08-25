@@ -47,10 +47,10 @@ export function SubscribeForm() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
         <div className="shrink-0">
           <h3 className="m-0 text-[19px] font-bold leading-snug text-[var(--editor-ink)]">
-            New writing, in your inbox.
+            AI, software, and things I&apos;m building.
           </h3>
           <p className="mt-1 text-sm leading-relaxed text-[var(--editor-muted)]">
-            New articles, no spam. Unsubscribe anytime.
+            Occasional notes. No spam, unsubscribe anytime.
           </p>
         </div>
 
