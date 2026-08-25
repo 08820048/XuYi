@@ -4,7 +4,7 @@
 import { ArrowRight, LoaderCircle, Mail } from 'lucide-react'
 import { useState } from 'react'
 
-export function SubscribeForm() {
+export function SubscribeForm({ minimal = false }: { minimal?: boolean }) {
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [successMessage, setSuccessMessage] = useState('')
@@ -44,22 +44,30 @@ export function SubscribeForm() {
       aria-label="Email newsletter"
       className="subscribe-panel"
     >
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-        <div className="shrink-0">
-          <h3 className="m-0 text-[19px] font-bold leading-snug text-[var(--editor-ink)]">
-            AI, software, and things I&apos;m building.
-          </h3>
-          <p className="mt-1 text-sm leading-relaxed text-[var(--editor-muted)]">
-            Occasional notes. No spam, unsubscribe anytime.
-          </p>
-        </div>
+      <div
+        className={
+          minimal
+            ? 'mx-auto w-full max-w-md'
+            : 'mx-auto flex max-w-xl flex-col items-center text-center'
+        }
+      >
+        {!minimal && (
+          <div>
+            <h3 className="m-0 text-[19px] font-bold leading-snug text-[var(--editor-ink)]">
+              AI, software, and things I&apos;m building.
+            </h3>
+            <p className="mt-1 text-sm leading-relaxed text-[var(--editor-muted)]">
+              Occasional notes. No spam, unsubscribe anytime.
+            </p>
+          </div>
+        )}
 
         {successMessage ? (
-          <p role="status" className="m-0 text-sm text-[var(--editor-accent)]">
+          <p role="status" className={`${minimal ? '' : 'mt-5'} text-sm text-[var(--editor-accent)]`}>
             {successMessage}
           </p>
         ) : (
-          <div className="min-w-0 flex-1 sm:max-w-md">
+          <div className={minimal ? '' : 'mx-auto mt-5 max-w-md'}>
             <form onSubmit={handleSubmit} className="flex gap-2">
               <label className="flex min-w-0 flex-1 items-center gap-2.5 rounded-[7px] border border-[var(--editor-line)] bg-[var(--editor-panel)] px-3 transition-[border-color,box-shadow] duration-150 focus-within:border-[var(--editor-accent)] focus-within:ring-2 focus-within:ring-[var(--editor-accent)]/15">
                 <Mail className="h-4 w-4 shrink-0 text-[var(--editor-muted)]" aria-hidden />

@@ -334,7 +334,7 @@ export default async function PostPage({
                 <MathRenderEnhancer containerId={contentContainerId} html={post.html} />
                 <TwitterEmbedsEnhancer containerId={contentContainerId} html={post.html} />
 
-                <SubscribeForm />
+                <SubscribeForm minimal />
 
                 <ArticleCopyrightNotice
                   containerId={contentContainerId}
