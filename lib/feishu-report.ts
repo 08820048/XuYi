@@ -24,6 +24,7 @@ type CountStatsRow = {
   encrypted_posts: number | null
   deleted_posts: number | null
   total_views: number | null
+  active_subscribers: number | null
   today_new_posts: number | null
   today_updated_posts: number | null
 }
@@ -66,6 +67,7 @@ export interface BlogReport {
     encryptedPosts: number
     deletedPosts: number
     totalViews: number
+    activeSubscribers: number
     todayNewPosts: number
     todayUpdatedPosts: number
   }
@@ -207,6 +209,7 @@ export async function collectBlogReport(
         SUM(CASE WHEN password IS NOT NULL AND deleted_at IS NULL THEN 1 ELSE 0 END) AS encrypted_posts,
         SUM(CASE WHEN deleted_at IS NOT NULL THEN 1 ELSE 0 END) AS deleted_posts,
         COALESCE(SUM(CASE WHEN deleted_at IS NULL THEN view_count ELSE 0 END), 0) AS total_views,
+        (SELECT COUNT(*) FROM subscribers WHERE status = 'subscribed') AS active_subscribers,
         SUM(CASE WHEN ${publicWhere} AND published_at >= ? THEN 1 ELSE 0 END) AS today_new_posts,
         SUM(CASE WHEN deleted_at IS NULL AND updated_at >= ? AND published_at < ? THEN 1 ELSE 0 END) AS today_updated_posts
        FROM posts`,
@@ -262,6 +265,7 @@ export async function collectBlogReport(
       encryptedPosts: toNumber(statsRow?.encrypted_posts),
       deletedPosts: toNumber(statsRow?.deleted_posts),
       totalViews,
+      activeSubscribers: toNumber(statsRow?.active_subscribers),
       todayNewPosts: toNumber(statsRow?.today_new_posts),
       todayUpdatedPosts: toNumber(statsRow?.today_updated_posts),
     },
@@ -299,6 +303,7 @@ export function buildFeishuReportText(report: BlogReport) {
     `公开文章：${report.stats.publicPosts} 篇（较上次 ${formatDelta(report.deltas.publicPosts)}）`,
     `全部文章：${report.stats.allPosts} 篇；草稿：${report.stats.draftPosts}；隐藏：${report.stats.hiddenPosts}；加密：${report.stats.encryptedPosts}；已删除：${report.stats.deletedPosts}`,
     `累计浏览：${report.stats.totalViews} 次（较上次 ${formatDelta(report.deltas.totalViews)}）`,
+    `有效订阅：${report.stats.activeSubscribers} 人`,
     `今日新增：${report.stats.todayNewPosts} 篇；今日更新：${report.stats.todayUpdatedPosts} 篇`,
     '',
     '热门文章 Top 5',

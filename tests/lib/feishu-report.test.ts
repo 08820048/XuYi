@@ -22,6 +22,7 @@ function createReport(overrides: Partial<BlogReport> = {}): BlogReport {
       encryptedPosts: 0,
       deletedPosts: 2,
       totalViews: 3456,
+      activeSubscribers: 27,
       todayNewPosts: 2,
       todayUpdatedPosts: 3,
     },
@@ -64,6 +65,7 @@ describe('feishu report helpers', () => {
     expect(text).toContain('XuYi数据报告｜早报')
     expect(text).toContain('公开文章：10 篇（较上次 +1）')
     expect(text).toContain('累计浏览：3456 次（较上次 +88）')
+    expect(text).toContain('有效订阅：27 人')
     expect(text).toContain('今日新增：2 篇；今日更新：3 篇')
     expect(text).toContain('1. 热门文章｜随笔｜256 次｜https://blog.example.com/hot-post')
   })
