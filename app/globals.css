@@ -1027,17 +1027,6 @@ body:has(.site-header) > :has(> .site-header) {
   line-height: 1.35;
 }
 
-.archive-post-description {
-  display: -webkit-box;
-  margin: 0.65rem 0 0;
-  overflow: hidden;
-  color: var(--editor-muted);
-  font-size: 0.87rem;
-  line-height: 1.7;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-}
-
 .archive-post-meta {
   display: flex;
   align-items: center;

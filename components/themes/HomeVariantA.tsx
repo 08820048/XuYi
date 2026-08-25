@@ -75,12 +75,6 @@ export function HomeVariantA({
                           )}
                         </h2>
 
-                        {post.description && (
-                          <p className="archive-post-description">
-                            {post.description}
-                          </p>
-                        )}
-
                         <div className="archive-post-meta">
                           {post.category && (
                             <span>{post.category}</span>
