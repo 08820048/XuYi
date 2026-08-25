@@ -79,7 +79,7 @@ export function SubscribeForm({ minimal = false }: { minimal?: boolean }) {
                   placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="min-w-0 flex-1 bg-transparent py-2.5 text-sm text-[var(--editor-ink)] outline-none placeholder:text-[var(--editor-muted)]"
+                  className="min-w-0 flex-1 bg-transparent py-2.5 text-sm text-[var(--editor-ink)] outline-none focus-visible:outline-none placeholder:text-[var(--editor-muted)]"
                 />
               </label>
               <button
