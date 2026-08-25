@@ -1486,6 +1486,46 @@ body:has(.site-header) > :has(> .site-header) {
   color: #c44a2a;
 }
 
+/* ── GitHub 风格提示框（> [!NOTE] / [!TIP] / [!IMPORTANT] / [!WARNING] / [!CAUTION]）── */
+:is(.novel-prose, .rich-content) blockquote.github-alert {
+  --github-alert-accent: #0969da;
+  font-style: normal;
+  border-left: 3px solid var(--github-alert-accent);
+  background: color-mix(in srgb, var(--github-alert-accent) 7%, #ffffff);
+  box-shadow: none;
+  color: var(--article-body);
+}
+
+:is(.novel-prose, .rich-content) blockquote.github-alert--tip {
+  --github-alert-accent: #1a7f37;
+}
+
+:is(.novel-prose, .rich-content) blockquote.github-alert--important {
+  --github-alert-accent: #8250df;
+}
+
+:is(.novel-prose, .rich-content) blockquote.github-alert--warning {
+  --github-alert-accent: #9a6700;
+}
+
+:is(.novel-prose, .rich-content) blockquote.github-alert--caution {
+  --github-alert-accent: #cf222e;
+}
+
+:is(.novel-prose, .rich-content) .github-alert-title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.35rem;
+  font-size: 0.9em;
+  font-weight: 600;
+  color: var(--github-alert-accent);
+}
+
+:is(.novel-prose, .rich-content) .github-alert-title svg {
+  flex-shrink: 0;
+}
+
 /* ── 终端主题：搜索面板深色 ── */
 [data-theme="terminal"] .search-panel {
   background: #1f2240 !important;

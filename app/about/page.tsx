@@ -7,6 +7,7 @@ import { SiteFooter } from '@/components/SiteFooter'
 import { CodeHighlightEnhancer } from '@/components/CodeHighlightEnhancer'
 import { MathRenderEnhancer } from '@/components/MathRenderEnhancer'
 import { TwitterEmbedsEnhancer } from '@/components/TwitterEmbedsEnhancer'
+import { GitHubAlertEnhancer } from '@/components/GitHubAlertEnhancer'
 
 export const metadata = {
   title: '关于我',
@@ -87,6 +88,7 @@ function AboutContent({
       <CodeHighlightEnhancer containerId={containerId} html={html} />
       <MathRenderEnhancer containerId={containerId} html={html} />
       <TwitterEmbedsEnhancer containerId={containerId} html={html} />
+      <GitHubAlertEnhancer containerId={containerId} html={html} />
     </article>
   )
 }

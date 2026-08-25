@@ -14,6 +14,7 @@ import { PostUpdateNotice } from '@/components/PostUpdateNotice'
 import { PostUpdateSeenMarker } from '@/components/PostUpdateSeenMarker'
 import { ArticleTableOfContents } from '@/components/ArticleTableOfContents'
 import { TwitterEmbedsEnhancer } from '@/components/TwitterEmbedsEnhancer'
+import { GitHubAlertEnhancer } from '@/components/GitHubAlertEnhancer'
 import { CodeHighlightEnhancer } from '@/components/CodeHighlightEnhancer'
 import { MathRenderEnhancer } from '@/components/MathRenderEnhancer'
 import { ArticleCopyrightNotice } from '@/components/ArticleCopyrightNotice'
@@ -314,6 +315,7 @@ export default async function PostPage({
                   dangerouslySetInnerHTML={{ __html: post.html }}
                 />
                 <CodeHighlightEnhancer containerId={contentContainerId} html={post.html} />
+                <GitHubAlertEnhancer containerId={contentContainerId} html={post.html} />
                 <MathRenderEnhancer containerId={contentContainerId} html={post.html} />
                 <TwitterEmbedsEnhancer containerId={contentContainerId} html={post.html} />
 

@@ -13,6 +13,7 @@ import { getSiteHeaderData } from '@/lib/site'
 import { decodeRouteSegment } from '@/lib/route-segments'
 import { getDiaryDisplayTitle, getDiaryPath } from '@/lib/diary-utils'
 import { getSiteUrl } from '@/lib/site-config'
+import { GitHubAlertEnhancer } from '@/components/GitHubAlertEnhancer'
 
 const BASE_URL = getSiteUrl()
 
@@ -109,9 +110,11 @@ export default async function DiaryEntryPage({
             ) : null}
           </header>
           <div
+            id="diary-content"
             className="rich-content diary-content mx-auto max-w-3xl pt-7 [text-wrap:pretty] sm:pt-9"
             dangerouslySetInnerHTML={{ __html: entry.html }}
           />
+          <GitHubAlertEnhancer containerId="diary-content" html={entry.html} />
         </article>
       </main>
 
