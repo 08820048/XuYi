@@ -330,41 +330,32 @@ export default async function PostPage({
 
                 {related.results.length > 0 && (
                   <section className="related-records mt-14 sm:mt-16 pt-6 sm:pt-8">
-                    <div className="flex items-end justify-between gap-3 mb-6">
+                    <div className="mb-4">
                       <div>
                         <p className="font-mono text-[10px] text-[var(--editor-muted)] mb-1">RELATED / 关联记录</p>
                         <h2 className="text-lg sm:text-xl font-bold text-[var(--editor-ink)]">继续阅读</h2>
                       </div>
-                      <p className="hidden text-right font-mono text-[10px] text-[var(--stone-gray)] sm:block">
-                          {related.source === 'vectorize' ? '基于向量召回' : '基于全文检索与主题相似度'}
-                      </p>
                     </div>
-                    <div className="related-record-grid">
-                      {related.results.map((item, index) => {
+                    <div>
+                      {related.results.map((item) => {
                         return (
                           <Link
                             key={item.slug}
                             href={`/${item.slug}`}
-                            className="group related-record"
+                            className="group archive-post-link"
                           >
-                            <div className="related-record-meta">
-                              <span>{String(index + 1).padStart(2, '0')}</span>
-                              <time>
-                                {new Date(item.published_at * 1000).toLocaleDateString('zh-CN', {
-                                  year: 'numeric',
-                                  month: 'short',
-                                  day: 'numeric',
-                                })}
-                              </time>
+                            <div className="archive-post-heading">
+                              <h3 className="archive-post-title">
+                                {item.title}
+                              </h3>
                             </div>
-                            <h3 className="related-record-title">
-                              {item.title}
-                            </h3>
-                            {item.description && (
-                              <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-[var(--editor-muted)]">
-                                {item.description}
-                              </p>
-                            )}
+                            <span className="archive-post-leader" aria-hidden="true" />
+                            <time
+                              className="archive-post-date"
+                              dateTime={new Date(item.published_at * 1000).toISOString()}
+                            >
+                              {new Date(item.published_at * 1000).toISOString().slice(5, 10).replace('-', '.')}
+                            </time>
                           </Link>
                         )
                       })}

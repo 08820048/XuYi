@@ -924,7 +924,7 @@ export function NovelEditor({ contentKind = 'post', initialData }: NovelEditorPr
   const showSidebar = sidebarOpen
 
   return (
-    <div className="min-h-screen bg-[var(--editor-app-bg)]">
+    <div className="min-h-screen bg-[var(--editor-app-bg)] bg-[url('/textures/sand-cyan.svg')] bg-[length:180px_180px] bg-repeat bg-fixed">
       {/* ── Sticky Header ── */}
       <header className="sticky top-0 z-40 h-14 border-b border-[var(--editor-line)] bg-[color-mix(in_srgb,var(--background)_90%,transparent)] backdrop-blur-lg">
         <div className="flex h-full items-center gap-2 px-4">
