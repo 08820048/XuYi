@@ -16,8 +16,12 @@ function getLinks(html: string) {
   }))
 }
 
+function findHeading(html: string, pattern: RegExp) {
+  return Array.from(html.matchAll(/<h2\b[^>]*>([\s\S]*?)<\/h2>/gi)).find((match) => pattern.test(stripHtml(match[1])))
+}
+
 function parseProjects(html: string) {
-  const heading = html.match(/<h2\b[^>]*>([\s\S]*?(?:作品集|portfolio)[\s\S]*?)<\/h2>/i)
+  const heading = findHeading(html, /作品集|portfolio/i)
   if (!heading || heading.index === undefined) return null
 
   const sectionStart = heading.index + heading[0].length
@@ -51,7 +55,7 @@ function parseProjects(html: string) {
 }
 
 function getContactHtml(html: string) {
-  const contactMatch = html.match(/<h2\b[^>]*>([\s\S]*?(?:联系我|contact)[\s\S]*?)<\/h2>/i)
+  const contactMatch = findHeading(html, /联系我|contact/i)
   return contactMatch?.index === undefined ? '' : html.slice(contactMatch.index).trim()
 }
 
