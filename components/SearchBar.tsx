@@ -110,7 +110,7 @@ export function SearchBar() {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="p-2 text-[var(--editor-muted)] hover:text-[var(--editor-ink)] transition-colors"
+        className="site-nav-action"
         title="搜索 (⌘K)"
         aria-label="搜索"
       >

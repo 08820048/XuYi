@@ -124,7 +124,6 @@ export default async function PostPage({
             initialTheme={headerData.defaultTheme}
             navLinks={headerData.navLinks}
             stickyOnMobile={false}
-            forceSpread
           />
           <main className="page-main mx-auto w-full max-w-3xl px-4 sm:px-6 flex-1 py-8 sm:py-12">
             <FrontPostAdminBoundary
@@ -155,7 +154,6 @@ export default async function PostPage({
             initialTheme={headerData.defaultTheme}
             navLinks={headerData.navLinks}
             stickyOnMobile={false}
-            forceSpread
           />
           <main className="page-main mx-auto w-full max-w-3xl px-4 sm:px-6 flex-1 py-8 sm:py-12">
             <FrontPostAdminBoundary
@@ -197,7 +195,6 @@ export default async function PostPage({
         initialTheme={headerData.defaultTheme}
         navLinks={headerData.navLinks}
         stickyOnMobile={false}
-        forceSpread
       />
 
       <main className="page-main mx-auto w-full max-w-[52rem] px-4 sm:px-6 flex-1 py-8 sm:py-12">
