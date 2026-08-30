@@ -1,8 +1,23 @@
+import Image from 'next/image'
+
 interface AboutProject {
   nameHtml: string
   descriptionHtml: string
   imageHtml?: string
+  logoUrl?: string
   links: Array<{ href: string; labelHtml: string }>
+}
+
+const PRODUCT_LOGOS: Record<string, string> = {
+  Hoolo: '/product-logos/hoolo.png',
+  ToolPop: '/product-logos/toolpop.png',
+  Welight: '/product-logos/welight.png',
+  Ornata: '/product-logos/ornata.png',
+  Clibo: '/product-logos/clibo.png',
+  Quiet: '/product-logos/quiet.svg',
+  'Citu（词图）': '/product-logos/citu.png',
+  Chisel: '/product-logos/chisel.svg',
+  鸭小账: '/product-logos/duckbill.png',
 }
 
 function stripHtml(value: string) {
@@ -47,6 +62,7 @@ function parseProjects(html: string) {
       nameHtml: nameMatch[1],
       descriptionHtml,
       imageHtml: imageMatch?.[0],
+      logoUrl: PRODUCT_LOGOS[stripHtml(nameMatch[1])],
       links: getLinks(block),
     })
   }
@@ -82,6 +98,10 @@ export function AboutShowcase({ html, id }: { html: string; id?: string }) {
               </div>
               {project.imageHtml ? (
                 <div className="about-project-image" dangerouslySetInnerHTML={{ __html: project.imageHtml }} />
+              ) : project.logoUrl ? (
+                <div className="about-project-image">
+                  <Image src={project.logoUrl} alt={`${stripHtml(project.nameHtml)} Logo`} width={48} height={48} />
+                </div>
               ) : (
                 <div className="about-project-glyph" aria-hidden="true">{stripHtml(project.nameHtml).slice(0, 2).toUpperCase()}</div>
               )}
