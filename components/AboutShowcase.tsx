@@ -50,20 +50,14 @@ function parseProjects(html: string) {
   return projects.length > 0 ? { headingHtml: heading[1], projects } : null
 }
 
-function splitContent(html: string) {
-  const firstRule = html.search(/<hr\b/i)
-  const introHtml = (firstRule < 0 ? html : html.slice(0, firstRule))
-    .replace(/<h1\b[^>]*>[\s\S]*?<\/h1>/i, '')
-    .trim()
+function getContactHtml(html: string) {
   const contactMatch = html.match(/<h2\b[^>]*>([\s\S]*?(?:联系我|contact)[\s\S]*?)<\/h2>/i)
-  const contactHtml = contactMatch?.index === undefined ? '' : html.slice(contactMatch.index).trim()
-
-  return { introHtml, contactHtml }
+  return contactMatch?.index === undefined ? '' : html.slice(contactMatch.index).trim()
 }
 
 export function AboutShowcase({ html, id }: { html: string; id?: string }) {
   const parsedProjects = parseProjects(html)
-  const { introHtml, contactHtml } = splitContent(html)
+  const contactHtml = getContactHtml(html)
 
   if (!parsedProjects) {
     return <div id={id} className="about-showcase-fallback rich-content" dangerouslySetInnerHTML={{ __html: html }} />
@@ -71,27 +65,9 @@ export function AboutShowcase({ html, id }: { html: string; id?: string }) {
 
   return (
     <div id={id} className="about-showcase">
-      <section className="about-hero" aria-labelledby="about-showcase-title">
-        <div className="about-hero-copy">
-          <p className="about-kicker">PROFILE / INDEPENDENT MAKER</p>
-          <h1 id="about-showcase-title">把复杂的事情，<br /><span>做得简单一点。</span></h1>
-          <p className="about-hero-caption">Products, tools, and quiet experiments.</p>
-        </div>
-        <div id="about-intro-content" className="about-intro-copy rich-content" dangerouslySetInnerHTML={{ __html: introHtml }} />
-        <dl className="about-hero-specs">
-          <div><dt>BUILDING</dt><dd>{String(parsedProjects.projects.length).padStart(2, '0')} PRODUCTS</dd></div>
-          <div><dt>FOCUS</dt><dd>AI / TOOLS / WRITING</dd></div>
-          <div><dt>BASE</dt><dd>XUYI.DEV</dd></div>
-        </dl>
-      </section>
-
       <section className="about-projects" aria-labelledby="about-projects-title">
         <div className="about-section-heading">
-          <div>
-            <p className="about-kicker">SELECTED WORKS / 01</p>
-            <h2 id="about-projects-title" dangerouslySetInnerHTML={{ __html: parsedProjects.headingHtml }} />
-          </div>
-          <span className="about-section-count">{String(parsedProjects.projects.length).padStart(2, '0')} ITEMS</span>
+          <h1 id="about-projects-title" dangerouslySetInnerHTML={{ __html: parsedProjects.headingHtml }} />
         </div>
         <div id="about-projects-content" className="about-project-grid">
           {parsedProjects.projects.map((project, index) => (
@@ -127,7 +103,6 @@ export function AboutShowcase({ html, id }: { html: string; id?: string }) {
       {contactHtml && (
         <section className="about-contact" aria-labelledby="about-contact-title">
           <div className="about-contact-label">
-            <p className="about-kicker">OPEN CHANNEL / 02</p>
             <h2 id="about-contact-title">联系我</h2>
           </div>
           <div id="about-contact-content" className="about-contact-copy rich-content" dangerouslySetInnerHTML={{ __html: contactHtml.replace(/<h2\b[^>]*>[\s\S]*?<\/h2>/i, '') }} />
