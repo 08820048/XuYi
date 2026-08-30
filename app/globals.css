@@ -2,34 +2,37 @@
 @import "katex/dist/katex.min.css";
 
 :root {
-  --background: #e8efee;
-  --foreground: #151a1b;
-  --editor-app-bg: #e8efee;
+  --background: #eceef1;
+  --foreground: #171717;
+  --editor-app-bg: #eceef1;
   --editor-panel: #ffffff;
-  --editor-soft: #edf3f3;
-  --editor-line: #d9e3e4;
-  --editor-ink: #151a1b;
-  --editor-muted: #687477;
+  --editor-soft: #f3f4f6;
+  --editor-line: #e2e5ea;
+  --editor-ink: #171717;
+  --editor-muted: #6b7280;
   --editor-accent: #0e7490;
   --editor-accent-ink: #ffffff;
   --editor-link: #0e7490;
-  --editor-code-bg: #edf3f4;
-  --editor-code-border: #d9e3e4;
+  --editor-code-bg: #f3f4f6;
+  --editor-code-border: #e2e5ea;
   --editor-quote-bg: #ffffff;
-  --editor-selection: #cce8ed;
-  --stone-gray: #849194;
-  --border-warm: #d9e3e4;
+  --editor-selection: #d4e9ed;
+  --stone-gray: #8a90a0;
+  --border-warm: #e2e5ea;
   --coral: #0e7490;
-  --article-heading: #151a1b;
-  --article-body: #303a3c;
-  --article-quote: #536164;
+  --article-heading: #171717;
+  --article-body: #343941;
+  --article-quote: #5f6672;
   --article-quote-border: transparent;
   --article-quote-nested-border: transparent;
-  --article-quote-nested-bg: #e8efee;
+  --article-quote-nested-bg: #eceef1;
   --ambient-line: rgba(14, 116, 144, 0.1);
-  --interaction-hover: color-mix(in srgb, var(--editor-accent) 5%, transparent);
-  --interaction-active: color-mix(in srgb, var(--editor-accent) 9%, transparent);
-  --interaction-border: color-mix(in srgb, var(--editor-accent) 18%, transparent);
+  --interaction-hover: rgba(255, 255, 255, 0.56);
+  --interaction-active: rgba(255, 255, 255, 0.8);
+  --interaction-border: rgba(25, 28, 33, 0.08);
+  --surface-tray: #fafafb;
+  --surface-raised: #ffffff;
+  --surface-shadow: 0 0 1.76px rgba(0, 0, 0, 0.08), 0 1px 1.76px rgba(25, 28, 33, 0.06), 0 0 0 1px rgba(25, 28, 33, 0.04);
 }
 
 @theme inline {
@@ -944,15 +947,12 @@ body:has(.site-header) > :has(> .site-header) {
   width: 14rem;
   padding: 0.75rem 0.85rem 0.8rem;
   border: 1px solid var(--interaction-border);
-  border-radius: 4px;
-  background-color: color-mix(in srgb, var(--background) 94%, white);
-  background-image: url('/textures/sand-cyan.svg');
-  background-repeat: repeat;
-  background-size: 180px 180px;
+  border-radius: 10px;
+  background-color: var(--surface-raised);
   color: var(--editor-ink);
   opacity: 0;
   translate: 4px -50%;
-  box-shadow: 0 6px 18px rgba(15, 35, 39, 0.07);
+  box-shadow: 0 6px 20px -6px rgba(15, 23, 42, 0.22), var(--surface-shadow);
   transition:
     opacity 140ms ease-out,
     translate 140ms ease-out;
@@ -1266,15 +1266,38 @@ body:has(.site-header) > :has(> .site-header) {
 
 .site-header,
 .site-footer {
-  background-color: color-mix(in srgb, var(--background) 88%, transparent);
-  background-image: url('/textures/sand-cyan.svg');
-  background-repeat: repeat;
-  background-size: 180px 180px;
+  background-color: color-mix(in srgb, var(--surface-tray) 88%, transparent);
+  background-image: none;
+  backdrop-filter: saturate(140%) blur(16px);
+}
+
+.site-header {
+  box-shadow: 0 1px 0 rgba(25, 28, 33, 0.04), 0 1px 1.76px rgba(25, 28, 33, 0.04);
 }
 
 .site-footer {
   position: relative;
   z-index: 21;
+  box-shadow: 0 -1px 0 rgba(25, 28, 33, 0.04);
+}
+
+:is(.article-record-meta, .article-record-source, .friend-record, .route-transition__pill) {
+  border-color: transparent;
+  border-radius: 10px;
+  background: var(--surface-raised);
+  box-shadow: var(--surface-shadow);
+}
+
+.subscribe-panel label {
+  border-color: transparent;
+  border-radius: 10px;
+  background: var(--surface-raised);
+  box-shadow: var(--surface-shadow);
+}
+
+.subscribe-panel button {
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.14), 0 0 0 1px rgba(15, 23, 42, 0.04);
 }
 
 :is(.diary-media, .rich-content img) {
