@@ -8,6 +8,7 @@ import { CodeHighlightEnhancer } from '@/components/CodeHighlightEnhancer'
 import { MathRenderEnhancer } from '@/components/MathRenderEnhancer'
 import { TwitterEmbedsEnhancer } from '@/components/TwitterEmbedsEnhancer'
 import { GitHubAlertEnhancer } from '@/components/GitHubAlertEnhancer'
+import { AboutShowcase } from '@/components/AboutShowcase'
 
 export const metadata = {
   title: '关于我',
@@ -33,7 +34,7 @@ export default async function AboutPage() {
     return (
       <div className="flex min-h-screen flex-col bg-[var(--background)]">
         <SiteHeader />
-        <main className="page-main mx-auto w-full max-w-3xl flex-1 px-4 py-10 sm:px-6 sm:py-14">
+        <main className="page-main mx-auto w-full max-w-4xl flex-1 px-4 py-10 sm:px-6 sm:py-14">
           <AboutContent containerId={contentContainerId} html={html} />
         </main>
         <SiteFooter />
@@ -55,7 +56,7 @@ export default async function AboutPage() {
         navLinks={headerData.navLinks}
       />
 
-      <main className="page-main mx-auto w-full max-w-3xl flex-1 px-4 py-10 sm:px-6 sm:py-14">
+      <main className="page-main mx-auto w-full max-w-4xl flex-1 px-4 py-10 sm:px-6 sm:py-14">
         <AboutContent containerId={contentContainerId} html={html} />
       </main>
 
@@ -73,18 +74,7 @@ function AboutContent({
 }) {
   return (
     <article>
-      <header className="public-page-header">
-        <p className="public-page-kicker">PROFILE / ABOUT</p>
-        <h1 className="public-page-title">
-          关于我
-        </h1>
-      </header>
-
-      <div
-        id={containerId}
-        className="rich-content"
-        dangerouslySetInnerHTML={{ __html: html }}
-      />
+      <AboutShowcase id={containerId} html={html} />
       <CodeHighlightEnhancer containerId={containerId} html={html} />
       <MathRenderEnhancer containerId={containerId} html={html} />
       <TwitterEmbedsEnhancer containerId={containerId} html={html} />
