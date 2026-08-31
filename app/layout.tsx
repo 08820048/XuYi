@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     default: "XuYi",
     template: "%s · XuYi",
   },
-  description: '记录思考，分享所学，留住当下。技术、生活、读书笔记的数字花园。',
+  description: '把想法写成文字，把当下留在字里。一个开发者关于编程、工具与 AI 的写作实践。',
   icons: {
     icon: [
       { url: `/favicon.ico?v=${ICON_VERSION}`, sizes: 'any' },
@@ -70,7 +70,7 @@ export const metadata: Metadata = {
     url: SITE_URL,
     siteName: "XuYi",
     title: "XuYi",
-    description: '记录思考，分享所学，留住当下。技术、生活、读书笔记的数字花园。',
+    description: '把想法写成文字，把当下留在字里。一个开发者关于编程、工具与 AI 的写作实践。',
     images: [
       {
         url: '/icon-512.png',
@@ -85,7 +85,7 @@ export const metadata: Metadata = {
     site: '@vista8',
     creator: '@vista8',
     title: "XuYi",
-    description: '记录思考，分享所学，留住当下。技术、生活、读书笔记的数字花园。',
+    description: '把想法写成文字，把当下留在字里。一个开发者关于编程、工具与 AI 的写作实践。',
     images: ['/icon-512.png'],
   },
 };

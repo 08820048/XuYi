@@ -61,7 +61,7 @@ export default async function Home({
             '@type': 'WebSite',
             name: "XuYi",
             url: BASE_URL,
-            description: '记录思考，分享所学，留住当下。技术、生活、读书笔记的数字花园。',
+            description: '把想法写成文字，把当下留在字里。一个开发者关于编程、工具与 AI 的写作实践。',
             potentialAction: {
               '@type': 'SearchAction',
               target: { '@type': 'EntryPoint', urlTemplate: `${BASE_URL}/search?q={search_term_string}` },

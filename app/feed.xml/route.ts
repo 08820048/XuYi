@@ -3,7 +3,7 @@ import { getSiteUrl } from '@/lib/site-config'
 
 const SITE_URL = getSiteUrl()
 const SITE_TITLE = 'XuYi'
-const SITE_DESCRIPTION = '记录思考，分享所学，留住当下。'
+const SITE_DESCRIPTION = '把想法写成文字，把当下留在字里。'
 
 interface RssPost {
   slug: string
