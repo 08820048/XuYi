@@ -78,11 +78,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/08820048/XuYi-Blog.git"
+    "url": "git+https://github.com/08820048/XuYi.git"
   },
-  "homepage": "https://github.com/08820048/XuYi-Blog",
+  "homepage": "https://github.com/08820048/XuYi",
   "bugs": {
-    "url": "https://github.com/08820048/XuYi-Blog/issues"
+    "url": "https://github.com/08820048/XuYi/issues"
   },
   "cloudflare": {
     "bindings": {

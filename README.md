@@ -1,6 +1,6 @@
 # XuYi
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/08820048/XuYi-Blog)
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/08820048/XuYi)
 
 XuYi 是基于开源项目 [qiaomu-blog-opensource](https://github.com/joeseesun/qiaomu-blog-opensource) 二次调整的个人博客系统。
 
@@ -37,8 +37,8 @@ XuYi 是基于开源项目 [qiaomu-blog-opensource](https://github.com/joeseesun
 ## 本地启动
 
 ```bash
-git clone https://github.com/08820048/XuYi-Blog.git
-cd XuYi-Blog
+git clone https://github.com/08820048/XuYi.git
+cd XuYi
 npm install
 cp .env.example .env.local
 npm run db:init:local
