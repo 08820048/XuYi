@@ -17,6 +17,7 @@ const PRODUCT_LOGOS: Record<string, string> = {
   Quiet: '/product-logos/quiet.svg',
   'Citu（词图）': '/product-logos/citu.png',
   Chisel: '/product-logos/chisel.svg',
+  Berth: '/product-logos/berth.png',
   鸭小账: '/product-logos/duckbill.png',
 }
 
