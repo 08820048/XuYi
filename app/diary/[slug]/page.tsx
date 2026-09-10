@@ -15,6 +15,8 @@ import { getDiaryDisplayTitle, getDiaryPath } from '@/lib/diary-utils'
 import { getSiteUrl } from '@/lib/site-config'
 import { GitHubAlertEnhancer } from '@/components/GitHubAlertEnhancer'
 import { CodeHighlightEnhancer } from '@/components/CodeHighlightEnhancer'
+import { MathRenderEnhancer } from '@/components/MathRenderEnhancer'
+import { DiagramRenderEnhancer } from '@/components/DiagramRenderEnhancer'
 import { highlightHtml } from '@/lib/shiki-highlight'
 
 const BASE_URL = getSiteUrl()
@@ -117,6 +119,8 @@ export default async function DiaryEntryPage({
           />
           <GitHubAlertEnhancer containerId="diary-content" html={highlightedHtml} />
           <CodeHighlightEnhancer containerId="diary-content" html={highlightedHtml} />
+          <MathRenderEnhancer containerId="diary-content" html={highlightedHtml} />
+          <DiagramRenderEnhancer containerId="diary-content" html={highlightedHtml} />
         </article>
       </main>
 

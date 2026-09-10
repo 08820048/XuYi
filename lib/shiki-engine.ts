@@ -29,6 +29,12 @@ import xml from '@shikijs/langs/xml'
 import yaml from '@shikijs/langs/yaml'
 import type { HighlighterCore, LanguageInput } from '@shikijs/core'
 import { resolveLanguage } from '@/lib/shiki-highlight'
+import {
+  CODE_INNER_RE,
+  PRE_BLOCK_RE,
+  extractCodeFromPre,
+  extractRawLanguage,
+} from '@/lib/html-blocks'
 
 export const SHIKI_THEME_LIGHT = 'light-plus'
 export const SHIKI_THEME_DARK = 'dark-plus'
@@ -61,37 +67,22 @@ const LANG_GRAMMARS = {
   yaml,
 } satisfies Record<string, LanguageInput>
 
-const PRE_BLOCK_RE = /<pre\b[^>]*>[\s\S]*?<\/pre>/gi
-const LANGUAGE_CLASS_RE = /(?:language|lang)-([\w+#.-]+)/i
-const CODE_INNER_RE = /<code\b([^>]*)>([\s\S]*?)<\/code>/i
+const SKIP_HIGHLIGHT_LANGS = new Set(['mermaid', 'math', 'latex', 'katex', 'tex'])
 
 let highlighterPromise: Promise<HighlighterCore> | undefined
 
-function decodeHtmlEntities(value: string) {
-  return value
-    .replace(/&nbsp;/gi, ' ')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;|&apos;/g, "'")
-    .replace(/&#x([0-9a-f]+);/gi, (_, hex) => String.fromCodePoint(Number.parseInt(hex, 16)))
-    .replace(/&#(\d+);/g, (_, dec) => String.fromCodePoint(Number(dec)))
-    .replace(/&amp;/g, '&')
-}
-
-function stripTags(value: string) {
-  return value.replace(/<[^>]+>/g, '')
-}
-
 function extractLanguage(preHtml: string, codeAttrs: string) {
-  const match = `${preHtml.slice(0, 200)} ${codeAttrs}`.match(LANGUAGE_CLASS_RE)
-  return resolveLanguage(match?.[1] ?? '')
+  return resolveLanguage(extractRawLanguage(preHtml, codeAttrs))
 }
 
 function extractCode(preHtml: string) {
+  return extractCodeFromPre(preHtml)
+}
+
+function shouldSkipHighlight(preHtml: string) {
+  if (/\bclass="[^"]*\b(?:shiki|mermaid)\b/.test(preHtml)) return true
   const codeMatch = preHtml.match(CODE_INNER_RE)
-  const raw = codeMatch?.[2] ?? preHtml.replace(/^<pre\b[^>]*>/i, '').replace(/<\/pre>$/i, '')
-  return decodeHtmlEntities(stripTags(raw)).replace(/\n$/, '')
+  return SKIP_HIGHLIGHT_LANGS.has(extractRawLanguage(preHtml, codeMatch?.[1] ?? ''))
 }
 
 function getHighlighter() {
@@ -104,7 +95,7 @@ function getHighlighter() {
 }
 
 function highlightBlock(highlighter: HighlighterCore, preHtml: string) {
-  if (/\bclass="[^"]*\bshiki\b/.test(preHtml)) return preHtml
+  if (shouldSkipHighlight(preHtml)) return preHtml
 
   const codeMatch = preHtml.match(CODE_INNER_RE)
   const lang = extractLanguage(preHtml, codeMatch?.[1] ?? '')

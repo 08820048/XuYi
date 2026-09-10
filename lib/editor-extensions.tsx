@@ -364,6 +364,19 @@ export const suggestionItems = createSuggestionItems([
     },
   },
   {
+    title: 'Mermaid 图表',
+    description: '插入流程图、时序图等 Mermaid 图表。',
+    searchTerms: ['mermaid', 'diagram', 'flowchart', '图表', '流程图'],
+    icon: <CommandIcon label="◇" />,
+    command: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).insertContent({
+        type: 'codeBlock',
+        attrs: { language: 'mermaid' },
+        content: [{ type: 'text', text: 'flowchart TD\n  A[开始] --> B[结束]' }],
+      }).run()
+    },
+  },
+  {
     title: '数学公式',
     description: '插入 LaTeX 数学公式。',
     searchTerms: ['math', 'formula', 'latex', 'katex', '公式', '数学'],

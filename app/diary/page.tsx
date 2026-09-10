@@ -6,6 +6,8 @@ import { Pagination } from '@/components/Pagination'
 import { getSiteHeaderData } from '@/lib/site'
 import { getSiteUrl } from '@/lib/site-config'
 import { CodeHighlightEnhancer } from '@/components/CodeHighlightEnhancer'
+import { MathRenderEnhancer } from '@/components/MathRenderEnhancer'
+import { DiagramRenderEnhancer } from '@/components/DiagramRenderEnhancer'
 import { highlightHtml } from '@/lib/shiki-highlight'
 
 const PAGE_SIZE = 20
@@ -131,6 +133,14 @@ export default async function DiaryPage({
           </div>
         )}
         <CodeHighlightEnhancer
+          containerId="diary-list"
+          html={highlightedEntries.map((entry) => entry.html).join('\n')}
+        />
+        <MathRenderEnhancer
+          containerId="diary-list"
+          html={highlightedEntries.map((entry) => entry.html).join('\n')}
+        />
+        <DiagramRenderEnhancer
           containerId="diary-list"
           html={highlightedEntries.map((entry) => entry.html).join('\n')}
         />

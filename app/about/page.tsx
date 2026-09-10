@@ -6,6 +6,7 @@ import { SiteHeader } from '@/components/SiteHeader'
 import { SiteFooter } from '@/components/SiteFooter'
 import { MathRenderEnhancer } from '@/components/MathRenderEnhancer'
 import { CodeHighlightEnhancer } from '@/components/CodeHighlightEnhancer'
+import { DiagramRenderEnhancer } from '@/components/DiagramRenderEnhancer'
 import { highlightHtml } from '@/lib/shiki-highlight'
 import { TwitterEmbedsEnhancer } from '@/components/TwitterEmbedsEnhancer'
 import { GitHubAlertEnhancer } from '@/components/GitHubAlertEnhancer'
@@ -78,6 +79,7 @@ function AboutContent({
       <AboutShowcase id={containerId} html={html} />
       <CodeHighlightEnhancer containerId={containerId} html={html} />
       <MathRenderEnhancer containerId={containerId} html={html} />
+      <DiagramRenderEnhancer containerId={containerId} html={html} />
       <TwitterEmbedsEnhancer containerId={containerId} html={html} />
       <GitHubAlertEnhancer containerId={containerId} html={html} />
     </article>

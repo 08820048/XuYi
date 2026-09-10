@@ -1,4 +1,6 @@
 import { highlightHtmlWithShiki } from '@/lib/shiki-engine'
+import { prepareDiagramBlocks } from '@/lib/diagram-html'
+import { renderMathInHtml } from '@/lib/math-html'
 
 export const SHIKI_THEME_LIGHT = 'light-plus'
 export const SHIKI_THEME_DARK = 'dark-plus'
@@ -58,12 +60,14 @@ export function resolveLanguage(raw: string) {
 
 export async function highlightHtml(html: string | null | undefined) {
   if (!html) return ''
-  if (!html.includes('<pre')) return html
 
   try {
-    return await highlightHtmlWithShiki(html)
+    const withDiagrams = prepareDiagramBlocks(html)
+    const withMath = renderMathInHtml(withDiagrams)
+    if (!withMath.includes('<pre')) return withMath
+    return await highlightHtmlWithShiki(withMath)
   } catch (error) {
-    console.error('Shiki highlight failed:', error)
+    console.error('Article HTML enhance failed:', error)
     return html
   }
 }

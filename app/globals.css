@@ -1481,7 +1481,13 @@ body:has(.site-header) > :has(> .site-header) {
 .math-inline {
   display: inline;
 }
-.math-block-wrapper {
+.math-block-wrapper[data-display-mode="false"] {
+  display: inline;
+  margin: 0;
+  overflow: visible;
+}
+.math-block-wrapper[data-display-mode="true"],
+.math-block-wrapper:not([data-display-mode]) {
   margin: 1.5rem 0;
   text-align: center;
   overflow-x: auto;

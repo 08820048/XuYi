@@ -22,7 +22,7 @@ export function CodeHighlightEnhancer({
     const blocks = root.querySelectorAll('pre code')
     blocks.forEach((block) => {
       const element = block as HTMLElement
-      if (element.closest('pre.shiki')) return
+      if (element.closest('pre.shiki, pre.mermaid, .kami-diagram, .math-block-wrapper, .katex')) return
       if (element.dataset.highlighted === 'yes') return
       hljs.highlightElement(element)
     })

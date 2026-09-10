@@ -561,6 +561,64 @@ body {
   color: inherit;
 }
 
+:is(.novel-prose, .rich-content) .katex {
+  font-size: 1.06em;
+  color: var(--kami-near-black);
+}
+
+:is(.novel-prose, .rich-content) .math-block-wrapper[data-display-mode="false"] {
+  display: inline;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: none;
+}
+
+:is(.novel-prose, .rich-content) .katex-display,
+:is(.novel-prose, .rich-content) .math-block-wrapper[data-display-mode="true"] {
+  margin: 2rem 0;
+  padding: 1.15rem 1.1rem;
+  overflow-x: auto;
+  text-align: center;
+  background: var(--kami-ivory);
+  border: 0.5px solid var(--kami-warm-sand);
+  border-radius: 6px;
+}
+
+:is(.novel-prose, .rich-content) .math-block-wrapper[data-display-mode="true"] .katex-display {
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: none;
+}
+
+.kami-diagram {
+  margin: 2rem 0;
+  padding: 1.15rem 1.1rem;
+  overflow-x: auto;
+  background: var(--kami-ivory);
+  border: 0.5px solid var(--kami-warm-sand);
+  border-radius: 6px;
+}
+
+:is(.novel-prose, .rich-content) pre.mermaid,
+.kami-diagram .mermaid {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--kami-near-black);
+  border: none;
+  box-shadow: none;
+  text-align: center;
+}
+
+.kami-diagram .mermaid svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+
 :is(.novel-prose, .rich-content) table {
   border: 0.5px solid var(--kami-warm-sand);
   border-radius: 4px;
