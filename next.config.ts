@@ -11,8 +11,6 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
 
-  serverExternalPackages: ['shiki', '@shikijs/engine-javascript'],
-
   turbopack: {
     root: resolve(process.cwd()),
   },
