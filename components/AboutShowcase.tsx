@@ -11,7 +11,7 @@ interface AboutProject {
 const PRODUCT_LOGOS: Record<string, string> = {
   Hoolo: '/product-logos/hoolo.png',
   ToolPop: '/product-logos/toolpop.png',
-  Welight: '/product-logos/welight.png',
+  Welight: '/product-logos/welight-2.png',
   Ornata: '/product-logos/ornata.png',
   Clibo: '/product-logos/clibo.png',
   Quiet: '/product-logos/quiet.svg',
