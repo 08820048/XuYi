@@ -1341,25 +1341,6 @@ body:has(.site-header) > :has(> .site-header) {
 }
 
 
-/* 内联编辑器：去掉全页编辑器的 padding 和 min-height，融入文章详情页 */
-.inline-editor .novel-prose {
-  min-height: auto;
-  padding: 0;
-  font-size: 1rem;
-  line-height: 1.85;
-}
-
-@media (min-width: 640px) {
-  .inline-editor .novel-prose {
-    font-size: 1.06rem;
-    line-height: 1.9;
-  }
-}
-
-.inline-editor .editor-surface {
-  min-height: auto;
-}
-
 /* ── 视频 / 音频移动端兼容 ── */
 :is(.novel-prose, .rich-content) video {
   max-width: 100%;

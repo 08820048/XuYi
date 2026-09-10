@@ -5,7 +5,6 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { SiteHeader } from '@/components/SiteHeader'
 import { SiteFooter } from '@/components/SiteFooter'
-import { FrontPostAdminBoundary } from '@/components/FrontPostAdminBoundary'
 import { PasswordPrompt } from '@/components/PasswordPrompt'
 import { DownloadMarkdown } from '@/components/DownloadMarkdown'
 import { PostTypeBadge } from '@/components/PostTypeBadge'
@@ -114,7 +113,6 @@ export default async function PostPage({
   const headerData = await getSiteHeaderData(db)
   const activeCategorySlug = headerData.categories.find((category) => category.name === post.category)?.slug ?? null
 
-  // 密码保护逻辑保持公开路径纯粹，由前台管理员增强层在客户端接管编辑能力
   let passwordError: string | undefined
   const needsPassword = Boolean(post.password)
 
@@ -128,19 +126,7 @@ export default async function PostPage({
             stickyOnMobile={false}
           />
           <main className="kami-page-main">
-            <FrontPostAdminBoundary
-              slug={post.slug}
-              title={post.title}
-              html={post.html}
-              category={post.category}
-              coverImage={post.cover_image}
-              password={post.password}
-              publishedAt={post.published_at}
-              viewCount={post.view_count}
-              content={post.content}
-            >
-              <PasswordPrompt />
-            </FrontPostAdminBoundary>
+            <PasswordPrompt />
           </main>
           <SiteFooter />
         </div>
@@ -158,19 +144,7 @@ export default async function PostPage({
             stickyOnMobile={false}
           />
           <main className="kami-page-main">
-            <FrontPostAdminBoundary
-              slug={post.slug}
-              title={post.title}
-              html={post.html}
-              category={post.category}
-              coverImage={post.cover_image}
-              password={post.password}
-              publishedAt={post.published_at}
-              viewCount={post.view_count}
-              content={post.content}
-            >
-              <PasswordPrompt error={passwordError} />
-            </FrontPostAdminBoundary>
+            <PasswordPrompt error={passwordError} />
           </main>
           <SiteFooter />
         </div>
@@ -237,112 +211,96 @@ export default async function PostPage({
           )
         })()}
         <div className="relative">
-            <FrontPostAdminBoundary
-              slug={post.slug}
+          <article>
+            <PostUpdateSeenMarker post={post} />
+            <header className="kami-article-header">
+              <div className="kami-article-kicker">
+                <p className="kami-label">
+                  {post.category ? `${post.category} · 文章` : '文章'}
+                </p>
+                <span className="kami-post-badges">
+                  <PostTypeBadge type={post.post_type} />
+                  <PostUpdateBadge post={post} />
+                </span>
+              </div>
+              <h1 className="kami-article-title">
+                {post.title}
+              </h1>
+              <div className="kami-article-meta">
+                <time dateTime={publishedDate.replaceAll('.', '-')}>{publishedDate}</time>
+                <span>{readingMinutes} min</span>
+                <span>{post.view_count} views</span>
+                <DownloadMarkdown title={post.title} html={post.html} />
+              </div>
+              {post.source_url && post.post_type !== 'original' && (
+                <div className="kami-note">
+                  <p className="kami-label">版权与来源</p>
+                  <p>
+                    {post.post_type === 'repost'
+                      ? '原文著作权归原作者或相关权利人所有。本站仅在授权范围内转载，不代表原作者对本站观点或内容的认可。'
+                      : '原作品著作权归原作者或相关权利人所有。本译文由本站完成，译文相关权利的行使仍受原作品授权条款约束。'}
+                  </p>
+                  <p>
+                    原文链接：
+                    <a
+                      href={post.source_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {post.source_url}
+                    </a>
+                  </p>
+                </div>
+              )}
+            </header>
+
+            <PostUpdateNotice post={post} />
+
+            <div
+              id={contentContainerId}
+              className="rich-content"
+              dangerouslySetInnerHTML={{ __html: highlightedHtml }}
+            />
+            <GitHubAlertEnhancer containerId={contentContainerId} html={highlightedHtml} />
+            <CodeHighlightEnhancer containerId={contentContainerId} html={highlightedHtml} />
+            <MathRenderEnhancer containerId={contentContainerId} html={highlightedHtml} />
+            <DiagramRenderEnhancer containerId={contentContainerId} html={highlightedHtml} />
+            <TwitterEmbedsEnhancer containerId={contentContainerId} html={highlightedHtml} />
+
+            <SubscribeForm minimal />
+
+            <ArticleCopyrightNotice
+              containerId={contentContainerId}
               title={post.title}
-              html={post.html}
-              category={post.category}
-              coverImage={post.cover_image}
-              password={post.password}
-              publishedAt={post.published_at}
-              viewCount={post.view_count}
-              content={post.content}
-            >
-              <article>
-                <PostUpdateSeenMarker post={post} />
-                <header className="kami-article-header">
-                  <div className="kami-article-kicker">
-                    <p className="kami-label">
-                      {post.category ? `${post.category} · 文章` : '文章'}
-                    </p>
-                    <span className="kami-post-badges">
-                      <PostTypeBadge type={post.post_type} />
-                      <PostUpdateBadge post={post} />
-                    </span>
-                  </div>
-                  <h1
-                    data-admin-edit-trigger
-                    className="kami-article-title"
-                  >
-                    {post.title}
-                  </h1>
-                  <div className="kami-article-meta">
-                    <time dateTime={publishedDate.replaceAll('.', '-')}>{publishedDate}</time>
-                    <span>{readingMinutes} min</span>
-                    <span>{post.view_count} views</span>
-                    <DownloadMarkdown title={post.title} html={post.html} />
-                  </div>
-                  {post.source_url && post.post_type !== 'original' && (
-                    <div className="kami-note">
-                      <p className="kami-label">版权与来源</p>
-                      <p>
-                        {post.post_type === 'repost'
-                          ? '原文著作权归原作者或相关权利人所有。本站仅在授权范围内转载，不代表原作者对本站观点或内容的认可。'
-                          : '原作品著作权归原作者或相关权利人所有。本译文由本站完成，译文相关权利的行使仍受原作品授权条款约束。'}
-                      </p>
-                      <p>
-                        原文链接：
-                        <a
-                          href={post.source_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
+              articleUrl={articleUrl}
+              sourceUrl={post.source_url}
+            />
+
+            {related.results.length > 0 && (
+              <section className="kami-section related-records">
+                <p className="kami-label">02 · Continue</p>
+                <h2 className="kami-section-title">继续阅读</h2>
+                <div className="kami-post-list">
+                  {related.results.map((item) => (
+                    <article key={item.slug} className="kami-post">
+                      <Link href={`/${item.slug}`} className="kami-post-link">
+                        <div className="kami-post-main">
+                          <h3 className="kami-post-title">{item.title}</h3>
+                        </div>
+                        <span className="kami-post-leader" aria-hidden="true" />
+                        <time
+                          className="kami-post-date"
+                          dateTime={new Date(item.published_at * 1000).toISOString()}
                         >
-                          {post.source_url}
-                        </a>
-                      </p>
-                    </div>
-                  )}
-                </header>
-
-                <PostUpdateNotice post={post} />
-
-                <div
-                  id={contentContainerId}
-                  data-admin-edit-trigger
-                  className="rich-content"
-                  dangerouslySetInnerHTML={{ __html: highlightedHtml }}
-                />
-                <GitHubAlertEnhancer containerId={contentContainerId} html={highlightedHtml} />
-                <CodeHighlightEnhancer containerId={contentContainerId} html={highlightedHtml} />
-                <MathRenderEnhancer containerId={contentContainerId} html={highlightedHtml} />
-                <DiagramRenderEnhancer containerId={contentContainerId} html={highlightedHtml} />
-                <TwitterEmbedsEnhancer containerId={contentContainerId} html={highlightedHtml} />
-
-                <SubscribeForm minimal />
-
-                <ArticleCopyrightNotice
-                  containerId={contentContainerId}
-                  title={post.title}
-                  articleUrl={articleUrl}
-                  sourceUrl={post.source_url}
-                />
-
-                {related.results.length > 0 && (
-                  <section className="kami-section related-records">
-                    <p className="kami-label">02 · Continue</p>
-                    <h2 className="kami-section-title">继续阅读</h2>
-                    <div className="kami-post-list">
-                      {related.results.map((item) => (
-                        <article key={item.slug} className="kami-post">
-                          <Link href={`/${item.slug}`} className="kami-post-link">
-                            <div className="kami-post-main">
-                              <h3 className="kami-post-title">{item.title}</h3>
-                            </div>
-                            <span className="kami-post-leader" aria-hidden="true" />
-                            <time
-                              className="kami-post-date"
-                              dateTime={new Date(item.published_at * 1000).toISOString()}
-                            >
-                              {new Date(item.published_at * 1000).toISOString().slice(0, 10).replaceAll('-', '.')}
-                            </time>
-                          </Link>
-                        </article>
-                      ))}
-                    </div>
-                  </section>
-                )}
-              </article>
-            </FrontPostAdminBoundary>
+                          {new Date(item.published_at * 1000).toISOString().slice(0, 10).replaceAll('-', '.')}
+                        </time>
+                      </Link>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            )}
+          </article>
 
           <div className="article-toc-dock">
             <ArticleTableOfContents containerId={contentContainerId} />
