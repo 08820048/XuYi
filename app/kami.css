@@ -586,29 +586,24 @@ body {
 
 :is(.novel-prose, .rich-content) .katex-display,
 :is(.novel-prose, .rich-content) .math-block-wrapper[data-display-mode="true"] {
-  margin: 2rem 0;
-  padding: 1.15rem 1.1rem;
+  margin: 1.75rem 0;
+  padding: 0;
   overflow-x: auto;
   text-align: center;
-  background: var(--kami-ivory);
-  border: 0.5px solid var(--kami-warm-sand);
-  border-radius: 6px;
-}
-
-:is(.novel-prose, .rich-content) .math-block-wrapper[data-display-mode="true"] .katex-display {
-  margin: 0;
-  padding: 0;
   background: none;
   border: none;
 }
 
+:is(.novel-prose, .rich-content) .math-block-wrapper[data-display-mode="true"] .katex-display {
+  margin: 0;
+}
+
 .kami-diagram {
-  margin: 2rem 0;
-  padding: 1.15rem 1.1rem;
+  margin: 1.75rem 0;
+  padding: 0;
   overflow-x: auto;
-  background: var(--kami-ivory);
-  border: 0.5px solid var(--kami-warm-sand);
-  border-radius: 6px;
+  background: none;
+  border: none;
 }
 
 :is(.novel-prose, .rich-content) pre.mermaid,
