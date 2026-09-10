@@ -5,6 +5,11 @@ export const THEME_CHANGE_EVENT = 'qm-theme-change'
 
 export const THEME_OPTIONS = [
   {
+    id: 'kami',
+    label: 'Kami 纸',
+    description: '白底 · 油墨蓝 · 衬线阅读',
+  },
+  {
     id: 'default',
     label: '默认',
     description: '温暖、克制的阅读首页',
@@ -74,7 +79,7 @@ export function isTheme(value: string | null | undefined): value is Theme {
   return THEME_OPTIONS.some((option) => option.id === value)
 }
 
-export function normalizeTheme(value: string | null | undefined, fallback: Theme = 'default'): Theme {
+export function normalizeTheme(value: string | null | undefined, fallback: Theme = 'kami'): Theme {
   return isTheme(value) ? value : fallback
 }
 

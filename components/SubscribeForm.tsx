@@ -27,13 +27,13 @@ export function SubscribeForm({ minimal = false }: { minimal?: boolean }) {
       const data = await res.json().catch(() => null)
 
       if (res.ok && data?.success) {
-        setSuccessMessage("You're subscribed. The next article will arrive in your inbox.")
+        setSuccessMessage('订阅成功，下一篇文章发布时会通知你。')
         setEmail('')
       } else {
-        setError(res.status === 400 ? 'Please enter a valid email address.' : 'Something went wrong. Please try again.')
+        setError(res.status === 400 ? '请输入有效的邮箱地址。' : '提交失败，请稍后重试。')
       }
     } catch {
-      setError('Network error. Please try again.')
+      setError('网络错误，请稍后重试。')
     } finally {
       setLoading(false)
     }
@@ -53,11 +53,14 @@ export function SubscribeForm({ minimal = false }: { minimal?: boolean }) {
       >
         {!minimal && (
           <div>
-            <h3 className="m-0 text-[19px] font-bold leading-snug text-[var(--editor-ink)]">
-              AI, software, and things I&apos;m building.
+            <h3
+              className="m-0 text-[1.125rem] font-medium leading-snug text-[var(--editor-ink)]"
+              style={{ fontFamily: 'var(--font-serif)' }}
+            >
+              订阅更新
             </h3>
-            <p className="mt-1 text-sm leading-relaxed text-[var(--editor-muted)]">
-              Occasional notes. No spam, unsubscribe anytime.
+            <p className="mt-1.5 text-sm leading-relaxed text-[var(--editor-muted)]">
+              新文章发布时收到邮件通知，随时可退订。
             </p>
           </div>
         )}
@@ -69,7 +72,7 @@ export function SubscribeForm({ minimal = false }: { minimal?: boolean }) {
         ) : (
           <div className={minimal ? '' : 'mx-auto mt-5 max-w-md'}>
             <form onSubmit={handleSubmit} className="flex gap-2">
-              <label className="flex min-w-0 flex-1 items-center gap-2.5 rounded-[7px] border border-[var(--editor-line)] bg-[var(--editor-panel)] px-3 transition-[border-color,box-shadow] duration-150 focus-within:border-[var(--editor-accent)] focus-within:ring-2 focus-within:ring-[var(--editor-accent)]/15">
+              <label className="flex min-w-0 flex-1 items-center gap-2.5 px-3">
                 <Mail className="h-4 w-4 shrink-0 text-[var(--editor-muted)]" aria-hidden />
                 <span className="sr-only">Email address</span>
                 <input
@@ -86,7 +89,7 @@ export function SubscribeForm({ minimal = false }: { minimal?: boolean }) {
               <button
                 type="submit"
                 disabled={loading || !email.trim()}
-                className="inline-flex min-w-[7.25rem] shrink-0 items-center justify-center gap-2 rounded-[7px] bg-[var(--editor-accent)] px-4 py-2.5 text-sm font-semibold text-white transition-opacity duration-150 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+                className="kami-btn-primary inline-flex min-w-[7.25rem] shrink-0 items-center justify-center gap-2 px-4 py-2.5 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {loading ? (
                   <LoaderCircle className="h-4 w-4 animate-spin" aria-label="Subscribing" />

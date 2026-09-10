@@ -22,29 +22,26 @@ export function Pagination({ currentPage, totalPages, basePath }: PaginationProp
     page === 1 ? basePath : `${basePath}${basePath.includes('?') ? '&' : '?'}page=${page}`
 
   return (
-    <nav className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mt-12" aria-label="分页导航">
+    <nav className="kami-pagination flex flex-wrap items-center justify-center gap-1 mt-14" aria-label="分页导航">
       {currentPage > 1 && (
-        <Link
-          href={href(currentPage - 1)}
-          className="rounded-sm px-2.5 py-2 text-sm text-[var(--editor-muted)] transition-colors duration-150 hover:bg-[var(--editor-soft)] hover:text-[var(--editor-ink)] sm:px-3"
-        >
-          ← <span className="hidden xs:inline">上一页</span>
+        <Link href={href(currentPage - 1)} className="kami-page-link px-3 py-2 text-sm">
+          ← 上一页
         </Link>
       )}
 
       {pages.map((p, i) =>
         p === '...' ? (
-          <span key={`dot-${i}`} className="px-2 text-[var(--stone-gray)]">
-            ...
+          <span key={`dot-${i}`} className="px-2 text-[var(--kami-stone)]">
+            …
           </span>
         ) : (
           <Link
             key={p}
             href={href(p)}
-            className={`min-w-[2rem] rounded-sm px-2 py-2 text-center font-mono text-sm transition-colors duration-150 sm:min-w-[2.25rem] sm:px-3 ${
+            className={`min-w-[2rem] px-2.5 py-2 text-center font-mono text-sm ${
               p === currentPage
-                ? 'bg-[var(--editor-ink)] text-[var(--editor-panel)] font-semibold shadow-sm'
-                : 'text-[var(--editor-muted)] hover:text-[var(--editor-ink)] hover:bg-[var(--editor-soft)]'
+                ? 'kami-page-active rounded-lg'
+                : 'kami-page-link rounded-lg'
             }`}
           >
             {p}
@@ -53,11 +50,8 @@ export function Pagination({ currentPage, totalPages, basePath }: PaginationProp
       )}
 
       {currentPage < totalPages && (
-        <Link
-          href={href(currentPage + 1)}
-          className="rounded-sm px-2.5 py-2 text-sm text-[var(--editor-muted)] transition-colors duration-150 hover:bg-[var(--editor-soft)] hover:text-[var(--editor-ink)] sm:px-3"
-        >
-          <span className="hidden xs:inline">下一页</span> →
+        <Link href={href(currentPage + 1)} className="kami-page-link px-3 py-2 text-sm">
+          下一页 →
         </Link>
       )}
     </nav>

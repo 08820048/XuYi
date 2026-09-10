@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     default: "XuYi",
     template: "%s · XuYi",
   },
-  description: '把想法写成文字，把当下留在字里。一个开发者关于编程、工具与 AI 的写作实践。',
+  description: '写游戏开发，也写 AI。',
   icons: {
     icon: [
       { url: `/favicon.ico?v=${ICON_VERSION}`, sizes: 'any' },
@@ -70,7 +70,7 @@ export const metadata: Metadata = {
     url: SITE_URL,
     siteName: "XuYi",
     title: "XuYi",
-    description: '把想法写成文字，把当下留在字里。一个开发者关于编程、工具与 AI 的写作实践。',
+    description: '写游戏开发，也写 AI。',
     images: [
       {
         url: '/icon-512.png',
@@ -85,7 +85,7 @@ export const metadata: Metadata = {
     site: '@vista8',
     creator: '@vista8',
     title: "XuYi",
-    description: '把想法写成文字，把当下留在字里。一个开发者关于编程、工具与 AI 的写作实践。',
+    description: '写游戏开发，也写 AI。',
     images: ['/icon-512.png'],
   },
 };
@@ -109,21 +109,27 @@ export default async function RootLayout({
     }
   } catch {}
 
-  const font = FONT_CONFIG[bodyFont]
+  const effectiveFont = bodyFont || 'kaiti'
+  const font = FONT_CONFIG[effectiveFont] ?? FONT_CONFIG.kaiti
 
   return (
     <html
       lang="zh-CN"
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-      data-font={bodyFont || 'default'}
-      data-theme="refined"
+      data-font={effectiveFont}
+      data-theme="kami"
     >
       <head>
-        {font?.link && <link rel="stylesheet" href={font.link} />}
-        {font && (
-          <style dangerouslySetInnerHTML={{ __html: `:root { --body-font: ${font.family}; }` }} />
+        <link rel="stylesheet" href="/fonts/jinkai/jinkai.css" />
+        {font?.link && effectiveFont !== 'kaiti' && (
+          <link rel="stylesheet" href={font.link} />
         )}
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `:root { --body-font: "TsangerJinKai02", "Source Han Serif SC", "Source Han Serif CN", "Noto Serif CJK SC", "Noto Serif SC", "Songti SC", Georgia, serif; }`,
+          }}
+        />
         <Script
           defer
           src="https://cloud.umami.is/script.js"

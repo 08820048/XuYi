@@ -55,29 +55,22 @@ export function ArticleCopyrightNotice({
   }, [clipboardNotice, containerId])
 
   return (
-    <section className="article-record-source article-copyright-notice" aria-label="版权声明">
-      <div className="article-record-source-label">
-        <span aria-hidden>©</span>
-        <span>版权声明</span>
-      </div>
+    <section className="kami-note article-copyright-notice" aria-label="版权声明">
+      <p className="kami-label">版权声明</p>
       <p>{ARTICLE_COPYRIGHT_NOTICE}</p>
-      <p className="mt-1">
+      <p>
         本文链接：
-        <a
-          href={articleUrl}
-          className="break-all text-[var(--editor-accent)] underline underline-offset-2 hover:opacity-80"
-        >
+        <a href={articleUrl}>
           {articleUrl}
         </a>
       </p>
       {sourceUrl && (
-        <p className="mt-1">
+        <p>
           原文链接：
           <a
             href={sourceUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="break-all text-[var(--editor-accent)] underline underline-offset-2 hover:opacity-80"
           >
             {sourceUrl}
           </a>

@@ -26,7 +26,7 @@ export async function getSiteHeaderData(db: D1Database): Promise<{
 }> {
   let navLinks: SiteNavLink[] = []
   let categories: SiteCategoryLink[] = []
-  const defaultTheme: Theme = 'refined'
+  const defaultTheme: Theme = 'kami'
 
   try {
     const [navJson, categoryRows, diaryNavEnabled] = await Promise.all([

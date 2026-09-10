@@ -1,6 +1,5 @@
 'use client'
 
-import { useEffect } from 'react'
 import type { Theme } from '@/lib/appearance'
 import type { PostWithTags } from '@/lib/db'
 import type { SiteCategoryLink, SiteNavLink } from '@/lib/site'
@@ -18,24 +17,6 @@ export interface HomeProps {
   categorySlugMap: Record<string, string>
 }
 
-function injectFont(id: string, href: string) {
-  if (typeof document === 'undefined') return
-  if (!document.getElementById(id)) {
-    const link = document.createElement('link')
-    link.id = id
-    link.rel = 'stylesheet'
-    link.href = href
-    document.head.appendChild(link)
-  }
-}
-
 export function HomeClient(props: HomeProps) {
-  useEffect(() => {
-    injectFont(
-      'qm-jetbrains-mono',
-      'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap',
-    )
-  }, [])
-
-  return <HomeVariantA {...props} initialTheme="refined" />
+  return <HomeVariantA {...props} initialTheme="kami" />
 }

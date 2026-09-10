@@ -30,7 +30,7 @@ export default async function Home({
   let totalCount = 0
   let navLinks: SiteNavLink[] = []
   let categories: SiteCategoryLink[] = []
-  const defaultTheme = 'refined' as const
+  const defaultTheme = 'kami' as const
   try {
     const env = await getAppCloudflareEnv()
     if (env?.DB) {
@@ -61,7 +61,7 @@ export default async function Home({
             '@type': 'WebSite',
             name: "XuYi",
             url: BASE_URL,
-            description: '把想法写成文字，把当下留在字里。一个开发者关于编程、工具与 AI 的写作实践。',
+            description: '写游戏开发，也写 AI。',
             potentialAction: {
               '@type': 'SearchAction',
               target: { '@type': 'EntryPoint', urlTemplate: `${BASE_URL}/search?q={search_term_string}` },

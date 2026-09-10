@@ -1,6 +1,6 @@
 INSERT OR IGNORE INTO site_settings (key, value) VALUES
-  ('default_theme', 'editorial'),
-  ('body_font', 'serif'),
+  ('default_theme', 'kami'),
+  ('body_font', 'kaiti'),
   ('about_markdown', '# 关于我
 
 这里写你的自我介绍。

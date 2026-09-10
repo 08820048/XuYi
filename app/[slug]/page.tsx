@@ -15,8 +15,8 @@ import { PostUpdateSeenMarker } from '@/components/PostUpdateSeenMarker'
 import { ArticleTableOfContents } from '@/components/ArticleTableOfContents'
 import { TwitterEmbedsEnhancer } from '@/components/TwitterEmbedsEnhancer'
 import { GitHubAlertEnhancer } from '@/components/GitHubAlertEnhancer'
-import { CodeHighlightEnhancer } from '@/components/CodeHighlightEnhancer'
 import { MathRenderEnhancer } from '@/components/MathRenderEnhancer'
+import { highlightHtml } from '@/lib/shiki-highlight'
 import { ArticleCopyrightNotice } from '@/components/ArticleCopyrightNotice'
 import { SubscribeForm } from '@/components/SubscribeForm'
 import { getSiteHeaderData } from '@/lib/site'
@@ -125,7 +125,7 @@ export default async function PostPage({
             navLinks={headerData.navLinks}
             stickyOnMobile={false}
           />
-          <main className="page-main mx-auto w-full max-w-3xl px-4 sm:px-6 flex-1 py-8 sm:py-12">
+          <main className="kami-page-main">
             <FrontPostAdminBoundary
               slug={post.slug}
               title={post.title}
@@ -155,7 +155,7 @@ export default async function PostPage({
             navLinks={headerData.navLinks}
             stickyOnMobile={false}
           />
-          <main className="page-main mx-auto w-full max-w-3xl px-4 sm:px-6 flex-1 py-8 sm:py-12">
+          <main className="kami-page-main">
             <FrontPostAdminBoundary
               slug={post.slug}
               title={post.title}
@@ -185,6 +185,7 @@ export default async function PostPage({
   const related = !post.password
     ? await getRelatedPosts(db, env, post, 3).catch(() => ({ strategy: 'fts' as const, source: 'rules' as const, results: [] }))
     : { strategy: 'fts' as const, source: 'rules' as const, results: [] }
+  const highlightedHtml = await highlightHtml(post.html)
   const contentContainerId = `post-content-${post.slug}`
   const articleUrl = `${getSiteUrl()}/${post.slug}`
   const publishedDate = new Date(post.published_at * 1000).toISOString().slice(0, 10).replaceAll('-', '.')
@@ -197,7 +198,7 @@ export default async function PostPage({
         stickyOnMobile={false}
       />
 
-      <main className="page-main mx-auto w-full max-w-[52rem] px-4 sm:px-6 flex-1 py-8 sm:py-12">
+      <main className="kami-page-main">
         {!post.password && (() => {
           const baseUrl = getSiteUrl()
           const imgMatch = post.html?.match(/<img[^>]+src="([^"]+)"/)
@@ -247,54 +248,42 @@ export default async function PostPage({
             >
               <article>
                 <PostUpdateSeenMarker post={post} />
-                <header className="article-record-header mb-10 sm:mb-12">
-                  <div className="article-record-main">
-                    <div className="article-record-kicker">
-                      <span>ARTICLE</span>
-                      <span className="flex items-center gap-2">
-                        <PostTypeBadge type={post.post_type} />
-                        <PostUpdateBadge post={post} />
-                      </span>
-                    </div>
-                    <h1
-                      data-admin-edit-trigger
-                      className="article-display-title"
-                    >
-                      {post.title}
-                    </h1>
+                <header className="kami-article-header">
+                  <div className="kami-article-kicker">
+                    <p className="kami-label">
+                      {post.category ? `${post.category} · 文章` : '文章'}
+                    </p>
+                    <span className="kami-post-badges">
+                      <PostTypeBadge type={post.post_type} />
+                      <PostUpdateBadge post={post} />
+                    </span>
                   </div>
-
-                  <dl className="article-record-meta">
-                    <div>
-                      <dt>DATE</dt>
-                      <dd><time dateTime={publishedDate.replaceAll('.', '-')}>{publishedDate}</time></dd>
-                    </div>
-                    <div>
-                      <dt>READ</dt>
-                      <dd>{readingMinutes} MIN / {post.view_count} VIEWS</dd>
-                    </div>
-                    <div className="article-record-download">
-                      <DownloadMarkdown title={post.title} html={post.html} />
-                    </div>
-                  </dl>
+                  <h1
+                    data-admin-edit-trigger
+                    className="kami-article-title"
+                  >
+                    {post.title}
+                  </h1>
+                  <div className="kami-article-meta">
+                    <time dateTime={publishedDate.replaceAll('.', '-')}>{publishedDate}</time>
+                    <span>{readingMinutes} min</span>
+                    <span>{post.view_count} views</span>
+                    <DownloadMarkdown title={post.title} html={post.html} />
+                  </div>
                   {post.source_url && post.post_type !== 'original' && (
-                    <div className="article-record-source">
-                      <div className="article-record-source-label">
-                        <span aria-hidden>©</span>
-                        <span>版权与来源</span>
-                      </div>
+                    <div className="kami-note">
+                      <p className="kami-label">版权与来源</p>
                       <p>
                         {post.post_type === 'repost'
                           ? '原文著作权归原作者或相关权利人所有。本站仅在授权范围内转载，不代表原作者对本站观点或内容的认可。'
                           : '原作品著作权归原作者或相关权利人所有。本译文由本站完成，译文相关权利的行使仍受原作品授权条款约束。'}
                       </p>
-                      <p className="mt-1">
+                      <p>
                         原文链接：
                         <a
                           href={post.source_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="break-all text-[var(--editor-accent)] underline underline-offset-2 hover:opacity-80"
                         >
                           {post.source_url}
                         </a>
@@ -309,12 +298,11 @@ export default async function PostPage({
                   id={contentContainerId}
                   data-admin-edit-trigger
                   className="rich-content"
-                  dangerouslySetInnerHTML={{ __html: post.html }}
+                  dangerouslySetInnerHTML={{ __html: highlightedHtml }}
                 />
-                <CodeHighlightEnhancer containerId={contentContainerId} html={post.html} />
-                <GitHubAlertEnhancer containerId={contentContainerId} html={post.html} />
-                <MathRenderEnhancer containerId={contentContainerId} html={post.html} />
-                <TwitterEmbedsEnhancer containerId={contentContainerId} html={post.html} />
+                <GitHubAlertEnhancer containerId={contentContainerId} html={highlightedHtml} />
+                <MathRenderEnhancer containerId={contentContainerId} html={highlightedHtml} />
+                <TwitterEmbedsEnhancer containerId={contentContainerId} html={highlightedHtml} />
 
                 <SubscribeForm minimal />
 
@@ -326,36 +314,26 @@ export default async function PostPage({
                 />
 
                 {related.results.length > 0 && (
-                  <section className="related-records mt-14 sm:mt-16 pt-6 sm:pt-8">
-                    <div className="mb-4">
-                      <div>
-                        <p className="font-mono text-[10px] text-[var(--editor-muted)] mb-1">RELATED / 关联记录</p>
-                        <h2 className="text-lg sm:text-xl font-bold text-[var(--editor-ink)]">继续阅读</h2>
-                      </div>
-                    </div>
-                    <div>
-                      {related.results.map((item) => {
-                        return (
-                          <Link
-                            key={item.slug}
-                            href={`/${item.slug}`}
-                            className="group archive-post-link"
-                          >
-                            <div className="archive-post-heading">
-                              <h3 className="archive-post-title">
-                                {item.title}
-                              </h3>
+                  <section className="kami-section related-records">
+                    <p className="kami-label">02 · Continue</p>
+                    <h2 className="kami-section-title">继续阅读</h2>
+                    <div className="kami-post-list">
+                      {related.results.map((item) => (
+                        <article key={item.slug} className="kami-post">
+                          <Link href={`/${item.slug}`} className="kami-post-link">
+                            <div className="kami-post-main">
+                              <h3 className="kami-post-title">{item.title}</h3>
                             </div>
-                            <span className="archive-post-leader" aria-hidden="true" />
+                            <span className="kami-post-leader" aria-hidden="true" />
                             <time
-                              className="archive-post-date"
+                              className="kami-post-date"
                               dateTime={new Date(item.published_at * 1000).toISOString()}
                             >
-                              {new Date(item.published_at * 1000).toISOString().slice(5, 10).replace('-', '.')}
+                              {new Date(item.published_at * 1000).toISOString().slice(0, 10).replaceAll('-', '.')}
                             </time>
                           </Link>
-                        )
-                      })}
+                        </article>
+                      ))}
                     </div>
                   </section>
                 )}

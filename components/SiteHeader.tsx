@@ -97,7 +97,7 @@ export function SiteHeader({
         `}
       >
         <div className="site-mobile-menu">
-          <nav className="flex flex-col gap-1 px-4 pb-3 text-sm">
+          <nav className="site-mobile-nav flex flex-col gap-1 pb-3 text-sm">
             {links.map(link => (
               <div key={link.label} className="site-mobile-nav-item">
                 {renderLink(link, () => setMobileMenuOpen(false))}

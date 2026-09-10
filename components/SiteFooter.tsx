@@ -53,8 +53,8 @@ export function SiteFooter() {
   return (
     <>
       <footer className="site-footer mt-auto">
-        <div className="relative mx-auto max-w-5xl px-4 py-6 text-xs text-[var(--stone-gray)] sm:px-6">
-          <div className="flex flex-wrap items-center justify-center gap-2">
+        <div className="site-footer-inner relative mx-auto text-xs text-[var(--kami-stone)]">
+          <div className="flex flex-wrap items-center justify-start gap-2">
             <span>© 2026</span>
             <span>·</span>
             {isAdmin ? (
@@ -91,7 +91,7 @@ export function SiteFooter() {
           {sponsorActive && (
             <aside
               aria-label="赞助"
-              className="mt-3 flex items-center justify-end gap-1.5 sm:absolute sm:right-6 sm:top-1/2 sm:mt-0 sm:-translate-y-1/2"
+              className="mt-3 flex items-center justify-start gap-1.5 sm:absolute sm:right-0 sm:top-1/2 sm:mt-0 sm:-translate-y-1/2"
             >
               <span>赞助</span>
               <span aria-hidden="true">·</span>
@@ -114,8 +114,8 @@ export function SiteFooter() {
           className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--editor-ink)]/30 px-4 backdrop-blur-sm"
           onClick={(e) => e.target === e.currentTarget && setOpen(false)}
         >
-          <div className="w-full max-w-[90vw] rounded-sm border border-[var(--editor-line)] bg-[var(--editor-panel)] p-4 shadow-xl sm:max-w-xs sm:p-6">
-            <h2 className="text-sm font-semibold text-[var(--editor-ink)] mb-4">进入管理后台</h2>
+          <div className="kami-modal w-full max-w-[90vw] p-5 sm:max-w-xs sm:p-6">
+            <h2 className="kami-section-title mb-4">进入管理后台</h2>
             <form onSubmit={handleSubmit} className="flex flex-col gap-3">
               <input
                 ref={inputRef}
@@ -123,21 +123,21 @@ export function SiteFooter() {
                 placeholder="请输入密码"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-sm border border-[var(--editor-line)] bg-[var(--background)] px-3 py-2.5 text-sm text-[var(--editor-ink)] outline-none transition-[border-color,box-shadow] duration-150 focus:border-[var(--editor-ink)] focus:ring-2 focus:ring-[var(--editor-ink)]/10"
+                className="kami-input"
               />
-              {error && <p className="text-xs text-rose-500">{error}</p>}
+              {error && <p className="text-xs text-[var(--kami-error)]">{error}</p>}
               <div className="flex gap-2">
                 <button
                   type="submit"
                   disabled={loading || !password}
-                  className="flex-1 rounded-sm bg-[var(--editor-ink)] py-2.5 text-sm font-semibold text-[var(--background)] transition-opacity duration-150 hover:opacity-80 disabled:opacity-50"
+                  className="kami-btn-primary flex-1 py-2.5 disabled:opacity-50"
                 >
                   {loading ? '验证中…' : '登录'}
                 </button>
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  className="rounded-sm border border-[var(--editor-line)] px-4 py-2.5 text-sm text-[var(--editor-muted)] transition-colors duration-150 hover:bg-[var(--editor-soft)]"
+                  className="kami-btn-secondary px-4 py-2.5"
                 >
                   取消
                 </button>

@@ -1,0 +1,964 @@
+/**
+ * Kami 纸 — 前台视觉层（白底打印版）
+ * 白底画布 · 暖色卡片 · 油墨蓝 · 衬线层级 · 平面克制
+ */
+
+@import url('/fonts/jinkai/jinkai.css');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root,
+[data-theme="kami"],
+[data-theme="refined"],
+[data-theme="default"] {
+  --kami-canvas: #ffffff;
+  --kami-parchment: #f5f4ed;
+  --kami-ivory: #faf9f5;
+  --kami-warm-sand: #e8e6dc;
+  --kami-ink: #1b365d;
+  --kami-ink-light: #2d5a8a;
+  --kami-near-black: #141413;
+  --kami-dark-warm: #3d3d3a;
+  --kami-olive: #504e49;
+  --kami-stone: #6b6a64;
+  --kami-tag: #e4ecf5;
+  --kami-tag-quiet: #eef2f7;
+  --kami-error: #b53333;
+
+  --background: var(--kami-canvas);
+  --foreground: var(--kami-near-black);
+  --editor-app-bg: var(--kami-canvas);
+  --editor-panel: var(--kami-ivory);
+  --editor-soft: #f0eee6;
+  --editor-line: var(--kami-warm-sand);
+  --editor-ink: var(--kami-near-black);
+  --editor-muted: var(--kami-stone);
+  --editor-accent: var(--kami-ink);
+  --editor-accent-ink: var(--kami-ivory);
+  --editor-link: var(--kami-ink);
+  --editor-code-bg: var(--kami-ivory);
+  --editor-code-border: transparent;
+  --editor-quote-bg: transparent;
+  --editor-selection: var(--kami-tag);
+  --stone-gray: var(--kami-stone);
+  --border-warm: var(--kami-warm-sand);
+  --coral: var(--kami-ink);
+  --article-heading: var(--kami-near-black);
+  --article-body: var(--kami-dark-warm);
+  --article-quote: var(--kami-olive);
+  --article-quote-border: transparent;
+  --article-quote-nested-border: transparent;
+  --article-quote-nested-bg: transparent;
+  --ambient-line: #e8e6dc;
+  --interaction-hover: var(--kami-ivory);
+  --interaction-active: #f0eee6;
+  --interaction-border: var(--kami-warm-sand);
+  --surface-tray: var(--kami-ivory);
+  --surface-raised: var(--kami-ivory);
+  --surface-shadow: none;
+  --font-serif: "TsangerJinKai02", "Source Han Serif SC", "Source Han Serif CN", "Noto Serif CJK SC", "Noto Serif SC", "Songti SC", Georgia, serif;
+  --font-sans: var(--font-serif);
+  --logo-font: var(--font-serif);
+  --font-ui: var(--font-serif);
+  --body-font: var(--font-serif);
+  --font-mono: "JetBrains Mono", "SF Mono", var(--font-geist-mono), ui-monospace, monospace;
+  --kami-content-width: 42rem;
+  --kami-page-width: 48rem;
+  --kami-page-gutter: 1.5rem;
+}
+
+html,
+html.antialiased {
+  background-color: var(--kami-canvas);
+  background-image: none;
+  color-scheme: light;
+  -webkit-font-smoothing: auto;
+  -moz-osx-font-smoothing: auto;
+}
+
+body {
+  background: var(--kami-canvas);
+  color: var(--kami-near-black);
+  font-family: var(--font-serif);
+  letter-spacing: 0.35px;
+  -webkit-font-smoothing: auto;
+  -moz-osx-font-smoothing: auto;
+}
+
+@page {
+  background: var(--kami-canvas);
+}
+
+/* ── 站点壳层 ── */
+
+.site-header {
+  background-color: var(--kami-canvas);
+  background-image: none;
+  backdrop-filter: none;
+  border-bottom: none;
+  box-shadow: none;
+}
+
+.site-header .site-header-inner,
+[data-theme="kami"] .site-header-inner,
+[data-theme="refined"] .site-header-inner {
+  width: 100%;
+  max-width: var(--kami-page-width);
+  margin-inline: auto;
+  padding-left: var(--kami-page-gutter);
+  padding-right: var(--kami-page-gutter);
+}
+
+.site-header-row {
+  height: 4rem;
+}
+
+.site-nav {
+  gap: 0.15rem;
+  font-family: var(--font-serif);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.site-nav-link,
+.site-nav-action {
+  border-radius: 8px;
+  color: var(--kami-olive);
+}
+
+.site-nav-link:is(:hover, :focus-visible),
+.site-nav-action:is(:hover, :focus-visible) {
+  background: var(--kami-ivory);
+  color: var(--kami-ink);
+}
+
+.site-logo-link:hover .signature-logo {
+  color: var(--kami-ink);
+}
+
+.site-footer {
+  background: var(--kami-canvas) !important;
+  background-image: none !important;
+  backdrop-filter: none !important;
+  border-top: none;
+  box-shadow: none;
+}
+
+.site-footer-inner {
+  width: 100%;
+  max-width: var(--kami-page-width);
+  margin-inline: auto;
+  padding: 2rem var(--kami-page-gutter) 2.5rem;
+}
+
+.site-mobile-menu {
+  background-color: var(--kami-canvas) !important;
+  background-image: none !important;
+}
+
+.site-mobile-nav {
+  padding-left: var(--kami-page-gutter);
+  padding-right: var(--kami-page-gutter);
+}
+
+/* ── 页面骨架 ── */
+
+.kami-home,
+.kami-page-main {
+  background: var(--kami-canvas);
+}
+
+.kami-home {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.kami-home-main,
+.kami-page-main {
+  flex: 1;
+  width: 100%;
+  max-width: var(--kami-page-width);
+  margin-inline: auto;
+  padding: 3.25rem var(--kami-page-gutter) 6.5rem;
+}
+
+.page-main {
+  max-width: var(--kami-page-width) !important;
+  padding-left: var(--kami-page-gutter) !important;
+  padding-right: var(--kami-page-gutter) !important;
+}
+
+/* ── 标题系统 ── */
+
+.kami-label {
+  margin: 0 0 0.7rem;
+  color: var(--kami-stone);
+  font-family: var(--font-serif);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 1.2px;
+  text-transform: none;
+}
+
+.kami-display {
+  margin: 0;
+  color: var(--kami-near-black);
+  font-family: var(--font-serif);
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.kami-lead {
+  margin: 1.1rem 0 0;
+  max-width: 34rem;
+  color: var(--kami-olive);
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  font-weight: 500;
+  line-height: 1.45;
+  letter-spacing: 0.35px;
+}
+
+.kami-section-title {
+  margin: 0 0 1.75rem;
+  color: var(--kami-near-black);
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.kami-empty {
+  margin: 2rem 0 0;
+  color: var(--kami-stone);
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.kami-empty a {
+  color: var(--kami-ink);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.kami-hero,
+.kami-page-header {
+  margin-bottom: 3.75rem;
+  padding-bottom: 2.25rem;
+  border-bottom: 0.5px solid var(--kami-warm-sand);
+}
+
+.kami-section {
+  margin-top: 0.5rem;
+}
+
+.kami-section + .kami-section,
+.related-records.kami-section {
+  margin-top: 4rem;
+  padding-top: 2.25rem;
+  border-top: 0.5px solid var(--kami-warm-sand);
+}
+
+/* ── 文章列表 ── */
+
+.kami-post-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.kami-post + .kami-post {
+  border-top: 0.5px solid color-mix(in srgb, var(--kami-warm-sand) 80%, transparent);
+}
+
+.kami-post-link {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 1rem 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.kami-post-link--stack {
+  display: block;
+}
+
+.kami-post-main {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.45rem 0.65rem;
+}
+
+.kami-post-title {
+  margin: 0;
+  color: var(--kami-near-black);
+  font-family: var(--font-serif);
+  font-size: 1.0625rem;
+  font-weight: 500;
+  line-height: 1.45;
+  letter-spacing: 0.01em;
+}
+
+.kami-post-link:is(:hover, :focus-visible) .kami-post-title {
+  color: var(--kami-ink);
+}
+
+.kami-post-badges {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.kami-post-leader {
+  flex: 1 1 2rem;
+  min-width: 2rem;
+  align-self: center;
+  border-top: 1px dotted color-mix(in srgb, var(--kami-stone) 50%, transparent);
+}
+
+.kami-post-link--stack .kami-post-leader {
+  display: none;
+}
+
+.kami-post-date {
+  flex-shrink: 0;
+  color: var(--kami-stone);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.kami-post-excerpt {
+  width: 100%;
+  margin: 0.15rem 0 0;
+  color: var(--kami-olive);
+  font-family: var(--font-serif);
+  font-size: 0.9375rem;
+  font-weight: 400;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.kami-lock {
+  color: var(--kami-stone);
+  flex-shrink: 0;
+}
+
+/* ── 文章详情 ── */
+
+.kami-article-header {
+  max-width: var(--kami-content-width);
+  margin-bottom: 2.75rem;
+  padding-bottom: 1.75rem;
+  border-bottom: 0.5px solid var(--kami-warm-sand);
+}
+
+.kami-article-kicker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.kami-article-kicker .kami-label {
+  margin-bottom: 0;
+}
+
+.kami-article-title {
+  margin: 0.85rem 0 0;
+  color: var(--kami-near-black);
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 4.4vw, 2.875rem);
+  font-weight: 500;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.kami-article-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.85rem;
+  margin: 1rem 0 0;
+  color: var(--kami-stone);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+.kami-article-meta > span + span::before,
+.kami-article-meta > time + span::before {
+  content: none;
+}
+
+.kami-note {
+  margin-top: 1.5rem;
+  padding: 1.1rem 1.15rem;
+  background: var(--kami-ivory);
+  border-radius: 8px;
+  color: var(--kami-olive);
+  font-family: var(--font-serif);
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+.kami-note .kami-label {
+  margin-bottom: 0.45rem;
+}
+
+.kami-note p + p {
+  margin-top: 0.55rem;
+}
+
+.kami-note a {
+  color: var(--kami-ink);
+  word-break: break-all;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.kami-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--kami-olive);
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  font-weight: 400;
+  text-decoration: none;
+}
+
+.kami-back:hover {
+  color: var(--kami-ink);
+}
+
+/* ── 正文排版（Kami Long Doc）── */
+
+.rich-content,
+[data-font="kaiti"] .rich-content,
+[data-font="serif"] .rich-content {
+  max-width: var(--kami-content-width);
+  color: var(--kami-dark-warm);
+  font-family: var(--font-serif);
+  font-size: 1.0625rem;
+  font-weight: 400;
+  line-height: 1.55;
+  letter-spacing: 0.35px;
+}
+
+@media (min-width: 640px) {
+  .rich-content,
+  [data-font="kaiti"] .rich-content {
+    font-size: 1.0625rem;
+    line-height: 1.55;
+  }
+}
+
+:is(.novel-prose, .rich-content) h1,
+:is(.novel-prose, .rich-content) h2,
+:is(.novel-prose, .rich-content) h3,
+[data-font="kaiti"] :is(.rich-content) h1,
+[data-font="kaiti"] :is(.rich-content) h2,
+[data-font="kaiti"] :is(.rich-content) h3,
+[data-font="kaiti"] .article-display-title,
+[data-font="kaiti"] .kami-article-title {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--kami-near-black);
+}
+
+:is(.novel-prose, .rich-content) h1 {
+  font-size: 1.75rem;
+  line-height: 1.2;
+}
+
+:is(.novel-prose, .rich-content) h2 {
+  font-size: 1.375rem;
+  line-height: 1.25;
+  margin-top: 2.25em;
+}
+
+:is(.novel-prose, .rich-content) h3 {
+  font-size: 1.125rem;
+  line-height: 1.3;
+  margin-top: 1.75em;
+}
+
+:is(.novel-prose, .rich-content) a {
+  color: var(--kami-ink);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+:is(.novel-prose, .rich-content) a:hover {
+  color: var(--kami-ink-light);
+}
+
+:is(.novel-prose, .rich-content) blockquote {
+  background: transparent;
+  border-left: none;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0 0 0 0.15rem;
+  color: var(--kami-olive);
+  font-style: italic;
+}
+
+:is(.novel-prose, .rich-content) blockquote blockquote {
+  background: transparent;
+  margin-top: 0.75em;
+}
+
+:is(.novel-prose, .rich-content) hr {
+  border: none;
+  border-top: 0.5px solid var(--kami-warm-sand);
+  margin: 2.5rem 0;
+}
+
+:is(.novel-prose, .rich-content) code {
+  font-family: "JetBrains Mono", var(--font-mono), ui-monospace, monospace;
+  font-size: 0.875em;
+  background: #f0eee6;
+  border: none;
+  border-radius: 4px;
+  padding: 0.12em 0.35em;
+  color: var(--kami-near-black);
+}
+
+:is(.novel-prose, .rich-content) pre {
+  background: #181818;
+  color: #f5f5f5;
+  border: none;
+  border-radius: 6px;
+  box-shadow: none;
+  padding: 1rem 1.1rem;
+}
+
+:is(.novel-prose, .rich-content) pre code {
+  font-family: "JetBrains Mono", var(--font-mono), ui-monospace, monospace;
+  font-size: 0.875rem;
+  line-height: 1.65;
+  background: transparent;
+  padding: 0;
+  color: inherit;
+}
+
+:is(.novel-prose, .rich-content) pre.shiki {
+  background-color: #ffffff;
+  color: #333333;
+  border: 0.5px solid var(--kami-warm-sand);
+}
+
+:is(.novel-prose, .rich-content) pre.shiki code {
+  color: inherit;
+}
+
+:is(.novel-prose, .rich-content) table {
+  border: 0.5px solid var(--kami-warm-sand);
+  border-radius: 4px;
+  box-shadow: none;
+}
+
+:is(.novel-prose, .rich-content) table th {
+  background: var(--kami-ivory);
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 0.8125rem;
+}
+
+:is(.novel-prose, .rich-content) table td {
+  font-size: 0.9375rem;
+}
+
+:is(.novel-prose, .rich-content) table tr:nth-child(even) td {
+  background: color-mix(in srgb, var(--kami-ivory) 70%, var(--kami-canvas));
+}
+
+:is(.diary-media, .rich-content img, .kami-media) {
+  outline: none;
+  border-radius: 8px;
+}
+
+/* ── 日记 ── */
+
+.kami-diary-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.kami-diary {
+  display: grid;
+  gap: 1.5rem;
+  padding: 2.25rem 0;
+  border-top: 0.5px solid var(--kami-warm-sand);
+}
+
+.kami-diary:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.kami-diary-date {
+  display: flex;
+  align-items: baseline;
+  gap: 0.65rem;
+}
+
+.kami-metric {
+  color: var(--kami-ink);
+  font-family: var(--font-serif);
+  font-size: 2.25rem;
+  font-weight: 500;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.kami-diary-caption {
+  color: var(--kami-stone);
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+.kami-diary-title {
+  margin: 0 0 1.25rem;
+  color: var(--kami-near-black);
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 500;
+  line-height: 1.25;
+  text-wrap: balance;
+}
+
+@media (min-width: 640px) {
+  .kami-diary {
+    grid-template-columns: 7.5rem minmax(0, 1fr);
+    gap: 2.5rem;
+    padding: 2.75rem 0;
+  }
+
+  .kami-diary-date {
+    display: block;
+  }
+
+  .kami-diary-caption {
+    display: block;
+    margin-top: 0.4rem;
+  }
+}
+
+/* ── 友联卡片 ── */
+
+.kami-card-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .kami-card-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.kami-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  padding: 1.1rem 1.15rem;
+  background: var(--kami-ivory);
+  border-radius: 8px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.kami-card:hover .kami-card-title {
+  color: var(--kami-ink);
+}
+
+.kami-card-avatar {
+  display: flex;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--kami-warm-sand);
+  color: var(--kami-olive);
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+
+.kami-card-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.kami-card .kami-label {
+  margin-bottom: 0.25rem;
+}
+
+.kami-card-title {
+  margin: 0;
+  color: var(--kami-near-black);
+  font-family: var(--font-serif);
+  font-size: 1.0625rem;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.kami-card-desc {
+  margin: 0.3rem 0 0;
+  color: var(--kami-olive);
+  font-family: var(--font-serif);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── Tag / 按钮 / 输入 ── */
+
+.kami-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  background: var(--kami-tag);
+  color: var(--kami-ink);
+  font-family: var(--font-ui);
+  font-size: 0.625rem;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: 0.02em;
+}
+
+.kami-tag--quiet {
+  background: var(--kami-tag-quiet);
+  color: var(--kami-olive);
+}
+
+.kami-btn-primary {
+  border: none;
+  border-radius: 8px;
+  background: var(--kami-ink);
+  color: var(--kami-ivory);
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  transition: opacity 140ms ease;
+}
+
+.kami-btn-primary:hover:not(:disabled) {
+  opacity: 0.88;
+}
+
+.kami-btn-secondary {
+  border: none;
+  border-radius: 8px;
+  background: var(--kami-warm-sand);
+  color: var(--kami-dark-warm);
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.kami-input {
+  width: 100%;
+  border: 0.5px solid var(--kami-warm-sand);
+  border-radius: 8px;
+  background: var(--kami-canvas);
+  padding: 0.65rem 0.8rem;
+  color: var(--kami-near-black);
+  font-family: var(--font-ui);
+  font-size: 0.875rem;
+  outline: none;
+}
+
+.kami-input:focus {
+  border-color: var(--kami-ink);
+}
+
+.kami-modal {
+  border-radius: 8px;
+  background: var(--kami-ivory);
+  box-shadow: 0 8px 28px color-mix(in srgb, var(--kami-near-black) 8%, transparent);
+}
+
+/* ── 订阅 ── */
+
+.subscribe-panel {
+  margin-top: 4.5rem;
+  padding: 2.25rem 0 0;
+  border-top: 0.5px solid var(--kami-warm-sand);
+}
+
+.subscribe-panel label {
+  background: var(--kami-ivory) !important;
+  border: 0.5px solid var(--kami-warm-sand) !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+
+.subscribe-panel button {
+  border-radius: 8px !important;
+  box-shadow: none !important;
+  background: var(--kami-ink) !important;
+  color: var(--kami-ivory) !important;
+  font-weight: 500 !important;
+}
+
+/* ── 分页 ── */
+
+.kami-pagination .kami-page-active {
+  background: var(--kami-ink);
+  color: var(--kami-ivory);
+  font-weight: 500;
+  box-shadow: none;
+}
+
+.kami-pagination .kami-page-link {
+  color: var(--kami-olive);
+  border-radius: 8px;
+}
+
+.kami-pagination .kami-page-link:hover {
+  background: var(--kami-ivory);
+  color: var(--kami-ink);
+}
+
+/* ── 路由指示器 ── */
+
+.route-transition__bar {
+  background: color-mix(in srgb, var(--kami-ink) 10%, transparent);
+}
+
+.route-transition__bar::before {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--kami-ink),
+    color-mix(in srgb, var(--kami-ink) 60%, var(--kami-ivory)),
+    transparent
+  );
+}
+
+.route-transition__pill {
+  box-shadow: none;
+  border: 0.5px solid var(--kami-warm-sand);
+  background: var(--kami-ivory);
+}
+
+/* ── 关于页 ── */
+
+.about-section-heading h1,
+.about-contact-label h2 {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.about-project h3 {
+  font-family: var(--font-serif);
+  font-weight: 500;
+}
+
+.about-project:hover h3 {
+  color: var(--kami-ink);
+}
+
+.about-project-index {
+  color: var(--kami-ink);
+  font-weight: 500;
+}
+
+.about-project {
+  border-top-color: var(--kami-warm-sand);
+}
+
+.about-project:hover {
+  border-top-color: var(--kami-ink);
+}
+
+.about-project-glyph {
+  background: var(--kami-tag);
+  color: var(--kami-ink);
+  border-radius: 4px;
+}
+
+/* ── TOC ── */
+
+.article-toc__tooltip {
+  box-shadow: none;
+  border: 0.5px solid var(--kami-warm-sand);
+  border-radius: 8px;
+}
+
+.article-toc__tooltip-kicker {
+  color: var(--kami-ink);
+  font-weight: 500;
+}
+
+/* ── 旧类兜底，避免残留杂志样式漏出 ── */
+
+.archive-post-title,
+.article-display-title,
+.public-page-title,
+.record-list-title {
+  font-family: var(--font-serif);
+  font-weight: 500;
+}
+
+.article-copyright-notice {
+  margin-top: 3rem;
+}
+
+.subscribe-panel + .article-copyright-notice {
+  margin-top: 1.25rem;
+}
+
+@media (max-width: 639px) {
+  :root,
+  [data-theme="kami"],
+  [data-theme="refined"],
+  [data-theme="default"] {
+    --kami-page-gutter: 1.25rem;
+  }
+
+  .kami-home-main,
+  .kami-page-main {
+    padding-top: 2.25rem;
+    padding-bottom: 5rem;
+  }
+
+  .kami-post-link {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+  }
+
+  .kami-post-leader {
+    display: none;
+  }
+}

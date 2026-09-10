@@ -86,10 +86,7 @@ export function PostUpdateBadge({
   return (
     <span
       title={`更新于 ${new Date(post.content_updated_at * 1000).toLocaleDateString('zh-CN')}`}
-      className={[
-        'inline-flex flex-shrink-0 items-center border border-emerald-600/40 px-1.5 py-0.5 font-mono text-[10px] font-semibold leading-none text-emerald-600 dark:text-emerald-400',
-        className,
-      ].filter(Boolean).join(' ')}
+      className={['kami-tag shrink-0', className].filter(Boolean).join(' ')}
     >
       + 有更新
     </span>

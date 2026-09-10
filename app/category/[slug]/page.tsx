@@ -86,57 +86,34 @@ export default async function CategoryPage({
         navLinks={headerData.navLinks}
       />
 
-      <main className="page-main public-main flex-1 mx-auto max-w-3xl w-full px-4 sm:px-6 py-10 sm:py-14">
-        <header className="public-page-header">
-          <p className="public-page-kicker">CATEGORY / 分类</p>
-          <h1 className="public-page-title">
-            {category.name}
-          </h1>
-          <p className="mt-3 text-sm text-[var(--editor-muted)]">
-            共 {totalCount} 篇文章
-          </p>
+      <main className="kami-page-main">
+        <header className="kami-page-header">
+          <p className="kami-label">00 · Category</p>
+          <h1 className="kami-display">{category.name}</h1>
+          <p className="kami-lead">共 {totalCount} 篇文章</p>
         </header>
 
         {posts.length === 0 ? (
-          <div className="py-20 text-center">
-            <p className="text-[var(--editor-muted)] mb-2">这个分类下还没有公开文章</p>
-            <Link
-              href="/"
-              className="text-sm text-[var(--editor-accent)] hover:underline underline-offset-2"
-            >
-              返回首页
-            </Link>
-          </div>
+          <p className="kami-empty">
+            这个分类下还没有公开文章。
+            {' '}
+            <Link href="/">返回首页</Link>
+          </p>
         ) : (
           <>
-            <div className="record-list">
-              {posts.map((post, index) => (
-                <article
-                  key={post.slug}
-                  className="group record-list-item"
-                  style={{ animation: `fadeInUp 0.4s ease-out ${index * 0.05}s both` }}
-                >
-                  <Link
-                    href={`/${post.slug}`}
-                    className="record-list-link"
-                  >
-                    <span className="record-list-index">{String((currentPage - 1) * PAGE_SIZE + index + 1).padStart(2, '0')}</span>
-                    <div className="min-w-0">
-                    <h2 className="record-list-title">
-                      {post.title}
-                      <PostTypeBadge type={post.post_type} />
-                      <PostUpdateBadge post={post} />
-                    </h2>
-                    {post.description ? (
-                      <p className="text-sm text-[var(--editor-muted)] leading-relaxed line-clamp-2 mb-2.5">
-                        {post.description}
-                      </p>
-                    ) : null}
-                    <div className="record-list-meta">
-                      <time>{formatDate(post.published_at)}</time>
-                      <span>[{category.name}]</span>
+            <div className="kami-post-list">
+              {posts.map((post) => (
+                <article key={post.slug} className="kami-post">
+                  <Link href={`/${post.slug}`} className="kami-post-link">
+                    <div className="kami-post-main">
+                      <h2 className="kami-post-title">{post.title}</h2>
+                      <div className="kami-post-badges">
+                        <PostTypeBadge type={post.post_type} />
+                        <PostUpdateBadge post={post} />
+                      </div>
                     </div>
-                    </div>
+                    <span className="kami-post-leader" aria-hidden="true" />
+                    <time className="kami-post-date">{formatDate(post.published_at)}</time>
                   </Link>
                 </article>
               ))}

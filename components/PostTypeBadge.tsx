@@ -11,10 +11,8 @@ export function PostTypeBadge({
   if (normalizedType === 'original') return null
 
   return (
-    <span
-      className={`inline-flex shrink-0 items-center font-mono text-[10px] font-semibold text-[var(--editor-muted)] ${className}`}
-    >
-      [{POST_TYPE_LABELS[normalizedType]}]
+    <span className={`kami-tag kami-tag--quiet shrink-0 ${className}`}>
+      {POST_TYPE_LABELS[normalizedType]}
     </span>
   )
 }

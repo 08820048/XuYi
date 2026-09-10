@@ -4,8 +4,8 @@ import { renderMarkdownContent } from '@/lib/markdown'
 import { getSiteHeaderData } from '@/lib/site'
 import { SiteHeader } from '@/components/SiteHeader'
 import { SiteFooter } from '@/components/SiteFooter'
-import { CodeHighlightEnhancer } from '@/components/CodeHighlightEnhancer'
 import { MathRenderEnhancer } from '@/components/MathRenderEnhancer'
+import { highlightHtml } from '@/lib/shiki-highlight'
 import { TwitterEmbedsEnhancer } from '@/components/TwitterEmbedsEnhancer'
 import { GitHubAlertEnhancer } from '@/components/GitHubAlertEnhancer'
 import { AboutShowcase } from '@/components/AboutShowcase'
@@ -29,12 +29,12 @@ export default async function AboutPage() {
   const contentContainerId = 'about-markdown-content'
 
   if (!env?.DB) {
-    const html = await renderMarkdownContent(fallbackMarkdown)
+    const html = await highlightHtml(await renderMarkdownContent(fallbackMarkdown))
 
     return (
       <div className="flex min-h-screen flex-col bg-[var(--background)]">
         <SiteHeader />
-        <main className="page-main mx-auto w-full max-w-4xl flex-1 px-4 py-10 sm:px-6 sm:py-14">
+        <main className="kami-page-main">
           <AboutContent containerId={contentContainerId} html={html} />
         </main>
         <SiteFooter />
@@ -47,7 +47,7 @@ export default async function AboutPage() {
     getSetting(env.DB, 'about_markdown'),
   ])
   const markdown = aboutMarkdown?.trim() ? aboutMarkdown : fallbackMarkdown
-  const html = await renderMarkdownContent(markdown)
+  const html = await highlightHtml(await renderMarkdownContent(markdown))
 
   return (
     <div className="flex min-h-screen flex-col bg-[var(--background)]">
@@ -56,7 +56,7 @@ export default async function AboutPage() {
         navLinks={headerData.navLinks}
       />
 
-      <main className="page-main mx-auto w-full max-w-4xl flex-1 px-4 py-10 sm:px-6 sm:py-14">
+      <main className="kami-page-main">
         <AboutContent containerId={contentContainerId} html={html} />
       </main>
 
@@ -75,7 +75,6 @@ function AboutContent({
   return (
     <article>
       <AboutShowcase id={containerId} html={html} />
-      <CodeHighlightEnhancer containerId={containerId} html={html} />
       <MathRenderEnhancer containerId={containerId} html={html} />
       <TwitterEmbedsEnhancer containerId={containerId} html={html} />
       <GitHubAlertEnhancer containerId={containerId} html={html} />

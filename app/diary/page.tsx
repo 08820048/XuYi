@@ -5,6 +5,7 @@ import { SiteFooter } from '@/components/SiteFooter'
 import { Pagination } from '@/components/Pagination'
 import { getSiteHeaderData } from '@/lib/site'
 import { getSiteUrl } from '@/lib/site-config'
+import { highlightHtml } from '@/lib/shiki-highlight'
 
 const PAGE_SIZE = 20
 const BASE_URL = getSiteUrl()
@@ -44,7 +45,7 @@ export default async function DiaryPage({
   let headerData: Awaited<ReturnType<typeof getSiteHeaderData>> = {
     navLinks: [],
     categories: [],
-    defaultTheme: 'refined',
+    defaultTheme: 'kami',
   }
 
   try {
@@ -61,6 +62,12 @@ export default async function DiaryPage({
   }
 
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE))
+  const highlightedEntries = await Promise.all(
+    entries.map(async (entry) => ({
+      ...entry,
+      html: await highlightHtml(entry.html),
+    })),
+  )
 
   return (
     <div className="flex min-h-full flex-col bg-[var(--background)] text-[var(--foreground)]">
@@ -69,39 +76,30 @@ export default async function DiaryPage({
         navLinks={headerData.navLinks}
       />
 
-      <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-10 sm:px-6 sm:py-14">
-        <section className="public-page-header">
-          <p className="public-page-kicker">LOG / DAILY NOTES</p>
-          <h1 className="public-page-title">
-            日记
-          </h1>
-          <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--editor-muted)] [text-wrap:pretty]">
+      <main className="kami-page-main">
+        <header className="kami-page-header">
+          <p className="kami-label">00 · Diary</p>
+          <h1 className="kami-display">日记</h1>
+          <p className="kami-lead">
             零散的生活、临时的念头、照片和片段。
           </p>
-        </section>
+        </header>
 
         {entries.length === 0 ? (
-          <div className="px-6 py-16 text-center">
-            <p className="text-sm text-[var(--editor-muted)]">还没有公开日记。</p>
-          </div>
+          <p className="kami-empty">还没有公开日记。</p>
         ) : (
           <div>
-            <div>
-              {entries.map((entry) => {
+            <div className="kami-diary-list">
+              {highlightedEntries.map((entry) => {
                 const date = formatDate(entry.published_at)
                 const title = entry.title?.trim()
 
                 return (
-                  <article
-                    key={entry.slug}
-                    className="diary-record grid gap-5 py-10 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-8 sm:py-14"
-                  >
-                    <time dateTime={new Date(entry.published_at * 1000).toISOString()} className="flex items-baseline gap-2 text-[var(--editor-muted)] sm:block">
-                      <span className="block font-mono text-3xl font-bold leading-none text-[var(--editor-ink)] tabular-nums">
-                        {date.day}
-                      </span>
-                      <span className="text-xs font-medium sm:mt-2 sm:block">{date.monthAndYear}</span>
-                      <span className="text-xs sm:mt-1 sm:block">{date.weekday}</span>
+                  <article key={entry.slug} className="kami-diary">
+                    <time dateTime={new Date(entry.published_at * 1000).toISOString()} className="kami-diary-date">
+                      <span className="kami-metric">{date.day}</span>
+                      <span className="kami-diary-caption">{date.monthAndYear}</span>
+                      <span className="kami-diary-caption">{date.weekday}</span>
                       <span className="sr-only">{date.full}</span>
                     </time>
 
@@ -111,11 +109,11 @@ export default async function DiaryPage({
                         <img
                           src={entry.cover_image}
                           alt=""
-                          className="diary-media mb-7 aspect-[16/9] w-full rounded-[6px] object-cover sm:mb-9"
+                          className="diary-media kami-media mb-7 aspect-[16/9] w-full object-cover sm:mb-8"
                         />
                       ) : null}
                       {title ? (
-                        <h2 className="mb-6 text-2xl font-bold leading-snug text-[var(--editor-ink)] [text-wrap:balance] sm:mb-8 sm:text-3xl">
+                        <h2 className="kami-diary-title">
                           {title}
                         </h2>
                       ) : null}

@@ -1,38 +1,39 @@
 @import "tailwindcss";
 @import "katex/dist/katex.min.css";
+@import "./kami.css";
 
 :root {
-  --background: #eceef1;
-  --foreground: #171717;
-  --editor-app-bg: #eceef1;
-  --editor-panel: #ffffff;
-  --editor-soft: #f3f4f6;
-  --editor-line: #e2e5ea;
-  --editor-ink: #171717;
-  --editor-muted: #6b7280;
-  --editor-accent: #0e7490;
-  --editor-accent-ink: #ffffff;
-  --editor-link: #0e7490;
-  --editor-code-bg: #f3f4f6;
-  --editor-code-border: #e2e5ea;
-  --editor-quote-bg: #ffffff;
-  --editor-selection: #d4e9ed;
-  --stone-gray: #8a90a0;
-  --border-warm: #e2e5ea;
-  --coral: #0e7490;
-  --article-heading: #171717;
-  --article-body: #343941;
-  --article-quote: #5f6672;
+  --background: #ffffff;
+  --foreground: #141413;
+  --editor-app-bg: #ffffff;
+  --editor-panel: #faf9f5;
+  --editor-soft: #f0eee6;
+  --editor-line: #e8e6dc;
+  --editor-ink: #141413;
+  --editor-muted: #6b6a64;
+  --editor-accent: #1b365d;
+  --editor-accent-ink: #faf9f5;
+  --editor-link: #1b365d;
+  --editor-code-bg: #faf9f5;
+  --editor-code-border: transparent;
+  --editor-quote-bg: transparent;
+  --editor-selection: #e4ecf5;
+  --stone-gray: #6b6a64;
+  --border-warm: #e8e6dc;
+  --coral: #1b365d;
+  --article-heading: #141413;
+  --article-body: #3d3d3a;
+  --article-quote: #504e49;
   --article-quote-border: transparent;
   --article-quote-nested-border: transparent;
-  --article-quote-nested-bg: #eceef1;
-  --ambient-line: rgba(14, 116, 144, 0.1);
-  --interaction-hover: rgba(255, 255, 255, 0.56);
-  --interaction-active: rgba(255, 255, 255, 0.8);
-  --interaction-border: rgba(25, 28, 33, 0.08);
-  --surface-tray: #fafafb;
-  --surface-raised: #ffffff;
-  --surface-shadow: 0 0 1.76px rgba(0, 0, 0, 0.08), 0 1px 1.76px rgba(25, 28, 33, 0.06), 0 0 0 1px rgba(25, 28, 33, 0.04);
+  --article-quote-nested-bg: transparent;
+  --ambient-line: #e8e6dc;
+  --interaction-hover: #faf9f5;
+  --interaction-active: #f0eee6;
+  --interaction-border: #e8e6dc;
+  --surface-tray: #faf9f5;
+  --surface-raised: #faf9f5;
+  --surface-shadow: none;
 }
 
 @theme inline {
@@ -44,19 +45,22 @@
 
 html {
   background-color: var(--background);
-  background-image: url('/textures/sand-cyan.svg');
-  background-repeat: repeat;
-  background-size: 180px 180px;
-  background-attachment: fixed;
+  background-image: none;
   color-scheme: light;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: auto;
+  -moz-osx-font-smoothing: auto;
+}
+
+html.antialiased,
+html.antialiased body {
+  -webkit-font-smoothing: auto;
+  -moz-osx-font-smoothing: auto;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-serif), "TsangerJinKai02", "Songti SC", Georgia, serif;
 }
 
 body:has(.site-header) {
@@ -295,22 +299,26 @@ body:has(.site-header) > :has(> .site-header) {
 :is(.novel-prose, .rich-content) h1,
 :is(.novel-prose, .rich-content) h2,
 :is(.novel-prose, .rich-content) h3 {
-  font-weight: 700;
-  letter-spacing: 0;
+  font-family: var(--font-serif);
+  font-weight: 500;
+  letter-spacing: 0.01em;
   line-height: 1.25;
   color: var(--article-heading);
 }
 
 :is(.novel-prose, .rich-content) h1 {
-  font-size: clamp(2rem, 4vw, 2.6rem);
+  font-size: 1.75rem;
+  line-height: 1.2;
 }
 
 :is(.novel-prose, .rich-content) h2 {
-  font-size: clamp(1.55rem, 3vw, 2rem);
+  font-size: 1.375rem;
+  line-height: 1.25;
 }
 
 :is(.novel-prose, .rich-content) h3 {
-  font-size: clamp(1.2rem, 2vw, 1.45rem);
+  font-size: 1.125rem;
+  line-height: 1.3;
 }
 
 :is(.novel-prose, .rich-content) p,
@@ -349,11 +357,11 @@ body:has(.site-header) > :has(> .site-header) {
 :is(.novel-prose, .rich-content) blockquote {
   border-left: 0;
   background: var(--editor-quote-bg);
-  padding: 1rem 1.2rem;
+  padding: 0 0 0 1.25rem;
   margin-left: 0;
   margin-right: 0;
-  border-radius: 8px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.035);
+  border-radius: 0;
+  box-shadow: none;
   color: var(--article-quote);
   font-style: italic;
 }
@@ -424,20 +432,23 @@ body:has(.site-header) > :has(> .site-header) {
 }
 
 :is(.novel-prose, .rich-content) code {
-  border: 1px solid var(--editor-code-border);
-  background: var(--editor-code-bg);
-  border-radius: 6px;
-  padding: 0.1rem 0.35rem;
-  font-family: var(--font-geist-mono), "SFMono-Regular", Consolas, monospace;
-  font-size: 0.92em;
+  border: none;
+  background: #f0eee6;
+  border-radius: 4px;
+  padding: 0.12em 0.35em;
+  font-family: "JetBrains Mono", var(--font-mono), ui-monospace, monospace;
+  font-size: 0.875em;
+  color: var(--kami-near-black, #141413);
 }
 
 :is(.novel-prose, .rich-content) pre {
   overflow-x: auto;
+  border: none;
   border-radius: 6px;
   background: #181818;
   color: #f5f5f5;
   padding: 1rem 1.1rem;
+  box-shadow: none;
 }
 
 :is(.novel-prose, .rich-content) pre code {
@@ -445,67 +456,44 @@ body:has(.site-header) > :has(> .site-header) {
   background: transparent;
   padding: 0;
   color: inherit;
+  font-family: "JetBrains Mono", var(--font-mono), ui-monospace, monospace;
+  font-size: 0.875rem;
+  line-height: 1.65;
+  font-weight: 400;
 }
 
-:is(.novel-prose, .rich-content) pre code.hljs {
+:is(.novel-prose, .rich-content) pre.shiki {
+  background-color: #ffffff;
+  color: #333333;
+  border: 0.5px solid var(--kami-warm-sand, #e8e6dc);
+  padding: 1rem 1.1rem;
+}
+
+:is(.novel-prose, .rich-content) pre.shiki code {
   display: block;
-  overflow-x: auto;
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  font-size: 0.875rem;
+  line-height: 1.65;
 }
 
-:is(.novel-prose, .rich-content) .hljs-comment,
-:is(.novel-prose, .rich-content) .hljs-quote {
-  color: #7f8c98;
-  font-style: italic;
+:is(.novel-prose, .rich-content) pre.shiki .line {
+  display: inline-block;
+  min-width: 100%;
 }
 
-:is(.novel-prose, .rich-content) .hljs-keyword,
-:is(.novel-prose, .rich-content) .hljs-selector-tag,
-:is(.novel-prose, .rich-content) .hljs-subst {
-  color: #ff7ab8;
+[data-theme="terminal"] :is(.novel-prose, .rich-content) pre.shiki,
+[data-theme="terminal"] :is(.novel-prose, .rich-content) pre.shiki span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+  text-decoration: var(--shiki-dark-text-decoration) !important;
 }
 
-:is(.novel-prose, .rich-content) .hljs-string,
-:is(.novel-prose, .rich-content) .hljs-doctag,
-:is(.novel-prose, .rich-content) .hljs-regexp {
-  color: #9ecbff;
-}
-
-:is(.novel-prose, .rich-content) .hljs-title,
-:is(.novel-prose, .rich-content) .hljs-section,
-:is(.novel-prose, .rich-content) .hljs-function .hljs-title {
-  color: #82e0aa;
-}
-
-:is(.novel-prose, .rich-content) .hljs-number,
-:is(.novel-prose, .rich-content) .hljs-literal,
-:is(.novel-prose, .rich-content) .hljs-symbol,
-:is(.novel-prose, .rich-content) .hljs-bullet {
-  color: #f5c26b;
-}
-
-:is(.novel-prose, .rich-content) .hljs-built_in,
-:is(.novel-prose, .rich-content) .hljs-type,
-:is(.novel-prose, .rich-content) .hljs-class .hljs-title {
-  color: #78dce8;
-}
-
-:is(.novel-prose, .rich-content) .hljs-attr,
-:is(.novel-prose, .rich-content) .hljs-attribute,
-:is(.novel-prose, .rich-content) .hljs-variable,
-:is(.novel-prose, .rich-content) .hljs-template-variable {
-  color: #ffd866;
-}
-
-:is(.novel-prose, .rich-content) .hljs-meta {
-  color: #caa6ff;
-}
-
-:is(.novel-prose, .rich-content) .hljs-emphasis {
-  font-style: italic;
-}
-
-:is(.novel-prose, .rich-content) .hljs-strong {
-  font-weight: 700;
+[data-theme="terminal"] :is(.novel-prose, .rich-content) pre.shiki {
+  border-color: #2a2f48;
 }
 
 :is(.novel-prose, .rich-content) img {
@@ -1265,25 +1253,22 @@ body:has(.site-header) > :has(> .site-header) {
 }
 
 .site-footer {
-  background-color: color-mix(in srgb, var(--surface-tray) 88%, transparent);
+  background-color: var(--background);
   background-image: none;
-  backdrop-filter: saturate(140%) blur(16px);
+  backdrop-filter: none;
 }
 
 .site-header {
-  background-color: color-mix(in srgb, var(--background) 88%, transparent);
-  background-image: url('/textures/sand-cyan.svg');
-  background-repeat: repeat;
-  background-size: 180px 180px;
-  background-attachment: fixed;
-  backdrop-filter: saturate(110%) blur(10px);
+  background-color: var(--background);
+  background-image: none;
+  backdrop-filter: none;
   box-shadow: none;
 }
 
 .site-footer {
   position: relative;
   z-index: 21;
-  box-shadow: 0 -1px 0 rgba(25, 28, 33, 0.04);
+  box-shadow: none;
 }
 
 :is(.article-record-meta, .article-record-source, .friend-record, .route-transition__pill) {
@@ -1301,8 +1286,8 @@ body:has(.site-header) > :has(> .site-header) {
 }
 
 .subscribe-panel button {
-  border-radius: 10px;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.14), 0 0 0 1px rgba(15, 23, 42, 0.04);
+  border-radius: 8px;
+  box-shadow: none;
 }
 
 :is(.diary-media, .rich-content img) {
@@ -1312,8 +1297,8 @@ body:has(.site-header) > :has(> .site-header) {
 
 @media (min-width: 640px) {
   .rich-content {
-    font-size: 1.06rem;
-    line-height: 1.9;
+    font-size: 1.0625rem;
+    line-height: 1.55;
   }
 }
 
@@ -1322,31 +1307,26 @@ body:has(.site-header) > :has(> .site-header) {
 /* 标题改用系统黑体做粗体，与楷体正文形成反差 */
 
 [data-font="kaiti"] .rich-content {
-  font-size: 1.08rem;
-  line-height: 2;
-  letter-spacing: 0.02em;
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  letter-spacing: 0.015em;
 }
 
 @media (min-width: 640px) {
   [data-font="kaiti"] .rich-content {
-    font-size: 1.14rem;
-    line-height: 2.05;
+    font-size: 1.0625rem;
+    line-height: 1.55;
   }
 }
 
-/* 楷体模式下标题用系统黑体，不用楷体 */
+/* Kami：楷体模式下标题仍用衬线，字重 500 */
 [data-font="kaiti"] :is(.rich-content) h1,
 [data-font="kaiti"] :is(.rich-content) h2,
-[data-font="kaiti"] :is(.rich-content) h3 {
-  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-}
-
-/* 楷体模式下文章主标题也用黑体 */
+[data-font="kaiti"] :is(.rich-content) h3,
 [data-font="kaiti"] .article-display-title {
-  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
-  font-weight: 800;
+  font-family: TsangerJinKai02, Georgia, "Noto Serif SC", serif;
+  font-weight: 500;
+  letter-spacing: 0.01em;
 }
 
 /* 移动端代码块横向滚动 */
@@ -1542,6 +1522,7 @@ body:has(.site-header) > :has(> .site-header) {
 
 /* ── 主题：AI终端 (terminal) ── */
 [data-theme="terminal"] {
+  color-scheme: dark;
   --background: #1a1c2e;
   --foreground: #c8d3e8;
   --editor-app-bg: #1a1c2e;
@@ -1668,6 +1649,23 @@ body:has(.site-header) > :has(> .site-header) {
    跨页面主题适配：SiteHeader 宽度 & 样式
    ══════════════════════════════════════════════════════ */
 
+/* Kami 纸：与正文同一栏宽 */
+[data-theme="kami"] .site-header-inner,
+[data-theme="kami"] .site-footer-inner,
+[data-theme="kami"] .page-main,
+[data-theme="kami"] .kami-page-main,
+[data-theme="kami"] .kami-home-main {
+  max-width: var(--kami-page-width, 48rem);
+  padding-left: var(--kami-page-gutter, 1.5rem);
+  padding-right: var(--kami-page-gutter, 1.5rem);
+}
+
+[data-theme="kami"] .site-header,
+[data-theme="kami"] .site-footer {
+  border: none;
+  box-shadow: none;
+}
+
 /* 精致极简：860px 宽度 */
 [data-theme="refined"] .site-header-inner {
   max-width: 860px;
@@ -1703,9 +1701,9 @@ body:has(.site-header) > :has(> .site-header) {
 
 .site-header .site-header-inner {
   width: 100%;
-  max-width: 860px;
-  padding-left: 32px;
-  padding-right: 32px;
+  max-width: var(--kami-page-width, 48rem);
+  padding-left: var(--kami-page-gutter, 1.5rem);
+  padding-right: var(--kami-page-gutter, 1.5rem);
 }
 
 .site-header-row {
@@ -1746,9 +1744,8 @@ body:has(.site-header) > :has(> .site-header) {
 }
 
 .site-mobile-menu {
-  background-color: color-mix(in srgb, var(--background) 94%, transparent);
-  background-image: url('/textures/sand-cyan.svg');
-  background-size: 180px 180px;
+  background-color: var(--background);
+  background-image: none;
 }
 
 .site-mobile-nav-item .site-nav-link {
@@ -2004,5 +2001,122 @@ body:has(.site-header) > :has(> .site-header) {
 
   .theme-home-terminal .terminal-post-body {
     min-width: 0;
+  }
+}
+
+/* Kami 覆盖：消解杂志式字重与投影，并锁住官方中文字栈 */
+:root,
+[data-theme="kami"] {
+  --body-font: "TsangerJinKai02", "Source Han Serif SC", "Source Han Serif CN", "Noto Serif CJK SC", "Noto Serif SC", "Songti SC", Georgia, serif;
+}
+
+body,
+[data-theme="kami"] body {
+  font-family: var(--font-serif), "TsangerJinKai02", "Songti SC", Georgia, serif;
+}
+
+/* Kami 覆盖：消解杂志式字重与投影 */
+.about-section-heading h1,
+.about-contact-label h2,
+.about-project h3 {
+  font-family: var(--font-serif);
+  font-weight: 500;
+}
+
+.about-project-index,
+.about-project-links a {
+  font-weight: 500;
+}
+
+.about-project-glyph {
+  background: var(--kami-tag, #e4ecf5);
+  border-radius: 4px;
+}
+
+/* 代码块：深色专业语法高亮（Xcode / GitHub Dark 系） */
+:is(.novel-prose, .rich-content) .hljs-comment,
+:is(.novel-prose, .rich-content) .hljs-quote {
+  color: #7f8c98;
+  font-style: italic;
+}
+
+:is(.novel-prose, .rich-content) .hljs-keyword,
+:is(.novel-prose, .rich-content) .hljs-selector-tag,
+:is(.novel-prose, .rich-content) .hljs-subst {
+  color: #ff7ab8;
+}
+
+:is(.novel-prose, .rich-content) .hljs-string,
+:is(.novel-prose, .rich-content) .hljs-doctag,
+:is(.novel-prose, .rich-content) .hljs-regexp {
+  color: #9ecbff;
+}
+
+:is(.novel-prose, .rich-content) .hljs-title,
+:is(.novel-prose, .rich-content) .hljs-section,
+:is(.novel-prose, .rich-content) .hljs-function .hljs-title,
+:is(.novel-prose, .rich-content) .hljs-title.function_ {
+  color: #82e0aa;
+}
+
+:is(.novel-prose, .rich-content) .hljs-number,
+:is(.novel-prose, .rich-content) .hljs-literal,
+:is(.novel-prose, .rich-content) .hljs-symbol,
+:is(.novel-prose, .rich-content) .hljs-bullet {
+  color: #f5c26b;
+}
+
+:is(.novel-prose, .rich-content) .hljs-built_in,
+:is(.novel-prose, .rich-content) .hljs-type,
+:is(.novel-prose, .rich-content) .hljs-class .hljs-title,
+:is(.novel-prose, .rich-content) .hljs-title.class_ {
+  color: #78dce8;
+}
+
+:is(.novel-prose, .rich-content) .hljs-attr,
+:is(.novel-prose, .rich-content) .hljs-attribute,
+:is(.novel-prose, .rich-content) .hljs-variable,
+:is(.novel-prose, .rich-content) .hljs-template-variable,
+:is(.novel-prose, .rich-content) .hljs-property,
+:is(.novel-prose, .rich-content) .hljs-params {
+  color: #ffd866;
+}
+
+:is(.novel-prose, .rich-content) .hljs-meta,
+:is(.novel-prose, .rich-content) .hljs-meta .hljs-keyword,
+:is(.novel-prose, .rich-content) .hljs-meta .hljs-string {
+  color: #caa6ff;
+}
+
+:is(.novel-prose, .rich-content) .hljs-name,
+:is(.novel-prose, .rich-content) .hljs-tag,
+:is(.novel-prose, .rich-content) .hljs-selector-id,
+:is(.novel-prose, .rich-content) .hljs-selector-class {
+  color: #78dce8;
+}
+
+:is(.novel-prose, .rich-content) .hljs-addition {
+  color: #82e0aa;
+}
+
+:is(.novel-prose, .rich-content) .hljs-deletion {
+  color: #ff7ab8;
+}
+
+:is(.novel-prose, .rich-content) .hljs-emphasis {
+  font-style: italic;
+}
+
+:is(.novel-prose, .rich-content) .hljs-strong {
+  font-weight: 700;
+}
+
+.rich-content pre {
+  font-size: 0.875rem;
+}
+
+@media (min-width: 640px) {
+  .rich-content pre {
+    font-size: 0.875rem;
   }
 }
