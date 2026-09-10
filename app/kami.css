@@ -3,9 +3,6 @@
  * 白底画布 · 暖色卡片 · 油墨蓝 · 衬线层级 · 平面克制
  */
 
-@import url('/fonts/jinkai/jinkai.css');
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
-
 :root,
 [data-theme="kami"],
 [data-theme="refined"],

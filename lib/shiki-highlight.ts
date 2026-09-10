@@ -32,7 +32,6 @@ const PRELOADED_LANGS = [
   'typescript',
   'xml',
   'yaml',
-  'text',
 ] as const satisfies readonly BundledLanguage[]
 
 const PRE_BLOCK_RE = /<pre\b[^>]*>[\s\S]*?<\/pre>/gi
@@ -74,9 +73,11 @@ function extractCode(preHtml: string) {
 }
 
 async function getHighlighter(langs: string[]) {
+  const extraLangs = langs.filter((lang): lang is BundledLanguage => lang in bundledLanguages)
+
   return getSingletonHighlighter({
     themes: [SHIKI_THEME_LIGHT, SHIKI_THEME_DARK],
-    langs: [...PRELOADED_LANGS, ...langs],
+    langs: [...PRELOADED_LANGS, ...extraLangs],
     engine: createJavaScriptRegexEngine({ forgiving: true }),
   })
 }
