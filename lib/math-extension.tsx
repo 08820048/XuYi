@@ -1,6 +1,6 @@
 'use client'
 
-import { Node, mergeAttributes } from '@tiptap/core'
+import { Node } from '@tiptap/core'
 import { ReactNodeViewRenderer, NodeViewWrapper, type ReactNodeViewProps } from '@tiptap/react'
 import { useState, useEffect, useRef } from 'react'
 import katex from 'katex'
@@ -111,25 +111,40 @@ export const MathNode = Node.create({
   },
 
   parseHTML() {
-    return [{ tag: 'div[data-math-latex]' }, { tag: 'span[data-math-latex]' }]
+    return [
+      {
+        tag: 'span[data-math-latex]',
+        getAttrs: (element) => {
+          if (!(element instanceof HTMLElement)) return false
+          return {
+            latex: element.getAttribute('data-math-latex') || '',
+            displayMode: element.getAttribute('data-display-mode') !== 'false',
+          }
+        },
+      },
+      {
+        tag: 'div[data-math-latex]',
+        getAttrs: (element) => {
+          if (!(element instanceof HTMLElement)) return false
+          return {
+            latex: element.getAttribute('data-math-latex') || '',
+            displayMode: element.getAttribute('data-display-mode') !== 'false',
+          }
+        },
+      },
+    ]
   },
 
   renderHTML({ HTMLAttributes }) {
-    const latex = HTMLAttributes.latex || ''
-    const displayMode = HTMLAttributes.displayMode !== false
-    let rendered = ''
-    try {
-      rendered = katex.renderToString(latex, { displayMode, throwOnError: false })
-    } catch {
-      rendered = `<code>${latex}</code>`
-    }
+    const latex = String(HTMLAttributes.latex || HTMLAttributes['data-math-latex'] || '')
+    const displayMode = HTMLAttributes.displayMode !== false && HTMLAttributes['data-display-mode'] !== 'false'
     return [
       'span',
-      mergeAttributes(
-        { 'data-math-latex': latex, 'data-display-mode': String(displayMode), class: 'math-block-wrapper' },
-        HTMLAttributes
-      ),
-      rendered,
+      {
+        'data-math-latex': latex,
+        'data-display-mode': String(displayMode),
+        class: 'math-block-wrapper',
+      },
     ]
   },
 

@@ -566,6 +566,16 @@ body {
   color: var(--kami-near-black);
 }
 
+:is(.novel-prose, .rich-content) .katex-mathml {
+  position: absolute;
+  clip: rect(1px, 1px, 1px, 1px);
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  padding: 0;
+  border: 0;
+}
+
 :is(.novel-prose, .rich-content) .math-block-wrapper[data-display-mode="false"] {
   display: inline;
   margin: 0;

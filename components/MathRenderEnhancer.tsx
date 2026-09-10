@@ -23,7 +23,7 @@ export function MathRenderEnhancer({
         { left: '\\[', right: '\\]', display: true },
       ],
       ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-      ignoredClasses: ['hljs', 'shiki', 'mermaid', 'kami-diagram', 'katex'],
+      ignoredClasses: ['hljs', 'shiki', 'mermaid', 'kami-diagram', 'katex', 'math-block-wrapper'],
     })
   }, [containerId, html])
 

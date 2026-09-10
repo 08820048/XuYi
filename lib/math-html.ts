@@ -140,9 +140,40 @@ function renderMathCodeBlocks(html: string) {
   return next
 }
 
+function readAttr(attrs: string, name: string) {
+  const match = attrs.match(new RegExp(`\\b${name}\\s*=\\s*("([^"]*)"|'([^']*)')`, 'i'))
+  return decodeHtmlEntities(match?.[2] ?? match?.[3] ?? '')
+}
+
+function extractLatexFromInner(inner: string) {
+  const raw = inner.includes('&lt;') ? decodeHtmlEntities(inner) : inner
+  const annotation = raw.match(/<annotation\b[^>]*encoding="application\/x-tex"[^>]*>([\s\S]*?)<\/annotation>/i)
+  return decodeHtmlEntities(stripTags(annotation?.[1] ?? '')).trim()
+}
+
+export function hydrateStoredMath(html: string) {
+  if (!html.includes('data-math-latex') && !html.includes('math-block-wrapper')) return html
+
+  return html.replace(
+    /<(div|span)\b([^>]*\b(?:data-math-latex|math-block-wrapper)[^>]*)>([\s\S]*?)<\/\1>/gi,
+    (full, _tag: string, attrs: string, inner: string) => {
+      const latex = readAttr(attrs, 'data-math-latex') || readAttr(attrs, 'latex') || extractLatexFromInner(inner)
+      if (!latex) {
+        if (inner.includes('&lt;') && /katex/i.test(inner)) return full.replace(inner, decodeHtmlEntities(inner))
+        return full
+      }
+      const displayMode = /data-display-mode\s*=\s*("|')true\1/i.test(attrs)
+        || /displaymode\s*=\s*("|')true\1/i.test(attrs)
+        || /katex-display/i.test(inner)
+      return wrapMathHtml(latex, displayMode)
+    },
+  )
+}
+
 export function renderMathInHtml(html: string) {
   if (!html) return html
-  const withFences = renderMathCodeBlocks(html)
+  const hydrated = hydrateStoredMath(html)
+  const withFences = renderMathCodeBlocks(hydrated)
   if (!withFences.includes('$') && !withFences.includes('\\(') && !withFences.includes('\\[')) {
     return withFences
   }

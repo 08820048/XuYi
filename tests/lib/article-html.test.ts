@@ -49,6 +49,15 @@ describe('renderMathInHtml', () => {
     expect(result).toContain('katex-display')
     expect(result).not.toContain('language-math')
   })
+
+  it('rehydrates katex html that TipTap escaped as text', () => {
+    const html = '<p>行内公式：<span data-math-latex="E = mc^2" data-display-mode="true" class="math-block-wrapper">&lt;span class="katex-display"&gt;&lt;span class="katex"&gt;&lt;span class="katex-mathml"&gt;&lt;annotation encoding="application/x-tex"&gt;E = mc^2&lt;/annotation&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;</span></p>'
+    const result = renderMathInHtml(html)
+
+    expect(result).toContain('class="katex"')
+    expect(result).not.toContain('&lt;span class="katex')
+    expect(result).toContain('data-math-latex="E = mc^2"')
+  })
 })
 
 describe('prepareDiagramBlocks', () => {
