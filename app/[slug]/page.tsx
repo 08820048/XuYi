@@ -16,6 +16,7 @@ import { ArticleTableOfContents } from '@/components/ArticleTableOfContents'
 import { TwitterEmbedsEnhancer } from '@/components/TwitterEmbedsEnhancer'
 import { GitHubAlertEnhancer } from '@/components/GitHubAlertEnhancer'
 import { MathRenderEnhancer } from '@/components/MathRenderEnhancer'
+import { CodeHighlightEnhancer } from '@/components/CodeHighlightEnhancer'
 import { highlightHtml } from '@/lib/shiki-highlight'
 import { ArticleCopyrightNotice } from '@/components/ArticleCopyrightNotice'
 import { SubscribeForm } from '@/components/SubscribeForm'
@@ -301,6 +302,7 @@ export default async function PostPage({
                   dangerouslySetInnerHTML={{ __html: highlightedHtml }}
                 />
                 <GitHubAlertEnhancer containerId={contentContainerId} html={highlightedHtml} />
+                <CodeHighlightEnhancer containerId={contentContainerId} html={highlightedHtml} />
                 <MathRenderEnhancer containerId={contentContainerId} html={highlightedHtml} />
                 <TwitterEmbedsEnhancer containerId={contentContainerId} html={highlightedHtml} />
 

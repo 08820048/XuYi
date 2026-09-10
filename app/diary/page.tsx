@@ -5,6 +5,7 @@ import { SiteFooter } from '@/components/SiteFooter'
 import { Pagination } from '@/components/Pagination'
 import { getSiteHeaderData } from '@/lib/site'
 import { getSiteUrl } from '@/lib/site-config'
+import { CodeHighlightEnhancer } from '@/components/CodeHighlightEnhancer'
 import { highlightHtml } from '@/lib/shiki-highlight'
 
 const PAGE_SIZE = 20
@@ -76,7 +77,7 @@ export default async function DiaryPage({
         navLinks={headerData.navLinks}
       />
 
-      <main className="kami-page-main">
+      <main id="diary-list" className="kami-page-main">
         <header className="kami-page-header">
           <p className="kami-label">00 · Diary</p>
           <h1 className="kami-display">日记</h1>
@@ -129,6 +130,10 @@ export default async function DiaryPage({
             <Pagination currentPage={currentPage} totalPages={totalPages} basePath="/diary" />
           </div>
         )}
+        <CodeHighlightEnhancer
+          containerId="diary-list"
+          html={highlightedEntries.map((entry) => entry.html).join('\n')}
+        />
       </main>
 
       <SiteFooter />

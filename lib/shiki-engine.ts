@@ -1,36 +1,65 @@
-import { createHighlighterCore, isSpecialLang } from 'shiki/core'
-import { createJavaScriptRegexEngine } from 'shiki/engine/javascript'
+import { createHighlighterCore, isSpecialLang } from '@shikijs/core'
+import { createJavaScriptRegexEngine } from '@shikijs/engine-javascript'
 import lightPlus from '@shikijs/themes/light-plus'
 import darkPlus from '@shikijs/themes/dark-plus'
-import type { HighlighterCore, LanguageInput } from 'shiki/core'
+import bash from '@shikijs/langs/bash'
+import c from '@shikijs/langs/c'
+import cpp from '@shikijs/langs/cpp'
+import csharp from '@shikijs/langs/csharp'
+import css from '@shikijs/langs/css'
+import diff from '@shikijs/langs/diff'
+import docker from '@shikijs/langs/docker'
+import go from '@shikijs/langs/go'
+import groovy from '@shikijs/langs/groovy'
+import html from '@shikijs/langs/html'
+import java from '@shikijs/langs/java'
+import javascript from '@shikijs/langs/javascript'
+import json from '@shikijs/langs/json'
+import jsx from '@shikijs/langs/jsx'
+import markdown from '@shikijs/langs/markdown'
+import python from '@shikijs/langs/python'
+import rust from '@shikijs/langs/rust'
+import sql from '@shikijs/langs/sql'
+import swift from '@shikijs/langs/swift'
+import toml from '@shikijs/langs/toml'
+import tsx from '@shikijs/langs/tsx'
+import typescript from '@shikijs/langs/typescript'
+import vue from '@shikijs/langs/vue'
+import xml from '@shikijs/langs/xml'
+import yaml from '@shikijs/langs/yaml'
+import type { HighlighterCore, LanguageInput } from '@shikijs/core'
 import { resolveLanguage } from '@/lib/shiki-highlight'
 
 export const SHIKI_THEME_LIGHT = 'light-plus'
 export const SHIKI_THEME_DARK = 'dark-plus'
 
-const LANG_LOADERS = {
-  bash: () => import('@shikijs/langs/bash'),
-  c: () => import('@shikijs/langs/c'),
-  cpp: () => import('@shikijs/langs/cpp'),
-  css: () => import('@shikijs/langs/css'),
-  diff: () => import('@shikijs/langs/diff'),
-  docker: () => import('@shikijs/langs/docker'),
-  go: () => import('@shikijs/langs/go'),
-  groovy: () => import('@shikijs/langs/groovy'),
-  html: () => import('@shikijs/langs/html'),
-  java: () => import('@shikijs/langs/java'),
-  javascript: () => import('@shikijs/langs/javascript'),
-  json: () => import('@shikijs/langs/json'),
-  jsx: () => import('@shikijs/langs/jsx'),
-  markdown: () => import('@shikijs/langs/markdown'),
-  python: () => import('@shikijs/langs/python'),
-  rust: () => import('@shikijs/langs/rust'),
-  sql: () => import('@shikijs/langs/sql'),
-  tsx: () => import('@shikijs/langs/tsx'),
-  typescript: () => import('@shikijs/langs/typescript'),
-  xml: () => import('@shikijs/langs/xml'),
-  yaml: () => import('@shikijs/langs/yaml'),
-} as const satisfies Record<string, LanguageInput>
+const LANG_GRAMMARS = {
+  bash,
+  c,
+  cpp,
+  csharp,
+  css,
+  diff,
+  docker,
+  go,
+  groovy,
+  html,
+  java,
+  javascript,
+  json,
+  jsx,
+  markdown,
+  python,
+  rust,
+  sql,
+  swift,
+  toml,
+  tsx,
+  typescript,
+  vue,
+  xml,
+  yaml,
+} satisfies Record<string, LanguageInput>
 
 const PRE_BLOCK_RE = /<pre\b[^>]*>[\s\S]*?<\/pre>/gi
 const LANGUAGE_CLASS_RE = /(?:language|lang)-([\w+#.-]+)/i
@@ -112,8 +141,8 @@ export async function highlightHtmlWithShiki(html: string) {
   await Promise.all(
     langs.map(async (lang) => {
       if (highlighter.getLoadedLanguages().includes(lang) || isSpecialLang(lang)) return
-      const loader = LANG_LOADERS[lang as keyof typeof LANG_LOADERS]
-      if (loader) await highlighter.loadLanguage(loader)
+      const grammar = LANG_GRAMMARS[lang as keyof typeof LANG_GRAMMARS]
+      if (grammar) await highlighter.loadLanguage(grammar)
     }),
   )
 

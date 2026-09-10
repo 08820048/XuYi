@@ -39,4 +39,13 @@ describe('highlightHtml', () => {
     expect(await highlightHtml(null)).toBe('')
     expect(await highlightHtml(undefined)).toBe('')
   })
+
+  it('highlights stored tiptap hljs python blocks', { timeout: 20000 }, async () => {
+    const html = '<pre class="hljs"><code class="language-python">from langchain_core.messages import SystemMessage\n</code></pre>'
+    const result = await highlightHtml(html)
+
+    expect(result).toContain('shiki')
+    expect(result).toContain('light-plus')
+    expect(result).toMatch(/style="[^"]*--shiki-dark/)
+  })
 })

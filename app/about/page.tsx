@@ -5,6 +5,7 @@ import { getSiteHeaderData } from '@/lib/site'
 import { SiteHeader } from '@/components/SiteHeader'
 import { SiteFooter } from '@/components/SiteFooter'
 import { MathRenderEnhancer } from '@/components/MathRenderEnhancer'
+import { CodeHighlightEnhancer } from '@/components/CodeHighlightEnhancer'
 import { highlightHtml } from '@/lib/shiki-highlight'
 import { TwitterEmbedsEnhancer } from '@/components/TwitterEmbedsEnhancer'
 import { GitHubAlertEnhancer } from '@/components/GitHubAlertEnhancer'
@@ -75,6 +76,7 @@ function AboutContent({
   return (
     <article>
       <AboutShowcase id={containerId} html={html} />
+      <CodeHighlightEnhancer containerId={containerId} html={html} />
       <MathRenderEnhancer containerId={containerId} html={html} />
       <TwitterEmbedsEnhancer containerId={containerId} html={html} />
       <GitHubAlertEnhancer containerId={containerId} html={html} />
