@@ -587,8 +587,9 @@ body {
 :is(.novel-prose, .rich-content) .katex-display,
 :is(.novel-prose, .rich-content) .math-block-wrapper[data-display-mode="true"] {
   margin: 1.75rem 0;
-  padding: 0;
+  padding: 0.2em 0;
   overflow-x: auto;
+  overflow-y: hidden;
   text-align: center;
   background: none;
   border: none;
@@ -596,6 +597,8 @@ body {
 
 :is(.novel-prose, .rich-content) .math-block-wrapper[data-display-mode="true"] .katex-display {
   margin: 0;
+  padding: 0;
+  overflow: visible;
 }
 
 .kami-diagram {

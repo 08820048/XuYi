@@ -1457,6 +1457,7 @@ body:has(.site-header) > :has(> .site-header) {
 .math-display {
   text-align: center;
   overflow-x: auto;
+  overflow-y: hidden;
   padding: 0.5rem 0;
 }
 .math-inline {
@@ -1472,6 +1473,7 @@ body:has(.site-header) > :has(> .site-header) {
   margin: 1.5rem 0;
   text-align: center;
   overflow-x: auto;
+  overflow-y: hidden;
 }
 
 /* ── 主题：logo 字体变量 ── */
