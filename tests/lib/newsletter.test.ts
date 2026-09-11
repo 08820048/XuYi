@@ -5,6 +5,7 @@ import {
   isPublicNewsletterPost,
   normalizeSubscriberEmail,
   pushNewsletterNewPostNotification,
+  renderSubscriptionResultPage,
   sendEmailViaResend,
   subscribeEmail,
   type NewsletterEnv,
@@ -86,6 +87,45 @@ describe('newsletter helpers', () => {
     expect(content.html).toContain('&lt;script&gt;')
     expect(content.html).toContain('https://blog.qiaomu.dev/hello-world')
     expect(content.html).toContain('unsubscribe?token=u')
+    expect(content.text).toContain('https://blog.qiaomu.dev/hello-world')
+    expect(content.text).toContain('unsubscribe?token=u')
+    expect(content.text).toContain('<script>alert("x")</script>')
+  })
+
+  it('renders the Kami paper letter instead of the old sage card', () => {
+    const content = buildNewPostNotificationEmail({
+      post: createPost(),
+      siteName: 'XuYi',
+      siteUrl: 'https://blog.qiaomu.dev',
+      unsubscribeUrl: 'https://blog.qiaomu.dev/api/subscribe/unsubscribe?token=u',
+    })
+
+    expect(content.html).toContain('#f5f4ed')
+    expect(content.html).toContain('#1b365d')
+    expect(content.html).toContain('#e8e6dc')
+    expect(content.html).toContain("Georgia, 'Noto Serif SC'")
+    expect(content.html).toContain('技术 · 新文章')
+    expect(content.html).toContain('2026.02.02')
+    expect(content.html).not.toContain('#f7f8f6')
+    expect(content.html).not.toContain('background:#171717')
+    expect(content.text).toContain('XuYi · 技术 · 新文章')
+    expect(content.text).toContain('你好世界')
+  })
+
+  it('renders subscription result pages in the same Kami paper style', () => {
+    const html = renderSubscriptionResultPage({
+      title: '已退订',
+      message: '之后不会再收到邮件。',
+      success: true,
+      siteName: 'XuYi',
+      siteUrl: 'https://blog.qiaomu.dev',
+    })
+
+    expect(html).toContain('#f5f4ed')
+    expect(html).toContain('#1b365d')
+    expect(html).toContain('已退订')
+    expect(html).toContain('返回 XuYi')
+    expect(html).not.toContain('#f7f8f6')
   })
 
   it('sends the payload to Resend with bearer auth', async () => {
@@ -223,6 +263,7 @@ describe('pushNewsletterNewPostNotification', () => {
     expect(firstBody.to).toEqual(['a@example.com'])
     expect(firstBody.subject).toBe('新文章｜你好世界')
     expect(firstBody.html).toContain('unsubscribe?token=tok-a')
+    expect(firstBody.text).toContain('unsubscribe?token=tok-a')
     expect(firstBody.headers['List-Unsubscribe']).toBe(
       '<https://blog.qiaomu.dev/api/subscribe/unsubscribe?token=tok-a>',
     )
