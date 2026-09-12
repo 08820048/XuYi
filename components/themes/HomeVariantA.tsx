@@ -30,6 +30,8 @@ export function HomeVariantA({
       <SiteHeader navLinks={navLinks} />
 
       <main className="kami-home-main">
+        {posts.length > 0 && <SubscribeForm />}
+
         <section aria-label="文章">
           {posts.length === 0 ? (
             <p className="kami-empty">还没有文章</p>
@@ -84,8 +86,6 @@ export function HomeVariantA({
             basePath="/"
           />
         </section>
-
-        {posts.length > 0 && <SubscribeForm />}
       </main>
 
       <SiteFooter />

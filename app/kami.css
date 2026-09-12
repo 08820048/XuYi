@@ -873,6 +873,14 @@ body {
   border-top: 0.5px solid var(--kami-warm-sand);
 }
 
+/* 首页订阅在文章列表上方，不加分隔线 */
+.kami-home .subscribe-panel {
+  margin-top: 0;
+  margin-bottom: 3.75rem;
+  padding: 0;
+  border-top: none;
+}
+
 .subscribe-panel label {
   background: var(--kami-ivory) !important;
   border: 0.5px solid var(--kami-warm-sand) !important;
