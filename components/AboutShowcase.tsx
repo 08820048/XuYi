@@ -19,6 +19,7 @@ const PRODUCT_LOGOS: Record<string, string> = {
   Berth: '/product-logos/berth.png',
   鸭小账: '/product-logos/duckbill.png',
   '星潮 Xingchao': '/product-logos/xingchao.png',
+  Folio: '/product-logos/folio.png',
 }
 
 function stripHtml(value: string) {
