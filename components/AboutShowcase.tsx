@@ -14,7 +14,6 @@ const PRODUCT_LOGOS: Record<string, string> = {
   Welight: '/product-logos/welight-2.png',
   Ornata: '/product-logos/ornata.png',
   Clibo: '/product-logos/clibo.png',
-  Quiet: '/product-logos/quiet.svg',
   'Citu（词图）': '/product-logos/citu.png',
   Berth: '/product-logos/berth.png',
   鸭小账: '/product-logos/duckbill.png',
