@@ -24,9 +24,9 @@
   --article-heading: #141413;
   --article-body: #3d3d3a;
   --article-quote: #504e49;
-  --article-quote-border: transparent;
-  --article-quote-nested-border: transparent;
-  --article-quote-nested-bg: transparent;
+  --article-quote-border: #1b365d;
+  --article-quote-nested-border: #8a9bb3;
+  --article-quote-nested-bg: #faf9f5;
   --ambient-line: #e8e6dc;
   --interaction-hover: #faf9f5;
   --interaction-active: #f0eee6;
@@ -355,12 +355,13 @@ body:has(.site-header) > :has(> .site-header) {
 }
 
 :is(.novel-prose, .rich-content) blockquote {
-  border-left: 0;
+  border-left: 2px solid var(--article-quote-border);
   background: var(--editor-quote-bg);
-  padding: 0 0 0 1.25rem;
+  padding: 0.85rem 1.15rem;
+  margin: 1.5rem 0;
   margin-left: 0;
   margin-right: 0;
-  border-radius: 0;
+  border-radius: 0 6px 6px 0;
   box-shadow: none;
   color: var(--article-quote);
   font-style: italic;

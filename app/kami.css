@@ -42,9 +42,9 @@
   --article-heading: var(--kami-near-black);
   --article-body: var(--kami-dark-warm);
   --article-quote: var(--kami-olive);
-  --article-quote-border: transparent;
-  --article-quote-nested-border: transparent;
-  --article-quote-nested-bg: transparent;
+  --article-quote-border: var(--kami-ink);
+  --article-quote-nested-border: color-mix(in srgb, var(--kami-ink) 38%, var(--kami-warm-sand));
+  --article-quote-nested-bg: var(--kami-ivory);
   --ambient-line: #e8e6dc;
   --interaction-hover: var(--kami-ivory);
   --interaction-active: #f0eee6;
@@ -502,19 +502,25 @@ body {
   color: var(--kami-ink-light);
 }
 
-:is(.novel-prose, .rich-content) blockquote {
-  background: transparent;
-  border-left: none;
-  border-radius: 0;
+:is(.novel-prose, .rich-content) blockquote:not(.github-alert) {
+  margin: 1.65rem 0;
+  padding: 0.9rem 1.2rem;
+  background: var(--kami-ivory);
+  border: none;
+  border-left: 2px solid var(--kami-ink);
+  border-radius: 0 6px 6px 0;
   box-shadow: none;
-  padding: 0 0 0 0.15rem;
   color: var(--kami-olive);
+  font-size: 0.97em;
   font-style: italic;
+  line-height: 1.75;
 }
 
-:is(.novel-prose, .rich-content) blockquote blockquote {
-  background: transparent;
-  margin-top: 0.75em;
+:is(.novel-prose, .rich-content) blockquote:not(.github-alert) blockquote {
+  margin-top: 0.85em;
+  padding: 0.7rem 1rem;
+  background: var(--kami-canvas);
+  border-left-color: color-mix(in srgb, var(--kami-ink) 38%, var(--kami-warm-sand));
 }
 
 :is(.novel-prose, .rich-content) hr {
