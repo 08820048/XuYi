@@ -874,32 +874,139 @@ body {
 /* ── 订阅 ── */
 
 .subscribe-panel {
+  width: 100%;
   margin-top: 4.5rem;
   padding: 2.25rem 0 0;
   border-top: 0.5px solid var(--kami-warm-sand);
 }
 
-/* 首页订阅在文章列表上方，不加分隔线 */
 .kami-home .subscribe-panel {
-  margin-top: 0;
-  margin-bottom: 3.75rem;
-  padding: 0;
+  margin: 0 0 2.75rem;
+  padding: 0 0 2.35rem;
   border-top: none;
+  border-bottom: 0.5px solid var(--kami-warm-sand);
 }
 
-.subscribe-panel label {
+.subscribe-panel-copy {
+  margin: 0 0 1.15rem;
+}
+
+.subscribe-panel-title {
+  margin: 0;
+  color: var(--kami-near-black);
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.subscribe-panel-lead {
+  margin: 0.4rem 0 0;
+  max-width: 34rem;
+  color: var(--kami-stone);
+  font-family: var(--font-serif);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+}
+
+.subscribe-form {
+  display: flex;
+  align-items: stretch;
+  gap: 0.6rem;
+  width: 100%;
+}
+
+.subscribe-field {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 3.15rem;
+  padding: 0 1rem;
   background: var(--kami-ivory) !important;
   border: 0.5px solid var(--kami-warm-sand) !important;
   border-radius: 8px !important;
   box-shadow: none !important;
+  transition: border-color 140ms ease;
 }
 
-.subscribe-panel button {
+.subscribe-field:focus-within {
+  border-color: var(--kami-ink) !important;
+}
+
+.subscribe-field-icon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  color: var(--kami-stone);
+}
+
+.subscribe-field input {
+  min-width: 0;
+  flex: 1;
+  border: 0;
+  background: transparent;
+  padding: 0.85rem 0;
+  color: var(--kami-near-black);
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  line-height: 1.4;
+  outline: none;
+}
+
+.subscribe-field input::placeholder {
+  color: var(--kami-stone);
+}
+
+.subscribe-submit {
+  display: inline-flex;
+  min-width: 8.75rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0 1.25rem;
   border-radius: 8px !important;
   box-shadow: none !important;
   background: var(--kami-ink) !important;
   color: var(--kami-ivory) !important;
+  font-size: 0.875rem;
   font-weight: 500 !important;
+}
+
+.subscribe-submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.subscribe-panel-status {
+  margin: 0;
+  color: var(--kami-ink);
+  font-family: var(--font-serif);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+}
+
+.subscribe-panel-error {
+  margin: 0.55rem 0 0;
+  color: var(--kami-error);
+  font-size: 0.75rem;
+}
+
+.subscribe-panel--minimal .subscribe-panel-status {
+  margin-top: 0;
+}
+
+@media (max-width: 540px) {
+  .subscribe-form {
+    flex-direction: column;
+  }
+
+  .subscribe-submit {
+    width: 100%;
+    min-height: 2.9rem;
+  }
 }
 
 /* ── 分页 ── */
