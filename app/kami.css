@@ -882,9 +882,8 @@ body {
 
 .kami-home .subscribe-panel {
   margin: 0 0 2.75rem;
-  padding: 0 0 2.35rem;
-  border-top: none;
-  border-bottom: 0.5px solid var(--kami-warm-sand);
+  padding: 0;
+  border: none;
 }
 
 .subscribe-panel-copy {
