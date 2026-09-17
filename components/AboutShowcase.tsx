@@ -5,8 +5,11 @@ interface AboutProject {
   descriptionHtml: string
   imageHtml?: string
   logoUrl?: string
+  pricing: ProductPricing
   links: Array<{ href: string; labelHtml: string }>
 }
+
+type ProductPricing = 'paid' | 'free' | 'open'
 
 const PRODUCT_LOGOS: Record<string, string> = {
   Hoolo: '/product-logos/hoolo.png',
@@ -19,6 +22,23 @@ const PRODUCT_LOGOS: Record<string, string> = {
   '星潮 Xingchao': '/product-logos/xingchao.png',
   Folio: '/product-logos/folio.png',
   Chupin: '/product-logos/chupin.png',
+}
+
+const PRODUCT_PRICING: Record<string, ProductPricing> = {
+  Hoolo: 'paid',
+  Chupin: 'paid',
+  Welight: 'paid',
+  Clibo: 'paid',
+  ToolPop: 'free',
+  鸭小账: 'free',
+  Ornata: 'free',
+  Folio: 'free',
+}
+
+const PRICING_LABEL: Record<ProductPricing, string> = {
+  paid: 'PAID',
+  free: 'FREE',
+  open: 'OPEN',
 }
 
 function stripHtml(value: string) {
@@ -64,6 +84,7 @@ function parseProjects(html: string) {
       descriptionHtml,
       imageHtml: imageMatch?.[0],
       logoUrl: PRODUCT_LOGOS[stripHtml(nameMatch[1])],
+      pricing: PRODUCT_PRICING[stripHtml(nameMatch[1])] ?? 'open',
       links: getLinks(block),
     })
   }
@@ -95,7 +116,9 @@ export function AboutShowcase({ html, id }: { html: string; id?: string }) {
             <article className="about-project" key={`${project.nameHtml}-${index}`}>
               <div className="about-project-topline">
                 <span className="about-project-index">{String(index + 1).padStart(2, '0')}</span>
-                <span className="about-project-status">{project.links.length ? 'LIVE' : 'NOTE'}</span>
+                <span className={`about-project-status about-project-status--${project.pricing}`}>
+                  {PRICING_LABEL[project.pricing]}
+                </span>
               </div>
               {project.imageHtml ? (
                 <div className="about-project-image" dangerouslySetInnerHTML={{ __html: project.imageHtml }} />

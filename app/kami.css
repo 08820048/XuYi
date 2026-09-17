@@ -1108,6 +1108,15 @@ body {
   font-weight: 500;
 }
 
+.about-project-status--paid {
+  color: var(--kami-ink);
+}
+
+.about-project-status--free,
+.about-project-status--open {
+  color: var(--kami-olive);
+}
+
 .about-project {
   border-top-color: var(--kami-warm-sand);
 }

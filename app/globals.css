@@ -718,6 +718,7 @@ body:has(.site-header) > :has(> .site-header) {
 .about-project-status {
   color: var(--editor-muted);
   font-size: 0.56rem;
+  letter-spacing: 0.08em;
 }
 
 .about-project-glyph {
