@@ -1,5 +1,6 @@
 import { highlightHtmlWithShiki } from '@/lib/shiki-engine'
 import { prepareDiagramBlocks } from '@/lib/diagram-html'
+import { enhanceMarkdownInHtml } from '@/lib/markdown-html'
 import { renderMathInHtml } from '@/lib/math-html'
 
 export const SHIKI_THEME_LIGHT = 'light-plus'
@@ -63,7 +64,8 @@ export async function highlightHtml(html: string | null | undefined) {
 
   try {
     const withDiagrams = prepareDiagramBlocks(html)
-    const withMath = renderMathInHtml(withDiagrams)
+    const withMarkdown = enhanceMarkdownInHtml(withDiagrams)
+    const withMath = renderMathInHtml(withMarkdown)
     if (!withMath.includes('<pre')) return withMath
     return await highlightHtmlWithShiki(withMath)
   } catch (error) {

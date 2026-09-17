@@ -90,6 +90,42 @@ describe('highlightHtml diagrams and math', () => {
   })
 })
 
+describe('enhanceMarkdownInHtml', () => {
+  it('turns leftover markdown links and bare urls into anchors', async () => {
+    const { enhanceMarkdownInHtml } = await import('@/lib/markdown-html')
+    const html = '<p>看 <a href="https://keep.example">已有链接</a> 和 [Chupin](https://chupin.site) 以及 Chupin简历:https://chupin.site)</p><pre><code>[skip](https://example.com)</code></pre>'
+    const result = enhanceMarkdownInHtml(html)
+
+    expect(result).toContain('href="https://keep.example"')
+    expect(result).toContain('>Chupin</a>')
+    expect(result).toContain('href="https://chupin.site"')
+    expect(result).toContain('[skip](https://example.com)')
+  })
+
+  it('renders GFM footnotes from stored editor html', async () => {
+    const { enhanceMarkdownInHtml } = await import('@/lib/markdown-html')
+    const html = [
+      '<p>初次筛选大约 7.4 秒。[^1] 实验室数字不必奉为定律。</p>',
+      '<p>---</p>',
+      '<p></p>',
+      '<p>[^1]: The Ladders, <a href="https://example.com/study"><em>Eye-Tracking Study</em> (2018)</a>。7.4 秒指初次筛选。</p>',
+      '<p>Chupin简历:https://chupin.site)</p>',
+    ].join('')
+    const result = enhanceMarkdownInHtml(html)
+
+    expect(result).toContain('data-footnote-ref')
+    expect(result).toContain('href="#user-content-fn-1"')
+    expect(result).toContain('id="user-content-fn-1"')
+    expect(result).toContain('class="footnotes"')
+    expect(result).toContain('Eye-Tracking Study')
+    expect(result).not.toContain('[^1]:')
+    expect(result).toContain('<hr>')
+    expect(result).not.toContain('<p></p>')
+    expect(result).toContain('>Chupin简历</a>')
+    expect(result).not.toContain('Chupin简历:')
+  })
+})
+
 describe('renderMarkdownContent math', () => {
   it('turns markdown math into katex html', async () => {
     const { renderMarkdownContent } = await import('@/lib/markdown')

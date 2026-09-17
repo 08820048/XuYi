@@ -529,6 +529,42 @@ body {
   margin: 2.5rem 0;
 }
 
+:is(.novel-prose, .rich-content) .footnote-ref,
+:is(.novel-prose, .rich-content) [data-footnote-ref] {
+  font-family: var(--font-serif);
+  font-size: 0.72em;
+  font-weight: 500;
+  line-height: 1;
+  margin-left: 0.08em;
+}
+
+:is(.novel-prose, .rich-content) .footnotes {
+  margin-top: 2.75rem;
+  padding-top: 1.15rem;
+  border-top: 0.5px solid var(--kami-warm-sand);
+  color: var(--kami-olive);
+  font-size: 0.875rem;
+  line-height: 1.65;
+}
+
+:is(.novel-prose, .rich-content) .footnotes h2 {
+  margin: 0;
+}
+
+:is(.novel-prose, .rich-content) .footnotes ol {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+:is(.novel-prose, .rich-content) .footnotes li + li {
+  margin-top: 0.45rem;
+}
+
+:is(.novel-prose, .rich-content) .data-footnote-backref {
+  margin-left: 0.2em;
+  text-decoration: none;
+}
+
 :is(.novel-prose, .rich-content) code {
   font-family: "JetBrains Mono", var(--font-mono), ui-monospace, monospace;
   font-size: 0.875em;
