@@ -18,7 +18,6 @@ function formatDate(ts: number) {
 }
 
 export function HomeDefault({
-  initialTheme,
   posts,
   navLinks,
   currentPage,
@@ -27,10 +26,7 @@ export function HomeDefault({
 }: HomeProps) {
   return (
     <div className="min-h-full flex flex-col bg-[var(--background)]">
-      <SiteHeader
-        initialTheme={initialTheme}
-        navLinks={navLinks}
-      />
+      <SiteHeader navLinks={navLinks} />
       <main className="flex-1 mx-auto max-w-3xl w-full px-4 sm:px-6 py-10 sm:py-14">
         {posts.length === 0 ? (
           <div className="text-center py-20">
