@@ -1,8 +1,7 @@
 import { getAppCloudflareEnv } from '@/lib/cloudflare'
 import { getPublicFriendLinks } from '@/lib/db'
 import { getSiteHeaderData } from '@/lib/site'
-import { SiteHeader } from '@/components/SiteHeader'
-import { SiteFooter } from '@/components/SiteFooter'
+import { SiteShell } from '@/components/SiteShell'
 
 export const metadata = {
   title: '友联',
@@ -15,14 +14,10 @@ export default async function LinksPage() {
   const env = await getAppCloudflareEnv()
   if (!env?.DB) {
     return (
-      <div className="flex min-h-screen flex-col bg-[var(--background)]">
-        <SiteHeader />
-        <main className="kami-page-main">
+      <SiteShell>
           <h1 className="kami-display">友联</h1>
           <p className="kami-lead">数据库暂不可用。</p>
-        </main>
-        <SiteFooter />
-      </div>
+      </SiteShell>
     )
   }
 
@@ -32,13 +27,10 @@ export default async function LinksPage() {
   ])
 
   return (
-    <div className="flex min-h-screen flex-col bg-[var(--background)]">
-      <SiteHeader
-        initialTheme={headerData.defaultTheme}
-        navLinks={headerData.navLinks}
-      />
-
-      <main className="kami-page-main">
+    <SiteShell
+      initialTheme={headerData.defaultTheme}
+      navLinks={headerData.navLinks}
+    >
         <header className="kami-page-header">
           <p className="kami-label">00 · Links</p>
           <h1 className="kami-display">友联</h1>
@@ -76,9 +68,6 @@ export default async function LinksPage() {
         ) : (
           <p className="kami-empty">还没有公开显示的友联。</p>
         )}
-      </main>
-
-      <SiteFooter />
-    </div>
+    </SiteShell>
   )
 }

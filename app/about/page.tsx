@@ -2,8 +2,7 @@ import { getAppCloudflareEnv } from '@/lib/cloudflare'
 import { getSetting } from '@/lib/db'
 import { renderMarkdownContent } from '@/lib/markdown'
 import { getSiteHeaderData } from '@/lib/site'
-import { SiteHeader } from '@/components/SiteHeader'
-import { SiteFooter } from '@/components/SiteFooter'
+import { SiteShell } from '@/components/SiteShell'
 import { MathRenderEnhancer } from '@/components/MathRenderEnhancer'
 import { CodeHighlightEnhancer } from '@/components/CodeHighlightEnhancer'
 import { DiagramRenderEnhancer } from '@/components/DiagramRenderEnhancer'
@@ -34,13 +33,9 @@ export default async function AboutPage() {
     const html = await highlightHtml(await renderMarkdownContent(fallbackMarkdown))
 
     return (
-      <div className="flex min-h-screen flex-col bg-[var(--background)]">
-        <SiteHeader />
-        <main className="kami-page-main">
+      <SiteShell>
           <AboutContent containerId={contentContainerId} html={html} />
-        </main>
-        <SiteFooter />
-      </div>
+      </SiteShell>
     )
   }
 
@@ -52,18 +47,12 @@ export default async function AboutPage() {
   const html = await highlightHtml(await renderMarkdownContent(markdown))
 
   return (
-    <div className="flex min-h-screen flex-col bg-[var(--background)]">
-      <SiteHeader
-        initialTheme={headerData.defaultTheme}
-        navLinks={headerData.navLinks}
-      />
-
-      <main className="kami-page-main">
+    <SiteShell
+      initialTheme={headerData.defaultTheme}
+      navLinks={headerData.navLinks}
+    >
         <AboutContent containerId={contentContainerId} html={html} />
-      </main>
-
-      <SiteFooter />
-    </div>
+    </SiteShell>
   )
 }
 

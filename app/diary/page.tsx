@@ -1,7 +1,6 @@
 import { getAppCloudflareEnv } from '@/lib/cloudflare'
 import { getDiaryEntries, getDiaryEntriesCount } from '@/lib/db'
-import { SiteHeader } from '@/components/SiteHeader'
-import { SiteFooter } from '@/components/SiteFooter'
+import { SiteShell } from '@/components/SiteShell'
 import { Pagination } from '@/components/Pagination'
 import { getSiteHeaderData } from '@/lib/site'
 import { getSiteUrl } from '@/lib/site-config'
@@ -73,13 +72,11 @@ export default async function DiaryPage({
   )
 
   return (
-    <div className="flex min-h-full flex-col bg-[var(--background)] text-[var(--foreground)]">
-      <SiteHeader
-        initialTheme={headerData.defaultTheme}
-        navLinks={headerData.navLinks}
-      />
-
-      <main id="diary-list" className="kami-page-main">
+    <SiteShell
+      initialTheme={headerData.defaultTheme}
+      navLinks={headerData.navLinks}
+      mainId="diary-list"
+    >
         <header className="kami-page-header">
           <p className="kami-label">00 · Diary</p>
           <h1 className="kami-display">日记</h1>
@@ -144,9 +141,6 @@ export default async function DiaryPage({
           containerId="diary-list"
           html={highlightedEntries.map((entry) => entry.html).join('\n')}
         />
-      </main>
-
-      <SiteFooter />
-    </div>
+    </SiteShell>
   )
 }

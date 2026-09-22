@@ -1,0 +1,323 @@
+/**
+ * 全站壳层（顶栏版）+ 书架（Bookshelf）
+ * 结构与主题解耦：颜色全部走 var(--*)，主题切换依然生效。
+ */
+
+/* ── 壳层 ── */
+
+.site-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--background);
+}
+
+.site-shell-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+/* 顶栏导航：当前页标记 */
+
+.site-nav-link.is-active {
+  color: var(--editor-accent);
+}
+
+/* ── 书架 ── */
+
+.shelf-hero {
+  margin-bottom: 2.75rem;
+}
+
+.shelf-block + .shelf-block {
+  margin-top: 3rem;
+}
+
+.shelf-label {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 0.9rem;
+  color: var(--editor-muted);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.shelf-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--editor-line);
+}
+
+.shelf {
+  position: relative;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-end;
+  gap: 8px;
+  min-height: 206px;
+  padding: 20px 4px 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-bottom: 10px solid color-mix(in srgb, var(--editor-muted) 42%, var(--editor-line));
+  box-shadow: 0 7px 0 -4px color-mix(in srgb, var(--editor-muted) 28%, transparent);
+  scrollbar-width: thin;
+  scrollbar-color: var(--editor-line) transparent;
+}
+
+.shelf::-webkit-scrollbar {
+  height: 6px;
+}
+
+.shelf::-webkit-scrollbar-thumb {
+  background: var(--editor-line);
+  border-radius: 3px;
+}
+
+.shelf-empty {
+  color: var(--editor-muted);
+  font-size: 0.9375rem;
+}
+
+/* 单本书 */
+
+.book {
+  position: relative;
+  flex-shrink: 0;
+  width: 50px;
+  height: var(--book-h, 178px);
+  border-radius: 2px 4px 4px 2px;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.16),
+      transparent 16%,
+      transparent 86%,
+      rgba(0, 0, 0, 0.1)
+    ),
+    var(--book-c, #1b365d);
+  box-shadow:
+    inset -3px 0 4px rgba(0, 0, 0, 0.14),
+    2px 0 6px rgba(0, 0, 0, 0.1),
+    0 0 0 1px color-mix(in srgb, var(--editor-line) 55%, transparent);
+  color: rgba(255, 255, 255, 0.94);
+  text-decoration: none;
+  transition:
+    transform 180ms ease,
+    z-index 0s;
+}
+
+.book:hover,
+.book:focus-visible {
+  transform: translateY(-12px) rotate(-1.2deg);
+  z-index: 6;
+  outline: none;
+}
+
+.book:focus-visible {
+  box-shadow:
+    inset -3px 0 4px rgba(0, 0, 0, 0.14),
+    2px 0 6px rgba(0, 0, 0, 0.1),
+    0 0 0 2px var(--background),
+    0 0 0 4px var(--editor-accent);
+}
+
+.book-band {
+  position: absolute;
+  top: 14px;
+  left: 5px;
+  right: 5px;
+  height: 3px;
+  border-radius: 1px;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.book-band--b {
+  top: auto;
+  bottom: 24px;
+}
+
+.book-spine {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 44px 4px;
+  font-family: var(--font-serif), "Noto Serif SC", serif;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+}
+
+.book-spine > span {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 100%;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.28);
+}
+
+/* 悬停抽出的封面卡 */
+
+.book-peek {
+  position: absolute;
+  left: calc(100% - 4px);
+  top: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 148px;
+  height: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--editor-line);
+  background: var(--background);
+  box-shadow: 8px 10px 28px rgba(20, 20, 19, 0.14);
+  color: var(--editor-ink);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-8px);
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
+.book:nth-last-child(-n + 4) .book-peek {
+  left: auto;
+  right: calc(100% - 4px);
+  transform: translateX(8px);
+}
+
+.book:is(:hover, :focus-visible) .book-peek {
+  opacity: 1;
+  transform: translateX(4px);
+}
+
+.book:nth-last-child(-n + 4):is(:hover, :focus-visible) .book-peek {
+  transform: translateX(-4px);
+}
+
+.book-peek-title {
+  font-family: var(--font-serif), "Noto Serif SC", serif;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--article-heading, var(--editor-ink));
+}
+
+.book-peek-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  color: var(--editor-muted);
+  font-family: var(--font-sans, system-ui, sans-serif);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.book-peek-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+/* 书架下的订阅区留白 */
+
+.shelf-after {
+  margin-top: 3.5rem;
+}
+
+/* ── 悬浮完整书名 ── */
+
+.book-title-tip {
+  position: fixed;
+  z-index: 90;
+  max-width: min(380px, calc(100vw - 28px));
+  padding: 10px 14px;
+  border: 1px solid var(--editor-line);
+  border-radius: 4px;
+  background: var(--background);
+  box-shadow: 0 10px 28px rgba(20, 20, 19, 0.14);
+  color: var(--article-heading, var(--editor-ink));
+  font-family: var(--font-serif), "Noto Serif SC", serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.55;
+  letter-spacing: 0.02em;
+  text-align: center;
+  text-wrap: balance;
+  word-break: break-word;
+  pointer-events: none;
+  transform: translate(-50%, calc(-100% - 14px));
+  animation: book-tip-in 140ms ease;
+}
+
+.book-title-tip.is-below {
+  transform: translate(-50%, 18px);
+  animation-name: book-tip-in-below;
+}
+
+@keyframes book-tip-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-100% - 8px));
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, calc(-100% - 14px));
+  }
+}
+
+@keyframes book-tip-in-below {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 10px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 18px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .book,
+  .book-peek {
+    transition: none;
+  }
+
+  .book:hover,
+  .book:focus-visible {
+    transform: none;
+  }
+
+  .book-title-tip {
+    animation: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .shelf {
+    min-height: 178px;
+    gap: 6px;
+  }
+
+  .book {
+    width: 44px;
+  }
+
+  .book-peek {
+    display: none;
+  }
+}

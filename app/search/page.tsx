@@ -1,8 +1,7 @@
 import { searchPosts } from '@/lib/db'
 import { getAppCloudflareEnv } from '@/lib/cloudflare'
 import Link from 'next/link'
-import { SiteHeader } from '@/components/SiteHeader'
-import { SiteFooter } from '@/components/SiteFooter'
+import { SiteShell } from '@/components/SiteShell'
 import { PostTypeBadge } from '@/components/PostTypeBadge'
 import type { SiteNavLink } from '@/lib/site'
 import { getSiteHeaderData } from '@/lib/site'
@@ -49,13 +48,7 @@ export default async function SearchPage({
   }
 
   return (
-    <div className="min-h-full flex flex-col bg-[var(--background)]">
-      <SiteHeader
-        initialTheme={defaultTheme}
-        navLinks={navLinks}
-      />
-
-      <main className="kami-page-main">
+    <SiteShell initialTheme={defaultTheme} navLinks={navLinks}>
         <header className="kami-page-header">
           <p className="kami-label">00 · Search</p>
           <h1 className="kami-display">搜索结果</h1>
@@ -99,9 +92,6 @@ export default async function SearchPage({
             ))}
           </div>
         ) : null}
-      </main>
-
-      <SiteFooter />
-    </div>
+    </SiteShell>
   )
 }

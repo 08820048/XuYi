@@ -7,8 +7,7 @@ import {
   incrementDiaryEntryViewCount,
   isPubliclyAccessibleDiaryEntry,
 } from '@/lib/db'
-import { SiteHeader } from '@/components/SiteHeader'
-import { SiteFooter } from '@/components/SiteFooter'
+import { SiteShell } from '@/components/SiteShell'
 import { getSiteHeaderData } from '@/lib/site'
 import { decodeRouteSegment } from '@/lib/route-segments'
 import { getDiaryDisplayTitle, getDiaryPath } from '@/lib/diary-utils'
@@ -81,13 +80,10 @@ export default async function DiaryEntryPage({
   const highlightedHtml = await highlightHtml(entry.html)
 
   return (
-    <div className="flex min-h-full flex-col bg-[var(--background)] text-[var(--foreground)]">
-      <SiteHeader
-        initialTheme={headerData.defaultTheme}
-        navLinks={headerData.navLinks}
-      />
-
-      <main className="kami-page-main">
+    <SiteShell
+      initialTheme={headerData.defaultTheme}
+      navLinks={headerData.navLinks}
+    >
         <Link href="/diary" className="kami-back">
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
           <span>返回日记</span>
@@ -122,9 +118,6 @@ export default async function DiaryEntryPage({
           <MathRenderEnhancer containerId="diary-content" html={highlightedHtml} />
           <DiagramRenderEnhancer containerId="diary-content" html={highlightedHtml} />
         </article>
-      </main>
-
-      <SiteFooter />
-    </div>
+    </SiteShell>
   )
 }

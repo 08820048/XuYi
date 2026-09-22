@@ -1,4 +1,4 @@
-import { getPosts, getPostsCount } from '@/lib/db'
+import { getPosts, getPostsCount, getDiaryEntries } from '@/lib/db'
 import { getAppCloudflareEnv } from '@/lib/cloudflare'
 import type { SiteCategoryLink, SiteNavLink } from '@/lib/site'
 import { getSiteHeaderData } from '@/lib/site'
@@ -30,14 +30,16 @@ export default async function Home({
   let totalCount = 0
   let navLinks: SiteNavLink[] = []
   let categories: SiteCategoryLink[] = []
+  let diaryEntries: Awaited<ReturnType<typeof getDiaryEntries>> = []
   const defaultTheme = 'kami' as const
   try {
     const env = await getAppCloudflareEnv()
     if (env?.DB) {
       const headerData = await getSiteHeaderData(env.DB)
-      ;[posts, totalCount] = await Promise.all([
+      ;[posts, totalCount, diaryEntries] = await Promise.all([
         getPosts(env.DB, PAGE_SIZE, (currentPage - 1) * PAGE_SIZE),
         getPostsCount(env.DB),
+        getDiaryEntries(env.DB, 12, 0),
       ])
       navLinks = headerData.navLinks
       categories = headerData.categories
@@ -90,6 +92,11 @@ export default async function Home({
         currentPage={currentPage}
         totalPages={totalPages}
         categorySlugMap={categorySlugMap}
+        diaryEntries={diaryEntries.map((entry) => ({
+          slug: entry.slug,
+          title: entry.title,
+          published_at: entry.published_at,
+        }))}
       />
     </>
   )

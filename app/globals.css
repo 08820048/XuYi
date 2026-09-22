@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "katex/dist/katex.min.css";
 @import "./kami.css";
+@import "./shell.css";
 
 :root {
   --background: #ffffff;

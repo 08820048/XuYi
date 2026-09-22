@@ -7,6 +7,12 @@ import { HomeVariantA } from '@/components/themes/HomeVariantA'
 
 export type { Theme }
 
+export interface DiaryShelfEntry {
+  slug: string
+  title: string | null
+  published_at: number
+}
+
 export interface HomeProps {
   initialTheme: Theme
   posts: PostWithTags[]
@@ -15,8 +21,9 @@ export interface HomeProps {
   currentPage: number
   totalPages: number
   categorySlugMap: Record<string, string>
+  diaryEntries?: DiaryShelfEntry[]
 }
 
 export function HomeClient(props: HomeProps) {
-  return <HomeVariantA {...props} initialTheme="kami" />
+  return <HomeVariantA {...props} />
 }

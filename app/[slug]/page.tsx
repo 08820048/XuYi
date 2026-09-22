@@ -3,8 +3,7 @@ import { getAppCloudflareEnv } from '@/lib/cloudflare'
 import { verifyPassword } from '@/lib/password'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { SiteHeader } from '@/components/SiteHeader'
-import { SiteFooter } from '@/components/SiteFooter'
+import { SiteShell } from '@/components/SiteShell'
 import { PasswordPrompt } from '@/components/PasswordPrompt'
 import { DownloadMarkdown } from '@/components/DownloadMarkdown'
 import { PostTypeBadge } from '@/components/PostTypeBadge'
@@ -119,17 +118,12 @@ export default async function PostPage({
   if (needsPassword) {
     if (!pwd) {
       return (
-        <div className="min-h-screen bg-[var(--background)] flex flex-col">
-          <SiteHeader
-            initialTheme={headerData.defaultTheme}
-            navLinks={headerData.navLinks}
-            stickyOnMobile={false}
-          />
-          <main className="kami-page-main">
+        <SiteShell
+          initialTheme={headerData.defaultTheme}
+          navLinks={headerData.navLinks}
+        >
             <PasswordPrompt />
-          </main>
-          <SiteFooter />
-        </div>
+        </SiteShell>
       )
     }
 
@@ -137,17 +131,12 @@ export default async function PostPage({
     if (!isValid) {
       passwordError = '密码错误，请重试'
       return (
-        <div className="min-h-screen bg-[var(--background)] flex flex-col">
-          <SiteHeader
-            initialTheme={headerData.defaultTheme}
-            navLinks={headerData.navLinks}
-            stickyOnMobile={false}
-          />
-          <main className="kami-page-main">
+        <SiteShell
+          initialTheme={headerData.defaultTheme}
+          navLinks={headerData.navLinks}
+        >
             <PasswordPrompt error={passwordError} />
-          </main>
-          <SiteFooter />
-        </div>
+        </SiteShell>
       )
     }
   }
@@ -167,14 +156,10 @@ export default async function PostPage({
   const publishedDate = new Date(post.published_at * 1000).toISOString().slice(0, 10).replaceAll('-', '.')
 
   return (
-    <div className="min-h-screen bg-[var(--background)] flex flex-col">
-      <SiteHeader
-        initialTheme={headerData.defaultTheme}
-        navLinks={headerData.navLinks}
-        stickyOnMobile={false}
-      />
-
-      <main className="kami-page-main">
+    <SiteShell
+      initialTheme={headerData.defaultTheme}
+      navLinks={headerData.navLinks}
+    >
         {!post.password && (() => {
           const baseUrl = getSiteUrl()
           const imgMatch = post.html?.match(/<img[^>]+src="([^"]+)"/)
@@ -306,9 +291,6 @@ export default async function PostPage({
             <ArticleTableOfContents containerId={contentContainerId} />
           </div>
         </div>
-      </main>
-
-      <SiteFooter />
-    </div>
+    </SiteShell>
   )
 }
