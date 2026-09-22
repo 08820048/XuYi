@@ -142,8 +142,8 @@ export function SettingsManager({
           <div className="rounded-lg border border-[var(--editor-line)] bg-[var(--background)] p-4">
             <label className="flex items-center justify-between gap-4">
               <span>
-                <span className="block text-sm font-medium text-[var(--editor-ink)]">顶部菜单显示日记</span>
-                <span className="mt-1 block text-xs text-[var(--editor-muted)]">关闭后前台顶部导航不显示“日记”，已发布日记页面仍可通过链接访问。</span>
+                <span className="block text-sm font-medium text-[var(--editor-ink)]">页脚显示日记</span>
+                <span className="mt-1 block text-xs text-[var(--editor-muted)]">关闭后页脚不显示“日记”，已发布日记页面仍可通过链接访问。</span>
               </span>
               <input
                 type="checkbox"

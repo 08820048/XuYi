@@ -2,10 +2,12 @@
 
 import Link from 'next/link'
 import { useState, useRef, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 import { refreshAdminSession, useAdminSession } from '@/lib/admin-session-client'
 import { isSponsorActive } from '@/lib/sponsor'
+import { splitSiteNavLinks, type SiteNavLink } from '@/lib/site'
 
-export function SiteFooter() {
+export function SiteFooter({ navLinks }: { navLinks?: SiteNavLink[] }) {
   const [open, setOpen] = useState(false)
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -13,6 +15,8 @@ export function SiteFooter() {
   const [sponsorActive] = useState(isSponsorActive)
   const inputRef = useRef<HTMLInputElement>(null)
   const { authenticated: isAdmin } = useAdminSession()
+  const pathname = usePathname()
+  const { footerLinks } = splitSiteNavLinks(navLinks)
 
   useEffect(() => {
     if (open) {
@@ -87,6 +91,31 @@ export function SiteFooter() {
                 XuYi
               </button>
             )}
+            {footerLinks.map((link) => {
+              const active = pathname === link.url || pathname.startsWith(`${link.url}/`)
+              const className = active
+                ? 'text-[var(--editor-ink)] underline underline-offset-2'
+                : 'hover:text-[var(--editor-ink)] transition-colors duration-150 underline-offset-2 hover:underline'
+              return (
+                <span key={link.url} className="contents">
+                  <span>·</span>
+                  {link.openInNewTab || link.url.startsWith('http') ? (
+                    <a
+                      href={link.url}
+                      target={link.openInNewTab ? '_blank' : undefined}
+                      rel={link.openInNewTab ? 'noopener noreferrer' : undefined}
+                      className={className}
+                    >
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link href={link.url} className={className}>
+                      {link.label}
+                    </Link>
+                  )}
+                </span>
+              )
+            })}
           </div>
           {sponsorActive && (
             <aside

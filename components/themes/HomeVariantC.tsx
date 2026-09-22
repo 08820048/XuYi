@@ -5,6 +5,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { SiteFooter } from '@/components/SiteFooter'
+import { splitSiteNavLinks } from '@/lib/site'
 import { SearchEntry } from '@/components/SearchEntry'
 import { Pagination } from '@/components/Pagination'
 import { ThemeDropdown } from '@/components/ThemeDropdown'
@@ -42,9 +43,8 @@ function TerminalHeader({
     { label: '~/links', url: '/links', openInNewTab: false },
     { label: '~/rss', url: '/feed.xml', openInNewTab: false },
   ]
-  const links = navLinks.length > 0
-    ? navLinks.map(l => ({ ...l, label: `~/${l.label.toLowerCase()}` }))
-    : defaultLinks
+  const links = splitSiteNavLinks(navLinks.length > 0 ? navLinks : defaultLinks).headerLinks
+    .map(l => ({ ...l, label: navLinks.length > 0 ? `~/${l.label.toLowerCase()}` : l.label }))
 
   return (
     <div className="terminal-home-header" style={{
@@ -351,7 +351,7 @@ export function HomeVariantC({
 
       {/* Standard footer with admin entry */}
       <div style={{ borderTop: `1px solid ${BORDER}`, marginTop: 16 }}>
-        <SiteFooter />
+        <SiteFooter navLinks={navLinks} />
       </div>
     </div>
   )

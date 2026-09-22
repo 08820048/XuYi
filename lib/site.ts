@@ -19,6 +19,48 @@ export const defaultSiteNavLinks: SiteNavLink[] = [
   { label: 'RSS', url: '/feed.xml', openInNewTab: false },
 ]
 
+function navPath(url: string) {
+  if (url.startsWith('http') || url.startsWith('//')) return url
+  const path = url.split('?')[0].split('#')[0]
+  if (path.length > 1 && path.endsWith('/')) return path.slice(0, -1)
+  return path || '/'
+}
+
+function linkHost(url: string) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '')
+  } catch {
+    return ''
+  }
+}
+
+/** 友联、简历、日记固定放在页脚，顺序也按这个来。 */
+function footerRank(link: SiteNavLink): number | null {
+  const path = navPath(link.url)
+  if (path === '/links') return 0
+  if (link.label.trim() === '简历' || linkHost(link.url) === 'chupin.site') return 1
+  if (path === '/diary') return 2
+  return null
+}
+
+export function splitSiteNavLinks(links: SiteNavLink[] | undefined): {
+  headerLinks: SiteNavLink[]
+  footerLinks: SiteNavLink[]
+} {
+  const source = links && links.length > 0 ? links : defaultSiteNavLinks
+  const headerLinks: SiteNavLink[] = []
+  const footerLinks: SiteNavLink[] = []
+
+  for (const link of source) {
+    if (footerRank(link) === null) headerLinks.push(link)
+    else footerLinks.push(link)
+  }
+
+  footerLinks.sort((a, b) => (footerRank(a) ?? 0) - (footerRank(b) ?? 0))
+
+  return { headerLinks, footerLinks }
+}
+
 export async function getSiteHeaderData(db: D1Database): Promise<{
   navLinks: SiteNavLink[]
   categories: SiteCategoryLink[]

@@ -27,7 +27,7 @@ export function SiteShell({
         <main id={mainId} className={mainClassName} aria-label={mainAriaLabel}>
           {children}
         </main>
-        <SiteFooter />
+        <SiteFooter navLinks={navLinks} />
       </div>
     </div>
   )

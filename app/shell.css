@@ -26,6 +26,71 @@
   color: var(--editor-accent);
 }
 
+.home-layout-menu {
+  position: relative;
+}
+
+.home-layout-menu-button {
+  gap: 0.15rem;
+  background: none;
+  border: none;
+  font: inherit;
+  cursor: pointer;
+}
+
+.home-layout-menu-button svg {
+  transition: transform 150ms ease;
+}
+
+.home-layout-menu-button svg.is-open {
+  transform: rotate(180deg);
+}
+
+.home-layout-menu-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 50;
+  min-width: 7.5rem;
+  padding: 0.3rem;
+  border: 1px solid var(--editor-line);
+  border-radius: 8px;
+  background: var(--background);
+  box-shadow: 0 10px 28px rgba(20, 20, 19, 0.08);
+}
+
+.home-layout-menu-item {
+  display: block;
+  width: 100%;
+  padding: 0.45rem 0.7rem;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--editor-muted);
+  font: inherit;
+  font-size: 0.8125rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.home-layout-menu-item:is(:hover, :focus-visible),
+.home-layout-menu-item.is-on {
+  background: var(--interaction-hover);
+  color: var(--editor-ink);
+  outline: none;
+}
+
+.home-layout-inline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.home-layout-inline > .site-nav-link {
+  pointer-events: none;
+}
+
 /* ── 书架 ── */
 
 .shelf-hero {

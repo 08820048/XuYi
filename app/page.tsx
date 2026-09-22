@@ -2,9 +2,11 @@ import { getPosts, getPostsCount, getDiaryEntries } from '@/lib/db'
 import { getAppCloudflareEnv } from '@/lib/cloudflare'
 import type { SiteCategoryLink, SiteNavLink } from '@/lib/site'
 import { getSiteHeaderData } from '@/lib/site'
+import { cookies } from 'next/headers'
 import { HomeClient } from '@/components/HomeClient'
 import { getSiteUrl } from '@/lib/site-config'
 import { POSTS_PER_SHELF_PAGE } from '@/lib/bookshelf-layout'
+import { HOME_LAYOUT_COOKIE, parseHomeLayout } from '@/lib/home-layout'
 
 const PAGE_SIZE = POSTS_PER_SHELF_PAGE
 const BASE_URL = getSiteUrl()
@@ -26,6 +28,8 @@ export default async function Home({
 }) {
   const { page: pageStr } = await searchParams
   const currentPage = Math.max(1, parseInt(pageStr ?? '1', 10) || 1)
+  const cookieStore = await cookies()
+  const initialHomeLayout = parseHomeLayout(cookieStore.get(HOME_LAYOUT_COOKIE)?.value)
 
   let posts: Awaited<ReturnType<typeof getPosts>> = []
   let totalCount = 0
@@ -93,6 +97,7 @@ export default async function Home({
         currentPage={currentPage}
         totalPages={totalPages}
         categorySlugMap={categorySlugMap}
+        initialHomeLayout={initialHomeLayout}
         diaryEntries={diaryEntries.map((entry) => ({
           slug: entry.slug,
           title: entry.title,

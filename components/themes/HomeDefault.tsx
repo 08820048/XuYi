@@ -104,7 +104,7 @@ export function HomeDefault({
           </>
         )}
       </main>
-      <SiteFooter />
+      <SiteFooter navLinks={navLinks} />
     </div>
   )
 }

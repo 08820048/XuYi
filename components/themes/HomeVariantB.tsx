@@ -6,6 +6,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { SiteFooter } from '@/components/SiteFooter'
+import { splitSiteNavLinks } from '@/lib/site'
 import { SearchEntry } from '@/components/SearchEntry'
 import { Pagination } from '@/components/Pagination'
 import { ThemeDropdown } from '@/components/ThemeDropdown'
@@ -46,7 +47,7 @@ function EditorialNavBar({
     { label: '友联', url: '/links', openInNewTab: false },
     { label: 'RSS', url: '/feed.xml', openInNewTab: false },
   ]
-  const links = navLinks.length > 0 ? navLinks : defaultLinks
+  const links = splitSiteNavLinks(navLinks.length > 0 ? navLinks : defaultLinks).headerLinks
   const { vol, month, year } = getIssueInfo()
 
   return (
@@ -367,7 +368,7 @@ export function HomeVariantB({
       </div>
 
       {/* Standard footer with admin entry */}
-      <SiteFooter />
+      <SiteFooter navLinks={navLinks} />
     </div>
   )
 }
