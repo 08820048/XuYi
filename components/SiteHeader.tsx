@@ -5,8 +5,6 @@ import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
 import { SearchEntry } from './SearchEntry'
-import { ThemeDropdown } from './ThemeDropdown'
-import type { Theme } from '@/lib/appearance'
 import { defaultSiteNavLinks, type SiteNavLink } from '@/lib/site'
 import { SignatureLogo } from '@/components/SignatureLogo'
 
@@ -15,13 +13,11 @@ export type NavLink = SiteNavLink
 interface SiteHeaderProps {
   navLinks?: NavLink[]
   stickyOnMobile?: boolean
-  initialTheme?: Theme
 }
 
 export function SiteHeader({
   navLinks,
   stickyOnMobile = true,
-  initialTheme = 'kami',
 }: SiteHeaderProps) {
   const links = navLinks && navLinks.length > 0 ? navLinks : defaultSiteNavLinks
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -82,9 +78,6 @@ export function SiteHeader({
             <nav className="site-nav hidden sm:flex items-center flex-shrink-0">
               {links.map(link => renderLink(link))}
               <SearchEntry />
-              <span className="site-nav-link" style={{ padding: 0 }}>
-                <ThemeDropdown initialTheme={initialTheme} />
-              </span>
             </nav>
 
             {/* Mobile: search icon + hamburger */}
@@ -116,14 +109,6 @@ export function SiteHeader({
                 {renderLink(link, () => setMobileMenuOpen(false))}
               </div>
             ))}
-            <div className="site-mobile-nav-item">
-              <span className="site-nav-link" style={{ padding: '0.7rem 0.75rem' }}>
-                <ThemeDropdown
-                  initialTheme={initialTheme}
-                  dropdownStyle={{ top: 'auto', bottom: '100%', marginBottom: 8 }}
-                />
-              </span>
-            </div>
           </nav>
         </div>
       </div>

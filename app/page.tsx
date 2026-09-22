@@ -4,8 +4,9 @@ import type { SiteCategoryLink, SiteNavLink } from '@/lib/site'
 import { getSiteHeaderData } from '@/lib/site'
 import { HomeClient } from '@/components/HomeClient'
 import { getSiteUrl } from '@/lib/site-config'
+import { POSTS_PER_SHELF_PAGE } from '@/lib/bookshelf-layout'
 
-const PAGE_SIZE = 25
+const PAGE_SIZE = POSTS_PER_SHELF_PAGE
 const BASE_URL = getSiteUrl()
 
 // Cloudflare Workers 缓存策略

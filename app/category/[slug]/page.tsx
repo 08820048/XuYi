@@ -10,8 +10,9 @@ import { PostUpdateBadge } from '@/components/PostUpdateBadge'
 import { decodeRouteSegment, getCategoryPath } from '@/lib/route-segments'
 import { getSiteHeaderData } from '@/lib/site'
 import { getSiteUrl } from '@/lib/site-config'
+import { chunkIntoLayers, POSTS_PER_SHELF_PAGE, shelfYearLabel } from '@/lib/bookshelf-layout'
 
-const PAGE_SIZE = 25
+const PAGE_SIZE = POSTS_PER_SHELF_PAGE
 const BASE_URL = getSiteUrl()
 
 export const dynamicParams = true
@@ -79,23 +80,23 @@ export default async function CategoryPage({
 
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE))
 
-  const books: ShelfBook[] = posts.map((post) => ({
-    key: post.slug,
-    href: `/${post.slug}`,
-    title: post.title,
-    spineText: post.title,
-    meta: (
-      <>
-        <span>{formatDateShort(post.published_at)}</span>
-      </>
-    ),
-    badges: (
-      <>
-        <PostTypeBadge type={post.post_type} />
-        <PostUpdateBadge post={post} />
-        {post.password ? <span className="kami-tag">加密</span> : null}
-      </>
-    ),
+  const layers = chunkIntoLayers(posts).map((layerPosts) => ({
+    key: layerPosts[0]?.slug ?? 'empty',
+    label: shelfYearLabel(layerPosts.map((post) => post.published_at)),
+    books: layerPosts.map((post): ShelfBook => ({
+      key: post.slug,
+      href: `/${post.slug}`,
+      title: post.title,
+      spineText: post.title,
+      meta: <span>{formatDateShort(post.published_at)}</span>,
+      badges: (
+        <>
+          <PostTypeBadge type={post.post_type} />
+          <PostUpdateBadge post={post} />
+          {post.password ? <span className="kami-tag">加密</span> : null}
+        </>
+      ),
+    })),
   }))
 
   return (
@@ -106,7 +107,7 @@ export default async function CategoryPage({
       <header className="kami-page-header shelf-hero">
         <p className="kami-label">00 · Category</p>
         <h1 className="kami-display">{category.name}</h1>
-        <p className="kami-lead">共 {totalCount} 篇文章 · 一格一架</p>
+        <p className="kami-lead">共 {totalCount} 篇文章</p>
       </header>
 
       {posts.length === 0 ? (
@@ -117,11 +118,14 @@ export default async function CategoryPage({
         </p>
       ) : (
         <>
-          <Bookshelf
-            label={`Shelf · ${category.name}`}
-            books={books}
-            emptyText="这个分类下还没有公开文章。"
-          />
+          {layers.map((layer) => (
+            <Bookshelf
+              key={layer.key}
+              label={layer.label}
+              books={layer.books}
+              emptyText="这个分类下还没有公开文章。"
+            />
+          ))}
 
           <div className="shelf-after">
             <Pagination

@@ -16,14 +16,13 @@ interface SiteShellProps {
 export function SiteShell({
   children,
   navLinks,
-  initialTheme,
   mainClassName = 'kami-page-main',
   mainId,
   mainAriaLabel,
 }: SiteShellProps) {
   return (
     <div className="site-shell">
-      <SiteHeader navLinks={navLinks} initialTheme={initialTheme} />
+      <SiteHeader navLinks={navLinks} />
       <div className="site-shell-body">
         <main id={mainId} className={mainClassName} aria-label={mainAriaLabel}>
           {children}
