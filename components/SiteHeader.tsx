@@ -5,7 +5,6 @@ import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
 import { SearchEntry } from './SearchEntry'
-import { HomeLayoutMenu } from './HomeLayoutMenu'
 import { splitSiteNavLinks, type SiteNavLink } from '@/lib/site'
 import { SignatureLogo } from '@/components/SignatureLogo'
 
@@ -78,7 +77,6 @@ export function SiteHeader({
             {/* Desktop nav */}
             <nav className="site-nav hidden sm:flex items-center flex-shrink-0">
               {links.map(link => renderLink(link))}
-              <HomeLayoutMenu />
               <SearchEntry />
             </nav>
 
@@ -111,9 +109,6 @@ export function SiteHeader({
                 {renderLink(link, () => setMobileMenuOpen(false))}
               </div>
             ))}
-            <div className="site-mobile-nav-item">
-              <HomeLayoutMenu inline onSelect={() => setMobileMenuOpen(false)} />
-            </div>
           </nav>
         </div>
       </div>

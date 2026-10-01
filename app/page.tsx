@@ -1,14 +1,11 @@
-import { getPosts, getPostsCount, getDiaryEntries } from '@/lib/db'
+import { getPosts, getPostsCount } from '@/lib/db'
 import { getAppCloudflareEnv } from '@/lib/cloudflare'
-import type { SiteCategoryLink, SiteNavLink } from '@/lib/site'
-import { getSiteHeaderData } from '@/lib/site'
-import { cookies } from 'next/headers'
 import { HomeClient } from '@/components/HomeClient'
+import type { HomeTab } from '@/components/home/PortfolioHome'
 import { getSiteUrl } from '@/lib/site-config'
-import { POSTS_PER_SHELF_PAGE } from '@/lib/bookshelf-layout'
-import { HOME_LAYOUT_COOKIE, parseHomeLayout } from '@/lib/home-layout'
+import './portfolio-home.css'
 
-const PAGE_SIZE = POSTS_PER_SHELF_PAGE
+const PAGE_SIZE = 20
 const BASE_URL = getSiteUrl()
 
 // Cloudflare Workers 缓存策略
@@ -24,39 +21,27 @@ export const metadata = {
 export default async function Home({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>
+  searchParams: Promise<{ page?: string; tab?: string }>
 }) {
-  const { page: pageStr } = await searchParams
+  const { page: pageStr, tab } = await searchParams
   const currentPage = Math.max(1, parseInt(pageStr ?? '1', 10) || 1)
-  const cookieStore = await cookies()
-  const initialHomeLayout = parseHomeLayout(cookieStore.get(HOME_LAYOUT_COOKIE)?.value)
+  const initialTab: HomeTab = tab === 'blog' || currentPage > 1 ? 'blog' : 'work'
 
   let posts: Awaited<ReturnType<typeof getPosts>> = []
   let totalCount = 0
-  let navLinks: SiteNavLink[] = []
-  let categories: SiteCategoryLink[] = []
-  let diaryEntries: Awaited<ReturnType<typeof getDiaryEntries>> = []
-  const defaultTheme = 'kami' as const
   try {
     const env = await getAppCloudflareEnv()
     if (env?.DB) {
-      const headerData = await getSiteHeaderData(env.DB)
-      ;[posts, totalCount, diaryEntries] = await Promise.all([
+      ;[posts, totalCount] = await Promise.all([
         getPosts(env.DB, PAGE_SIZE, (currentPage - 1) * PAGE_SIZE),
         getPostsCount(env.DB),
-        getDiaryEntries(env.DB, 12, 0),
       ])
-      navLinks = headerData.navLinks
-      categories = headerData.categories
     }
   } catch (e) {
     console.error('Homepage: failed to fetch posts', e)
   }
 
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE))
-  const categorySlugMap: Record<string, string> = Object.fromEntries(
-    categories.map((cat) => [cat.name, cat.slug])
-  )
 
   return (
     <>
@@ -89,20 +74,19 @@ export default async function Home({
           }),
         }}
       />
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&family=Noto+Sans+SC:wght@400;500;700&display=swap"
+      />
       <HomeClient
-        initialTheme={defaultTheme}
+        initialTheme="kami"
         posts={posts}
-        categories={categories}
-        navLinks={navLinks}
+        categories={[]}
+        navLinks={[]}
         currentPage={currentPage}
         totalPages={totalPages}
-        categorySlugMap={categorySlugMap}
-        initialHomeLayout={initialHomeLayout}
-        diaryEntries={diaryEntries.map((entry) => ({
-          slug: entry.slug,
-          title: entry.title,
-          published_at: entry.published_at,
-        }))}
+        categorySlugMap={{}}
+        initialTab={initialTab}
       />
     </>
   )

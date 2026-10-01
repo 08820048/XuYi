@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>结构方案 Mock 索引 · XuYi</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #141413; --muted: #6b6a64;
+    --line: #e8e6dc; --panel: #faf9f5; --accent: #1b365d;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
+    background: var(--bg); color: var(--fg);
+    min-height: 100vh; padding: 64px 24px;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  h1 { font-size: 28px; font-weight: 500; letter-spacing: 0.02em; }
+  .sub { color: var(--muted); font-size: 14px; margin-top: 8px; font-family: ui-monospace, monospace; }
+  .grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px; max-width: 960px; width: 100%; margin-top: 40px;
+  }
+  a.card {
+    display: block; text-decoration: none; color: inherit;
+    background: var(--panel); border: 1px solid var(--line);
+    padding: 24px; border-radius: 2px; transition: border-color .15s, transform .15s;
+  }
+  a.card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .num { font-family: ui-monospace, monospace; color: var(--accent); font-size: 12px; }
+  .card h2 { font-size: 18px; font-weight: 500; margin: 10px 0 8px; }
+  .card p { font-size: 13px; color: var(--muted); line-height: 1.7; font-family: system-ui, sans-serif; }
+  .tag { display: inline-block; margin-top: 14px; font-size: 11px; font-family: ui-monospace, monospace;
+    border: 1px solid var(--line); padding: 2px 8px; color: var(--muted); }
+  .tag.hot { color: var(--accent); border-color: var(--accent); }
+</style>
+</head>
+<body>
+  <h1>博客结构 · 5 版 Mock</h1>
+  <p class="sub">XuYi / structural explorations / 2026</p>
+  <div class="grid">
+    <a class="card" href="01-reading-desk.html">
+      <span class="num">MOCK 01</span>
+      <h2>书桌分屏 · Reading Desk</h2>
+      <p>左栏常驻目录抽屉，右栏阅读区。点文章只换右栏，浏览与阅读同时发生，不再有列表页/详情页的断裂。</p>
+      <span class="tag hot">信息架构改变</span>
+    </a>
+    <a class="card" href="02-margin-notes.html">
+      <span class="num">MOCK 02</span>
+      <h2>边注稿纸 · Margin Notes</h2>
+      <p>正文窄栏居中，右侧永远留边注栏：笔记、引用、相关文。像一份带批注的学术手稿。</p>
+      <span class="tag hot">空间即信息</span>
+    </a>
+    <a class="card" href="03-command-palette.html">
+      <span class="num">MOCK 03</span>
+      <h2>命令面板 · Chrome-less</h2>
+      <p>进站没有导航，首页即搜索。所有移动靠 ⌘K 调用。导航不是空间，是 invocation。</p>
+      <span class="tag">极简赌注</span>
+    </a>
+    <a class="card" href="04-bookshelf.html">
+      <span class="num">MOCK 04</span>
+      <h2>书架隐喻 · Bookshelf</h2>
+      <p>文章是一本本有书脊厚度的书，陈列在架上。分类即层架，日记即丛书。隐喻贯穿到内容陈列本身。</p>
+      <span class="tag">隐喻最完整</span>
+    </a>
+    <a class="card" href="05-dock.html">
+      <span class="num">MOCK 05</span>
+      <h2>底部工作台 · Dock</h2>
+      <p>导航/搜索/主题收进底部悬浮玻璃条，顶部 100% 留给内容。拇指可达，沉浸阅读。</p>
+      <span class="tag">风格赌注</span>
+    </a>
+  </div>
+</body>
+</html>

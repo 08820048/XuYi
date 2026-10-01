@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>05 底部工作台 · XuYi</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #141413; --muted: #6b6a64;
+    --line: #e8e6dc; --panel: rgba(250, 249, 245, .82);
+    --accent: #1b365d; --body: #3d3d3a; --soft: #f0eee6;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
+    background: var(--bg); color: var(--fg);
+    min-height: 100vh; padding-bottom: 120px;
+  }
+  .progress {
+    position: fixed; top: 0; left: 0; height: 2px; width: 0%;
+    background: var(--accent); z-index: 60; transition: width .1s linear;
+  }
+  .float-brand {
+    position: fixed; top: 24px; left: clamp(24px,5vw,64px); z-index: 5;
+    font-size: 18px; color: var(--accent); letter-spacing: .1em; text-decoration: none;
+  }
+  .float-share {
+    position: fixed; top: 24px; right: clamp(24px,5vw,64px); z-index: 5;
+    font-family: system-ui, sans-serif; font-size: 12px; color: var(--muted);
+    display: flex; gap: 12px;
+  }
+  .float-share span { cursor: pointer; }
+  .float-share span:hover { color: var(--accent); }
+
+  .wrap { max-width: 680px; margin: 0 auto; padding: 110px clamp(24px,6vw,32px) 80px; }
+  .kicker { font-family: ui-monospace, monospace; font-size: 12px; color: var(--accent); letter-spacing: .12em; }
+  h1 { font-size: clamp(30px, 5vw, 40px); font-weight: 500; line-height: 1.3; margin: 16px 0 18px; }
+  .meta { font-family: system-ui, sans-serif; font-size: 13px; color: var(--muted); padding-bottom: 28px; border-bottom: 1px solid var(--line); }
+  p { font-size: 16.5px; line-height: 2.05; color: var(--body); margin-top: 1.5em; }
+  h2 { font-size: 22px; font-weight: 500; margin: 2.2em 0 .6em; }
+  blockquote { margin: 1.6em 0; padding-left: 18px; border-left: 3px solid var(--accent); color: var(--muted); line-height: 1.9; }
+
+  .next-strip { max-width: 680px; margin: 48px auto 0; padding: 0 clamp(24px,6vw,32px); }
+  .next-strip .lbl { font-family: ui-monospace, monospace; font-size: 10px; letter-spacing: .16em; color: var(--muted); }
+  .next-strip a {
+    display: block; margin-top: 10px; padding: 18px 20px;
+    border: 1px solid var(--line); text-decoration: none; color: inherit;
+    font-size: 16px; background: var(--panel);
+  }
+  .next-strip a:hover { border-color: var(--accent); color: var(--accent); }
+  .next-strip .m { font-family: system-ui, sans-serif; font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+  footer.colophon {
+    max-width: 680px; margin: 64px auto 0; padding: 24px clamp(24px,6vw,32px) 0;
+    border-top: 1px solid var(--line);
+    font-family: system-ui, sans-serif; font-size: 12.5px; color: var(--muted);
+    display: flex; gap: 16px; flex-wrap: wrap;
+  }
+  footer.colophon a { color: var(--muted); text-decoration: none; }
+  footer.colophon a:hover { color: var(--accent); }
+
+  /* —— 底部 Dock —— */
+  .dock-zone {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+    display: flex; justify-content: center; padding: 0 16px 18px;
+    pointer-events: none;
+  }
+  .dock {
+    pointer-events: auto;
+    display: flex; align-items: center; gap: 4px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    backdrop-filter: blur(16px) saturate(1.4);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    border-radius: 16px;
+    padding: 6px 8px;
+    box-shadow: 0 8px 32px rgba(20,20,19,.12), inset 0 1px 0 rgba(255,255,255,.7);
+    font-family: system-ui, sans-serif;
+    position: relative;
+  }
+  .dock-btn {
+    position: relative;
+    width: 44px; height: 44px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    background: transparent; border: 0; cursor: pointer;
+    font-size: 17px; color: var(--fg);
+    transition: background .12s, transform .12s;
+  }
+  .dock-btn:hover { background: var(--soft); transform: translateY(-4px); }
+  .dock-btn.on { background: var(--accent); color: var(--panel); }
+  .dock-btn.on:hover { transform: translateY(-4px); }
+  .dock-sep { width: 1px; height: 28px; background: var(--line); margin: 0 4px; }
+  .dock-label {
+    font-size: 13px; padding: 0 14px; height: 44px;
+    display: flex; align-items: center; color: var(--muted);
+    border-radius: 10px; cursor: pointer; white-space: nowrap;
+  }
+  .dock-label:hover { background: var(--soft); color: var(--fg); }
+  .dock-tip {
+    position: absolute; bottom: calc(100% + 10px); left: 50%;
+    transform: translateX(-50%); background: var(--fg); color: var(--bg);
+    font-size: 11px; padding: 4px 8px; border-radius: 4px;
+    opacity: 0; pointer-events: none; transition: .12s; white-space: nowrap;
+  }
+  .dock-btn:hover .dock-tip, .dock-label:hover .dock-tip { opacity: 1; }
+  .dock-progress-txt {
+    font-family: ui-monospace, monospace; font-size: 11px; color: var(--muted);
+    padding: 0 10px 0 6px; min-width: 40px; text-align: right;
+  }
+
+  .mini-palette {
+    position: fixed; bottom: 86px; left: 50%; transform: translateX(-50%) translateY(8px);
+    width: min(480px, 92vw); background: var(--bg); border: 1px solid var(--line);
+    box-shadow: 0 12px 40px rgba(20,20,19,.16); border-radius: 12px;
+    opacity: 0; pointer-events: none; transition: .15s; z-index: 55; overflow: hidden;
+  }
+  .mini-palette.open { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0); }
+  .mini-palette input {
+    width: 100%; border: 0; border-bottom: 1px solid var(--line);
+    padding: 14px 16px; font-size: 14px; font-family: system-ui, sans-serif;
+    outline: none; background: transparent; color: var(--fg);
+  }
+  .mini-palette .it { padding: 10px 16px; font-family: system-ui, sans-serif; font-size: 13.5px; cursor: pointer; display: flex; justify-content: space-between; }
+  .mini-palette .it:hover, .mini-palette .it.sel { background: var(--accent); color: var(--panel); }
+  .mini-palette .it .s { font-family: ui-monospace, monospace; font-size: 10px; opacity: .7; }
+
+  .back { position: fixed; top: 24px; left: 50%; transform: translateX(-50%); font-family: ui-monospace, monospace; font-size: 11px; color: var(--muted); text-decoration: none; background: var(--panel); border: 1px solid var(--line); padding: 6px 10px; z-index: 6; backdrop-filter: blur(8px); }
+  .back:hover { color: var(--accent); }
+  @media (max-width: 600px) {
+    .dock-label span.full { display: none; }
+    .dock-progress-txt { display: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="progress" id="pg"></div>
+  <a class="float-brand" href="#">XuYi</a>
+  <div class="float-share"><span>收藏</span><span>分享</span></div>
+  <a class="back" href="index.html">← 返回索引</a>
+
+  <article class="wrap">
+    <div class="kicker">随笔 · 2026-09-18</div>
+    <h1>重新思考博客的信息架构</h1>
+    <div class="meta">徐一 · 1,240 字 · 约 5 分钟</div>
+    <p>传统的「顶部导航 + 内容 + 页脚」把「去哪里」和「读什么」分成两个空间。但阅读发生在正文里，导航只是一瞬的意图——它不配占住头顶那条黄金位置。</p>
+    <p>把导航沉到屏幕底部，是把它放回「工具」的位置：需要时伸手可及，不需要时视线里只有文字。顶部到第一像素都是内容。</p>
+    <blockquote>拇指够得到的地方放操作，眼睛想去的地方不要挡。</blockquote>
+    <h2>为什么是玻璃 dock</h2>
+    <p>悬浮、圆角、半透明——这些不是装饰，是「这一层不参与文档流」的视觉声明。它提醒你：随时会消失，也随时能唤起。进度百分比直接长在 dock 上，阅读位置和导航工具第一次合并成一个控件。</p>
+    <p>往下滚，看底部那条。点 ⌘ 或搜索图标可以唤起迷你面板。</p>
+    <h2>它适合什么样的站</h2>
+    <p>适合沉浸式长文、摄影作品集、日记流。不适合信息密度极高的目录型站点——那还是书桌分屏的活。结构没有银弹，只有匹配文体的那一个。</p>
+    <p>（页面顶部那条细线是阅读进度。继续往下滚，它会走完。）</p>
+  </article>
+
+  <div class="next-strip">
+    <div class="lbl">下一篇 / NEXT</div>
+    <a href="#">
+      把书脊立起来：一次结构实验
+      <div class="m">设计 · 09-12 · 3.4k 字</div>
+    </a>
+  </div>
+
+  <footer class="colophon">
+    <a href="#">关于我</a><a href="#">友联</a><a href="#">RSS</a><a href="#">GitHub</a>
+    <span style="margin-left:auto">© 2026 XuYi</span>
+  </footer>
+
+  <div class="mini-palette" id="mp">
+    <input placeholder="搜索或跳转…" autocomplete="off">
+    <div class="it sel">首页 <span class="s">/</span></div>
+    <div class="it">分类 <span class="s">/category</span></div>
+    <div class="it">日记 <span class="s">/diary</span></div>
+    <div class="it">切换主题 <span class="s">theme</span></div>
+  </div>
+
+  <div class="dock-zone">
+    <div class="dock">
+      <button class="dock-btn" onclick="location.href='index.html'" title="首页">⌂<span class="dock-tip">首页</span></button>
+      <button class="dock-btn" title="分类">▤<span class="dock-tip">分类</span></button>
+      <button class="dock-btn" title="日记">✎<span class="dock-tip">日记</span></button>
+      <div class="dock-sep"></div>
+      <div class="dock-label" onclick="toggleMp()">搜索文章…<span class="dock-tip">⌘K</span></div>
+      <div class="dock-sep"></div>
+      <button class="dock-btn" title="主题">◐<span class="dock-tip">主题 kami</span></button>
+      <button class="dock-btn on" title="回到顶部" onclick="scrollTo({top:0,behavior:'smooth'})">↑<span class="dock-tip">顶部</span></button>
+      <div class="dock-progress-txt" id="pt">0%</div>
+    </div>
+  </div>
+
+<script>
+  const pg = document.getElementById('pg'), pt = document.getElementById('pt');
+  addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const p = Math.min(100, Math.round(h.scrollTop / (h.scrollHeight - h.clientHeight) * 100));
+    pg.style.width = p + '%'; pt.textContent = p + '%';
+  }, { passive: true });
+  const mp = document.getElementById('mp');
+  function toggleMp(){ mp.classList.toggle('open'); if(mp.classList.contains('open')) mp.querySelector('input').focus(); }
+  document.addEventListener('keydown', e => {
+    if ((e.metaKey||e.ctrlKey) && e.key.toLowerCase()==='k'){ e.preventDefault(); toggleMp(); }
+    if (e.key==='Escape') mp.classList.remove('open');
+  });
+</script>
+</body>
+</html>

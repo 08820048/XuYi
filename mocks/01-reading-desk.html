@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>01 书桌分屏 · XuYi</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #141413; --muted: #6b6a64;
+    --line: #e8e6dc; --panel: #faf9f5; --soft: #f0eee6;
+    --accent: #1b365d; --body: #3d3d3a;
+    --drawer-w: clamp(260px, 32vw, 380px);
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
+    background: var(--bg); color: var(--fg); overflow: hidden;
+    display: flex;
+  }
+  .drawer {
+    width: var(--drawer-w); height: 100vh; flex-shrink: 0;
+    background: var(--panel); border-right: 1px solid var(--line);
+    display: flex; flex-direction: column;
+  }
+  .brand { padding: 28px 24px 20px; border-bottom: 1px solid var(--line); }
+  .brand .logo { font-size: 22px; letter-spacing: 0.08em; color: var(--accent); }
+  .brand .desc { font-size: 12px; color: var(--muted); margin-top: 4px; font-family: ui-monospace, monospace; }
+  .search {
+    margin: 16px 16px 8px; padding: 10px 12px;
+    background: var(--bg); border: 1px solid var(--line);
+    font-size: 13px; color: var(--muted); font-family: system-ui, sans-serif;
+    display: flex; justify-content: space-between; cursor: pointer;
+  }
+  .search:hover { border-color: var(--accent); }
+  .search kbd { font-family: ui-monospace, monospace; font-size: 11px; color: var(--accent); }
+  .tabs { display: flex; gap: 4px; padding: 8px 16px; font-family: system-ui, sans-serif; }
+  .tabs button {
+    flex: 1; padding: 6px 0; font-size: 12px; background: none;
+    border: 1px solid var(--line); color: var(--muted); cursor: pointer;
+  }
+  .tabs button.on { background: var(--accent); color: var(--panel); border-color: var(--accent); }
+  .list { flex: 1; overflow-y: auto; padding: 8px 0 24px; }
+  .month {
+    font-family: ui-monospace, monospace; font-size: 11px; color: var(--muted);
+    padding: 16px 24px 6px; letter-spacing: 0.1em;
+  }
+  .item {
+    display: block; padding: 12px 24px; text-decoration: none; color: inherit;
+    border-left: 3px solid transparent; cursor: pointer;
+  }
+  .item:hover { background: var(--soft); }
+  .item.active { background: var(--soft); border-left-color: var(--accent); }
+  .item .t { font-size: 14.5px; line-height: 1.5; }
+  .item .m { font-size: 11px; color: var(--muted); margin-top: 4px; font-family: system-ui, sans-serif; }
+  .item .m .cat { color: var(--accent); }
+  .drawer-foot {
+    padding: 14px 24px; border-top: 1px solid var(--line);
+    display: flex; gap: 14px; font-family: system-ui, sans-serif; font-size: 12px;
+  }
+  .drawer-foot a { color: var(--muted); text-decoration: none; }
+  .drawer-foot a:hover { color: var(--accent); }
+
+  .stage { flex: 1; height: 100vh; overflow-y: auto; position: relative; }
+  .article { max-width: 680px; margin: 0 auto; padding: 72px 48px 120px; }
+  .kicker { font-family: ui-monospace, monospace; font-size: 12px; color: var(--accent); letter-spacing: 0.12em; }
+  h1 { font-size: 34px; font-weight: 500; line-height: 1.35; margin: 14px 0 18px; letter-spacing: 0.01em; }
+  .meta { font-family: system-ui, sans-serif; font-size: 13px; color: var(--muted); padding-bottom: 24px; border-bottom: 1px solid var(--line); }
+  .article p { font-size: 16.5px; line-height: 2; color: var(--body); margin-top: 1.4em; }
+  .article blockquote {
+    margin: 1.6em 0; padding: 4px 0 4px 20px; border-left: 3px solid var(--accent);
+    color: var(--muted); font-size: 15.5px; line-height: 1.9;
+  }
+  .article h2 { font-size: 21px; font-weight: 500; margin: 2em 0 0.6em; color: var(--fg); }
+  .hint {
+    position: fixed; bottom: 20px; right: 24px; font-family: ui-monospace, monospace;
+    font-size: 11px; color: var(--muted); background: var(--panel);
+    border: 1px solid var(--line); padding: 6px 10px;
+  }
+  @media (max-width: 760px) {
+    .drawer { position: fixed; z-index: 10; width: 78vw; transform: translateX(-100%); transition: .2s; }
+    .drawer.open { transform: none; }
+    body { display: block; }
+    .stage { padding-top: 52px; }
+    .mobile-bar { display: flex !important; }
+  }
+  .mobile-bar {
+    display: none; position: fixed; top: 0; left: 0; right: 0; height: 52px;
+    background: var(--panel); border-bottom: 1px solid var(--line);
+    align-items: center; padding: 0 16px; gap: 12px; z-index: 20;
+    font-family: system-ui, sans-serif; font-size: 14px;
+  }
+  .mobile-bar button { background: none; border: 1px solid var(--line); padding: 4px 10px; cursor: pointer; font-size: 13px; }
+</style>
+</head>
+<body>
+  <div class="mobile-bar"><button onclick="document.querySelector('.drawer').classList.toggle('open')">☰ 目录</button><span>XuYi</span></div>
+
+  <aside class="drawer">
+    <div class="brand">
+      <div class="logo">XuYi</div>
+      <div class="desc">reading desk · 文集与札记</div>
+    </div>
+    <div class="search"><span>搜索文章、分类…</span><kbd>⌘K</kbd></div>
+    <div class="tabs">
+      <button class="on">文章</button>
+      <button>分类</button>
+      <button>日记</button>
+    </div>
+    <div class="list">
+      <div class="month">2026 / 09</div>
+      <a class="item active"><div class="t">重新思考博客的信息架构</div><div class="m"><span class="cat">随笔</span> · 09-18 · 1.2k 字</div></a>
+      <a class="item"><div class="t">把书脊立起来：一次结构实验</div><div class="m"><span class="cat">设计</span> · 09-12 · 3.4k 字</div></a>
+      <a class="item"><div class="t">Cloudflare Workers 上的图片流水线</div><div class="m"><span class="cat">工程</span> · 09-05 · 5.1k 字</div></a>
+      <div class="month">2026 / 08</div>
+      <a class="item"><div class="t">日记 0829 · 关于慢下来</div><div class="m"><span class="cat">日记</span> · 08-29</div></a>
+      <a class="item"><div class="t">D1 与 SQLite 的那些边界情况</div><div class="m"><span class="cat">工程</span> · 08-21 · 2.8k 字</div></a>
+      <a class="item"><div class="t">友链考古：我读过的 42 个博客</div><div class="m"><span class="cat">随笔</span> · 08-14 · 4.0k 字</div></a>
+      <a class="item"><div class="t">给自己的静态导出方案</div><div class="m"><span class="cat">工程</span> · 08-02 · 2.2k 字</div></a>
+      <div class="month">2026 / 07</div>
+      <a class="item"><div class="t">终端美学为什么耐看</div><div class="m"><span class="cat">设计</span> · 07-27 · 1.9k 字</div></a>
+      <a class="item"><div class="t">年中盘点：写了什么，没写什么</div><div class="m"><span class="cat">随笔</span> · 07-01 · 2.5k 字</div></a>
+    </div>
+    <div class="drawer-foot">
+      <a href="#">关于我</a><a href="#">友联</a><a href="#">RSS</a><a href="#">GitHub</a>
+      <a href="index.html" style="margin-left:auto">← 返回索引</a>
+    </div>
+  </aside>
+
+  <main class="stage">
+    <article class="article">
+      <div class="kicker">随笔 · 2026-09-18</div>
+      <h1>重新思考博客的信息架构</h1>
+      <div class="meta">徐一 · 1,240 字 · 约 5 分钟 · 观点 / 结构</div>
+      <p>传统的「顶部导航 + 内容 + 页脚」是 CMS 时代继承下来的默认答案。它把「去哪里」和「读什么」分成两个空间：先在顶栏做决定，再跳进一个陌生的页面。列表页存在的唯一理由，是让浏览器多一次往返。</p>
+      <p>如果目录本身就有足够的信息密度——时间、分类、字数、摘要——那么读者根本不需要「进入」列表页。列表应该是一直在场的。</p>
+      <blockquote>浏览和阅读不该是两个阶段，而该是同时发生的两种状态。</blockquote>
+      <h2>分屏的代价与收益</h2>
+      <p>左栏常驻意味着放弃「内容独占全屏」的仪式感，换来的是零成本的上下文切换。你随时知道自己在书桌的哪个位置，随时能抽出另一本书，而正在读的这一页不会消失。</p>
+      <p>这更接近真实书桌的隐喻：摊开的书在右手边，整排书脊在左手边。没有哪个浏览器的标签页会替你记住这件事。</p>
+      <h2>工程上的诚实</h2>
+      <p>分屏不是免费的。它要求列表数据随路由常驻、滚动位置分离、移动端另做折叠。但这些成本是一次性的，换来的是一种新的阅读节奏——对一个以写作为主的站点，这笔账是划算的。</p>
+      <p>点左边任意一篇试试：右侧内容会换，左侧纹丝不动。这就是全部。</p>
+    </article>
+    <div class="hint">MOCK 01 · 左栏常驻 · 右栏换文</div>
+  </main>
+
+<script>
+  document.querySelectorAll('.item').forEach(el => {
+    el.addEventListener('click', e => {
+      e.preventDefault();
+      document.querySelectorAll('.item').forEach(i => i.classList.remove('active'));
+      el.classList.add('active');
+      const t = el.querySelector('.t').textContent;
+      const m = el.querySelector('.m').textContent;
+      document.querySelector('h1').textContent = t;
+      document.querySelector('.meta').textContent = '徐一 · ' + m.replace('·', '·') + ' ·（示意）';
+      document.querySelector('.kicker').textContent = m.split('·')[0].trim() + ' · MOCK';
+      document.querySelector('.stage').scrollTo({ top: 0, behavior: 'smooth' });
+      document.querySelector('.drawer').classList.remove('open');
+    });
+  });
+</script>
+</body>
+</html>

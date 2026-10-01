@@ -1,12 +1,10 @@
 'use client'
 
-import { useSyncExternalStore } from 'react'
 import type { Theme } from '@/lib/appearance'
 import type { PostWithTags } from '@/lib/db'
 import type { SiteCategoryLink, SiteNavLink } from '@/lib/site'
-import { getHomeLayout, subscribeHomeLayout, type HomeLayout } from '@/lib/home-layout'
-import { HomeVariantA } from '@/components/themes/HomeVariantA'
-import { HomeList } from '@/components/themes/HomeList'
+import type { HomeLayout } from '@/lib/home-layout'
+import { PortfolioHome, type HomeTab } from '@/components/home/PortfolioHome'
 
 export type { Theme }
 
@@ -26,14 +24,21 @@ export interface HomeProps {
   categorySlugMap: Record<string, string>
   diaryEntries?: DiaryShelfEntry[]
   initialHomeLayout?: HomeLayout
+  initialTab?: HomeTab
 }
 
-export function HomeClient(props: HomeProps) {
-  const layout = useSyncExternalStore(
-    subscribeHomeLayout,
-    getHomeLayout,
-    () => props.initialHomeLayout ?? 'shelf',
+export function HomeClient({
+  posts,
+  currentPage,
+  totalPages,
+  initialTab = 'work',
+}: HomeProps) {
+  return (
+    <PortfolioHome
+      posts={posts}
+      currentPage={currentPage}
+      totalPages={totalPages}
+      initialTab={initialTab}
+    />
   )
-  if (layout === 'list') return <HomeList {...props} />
-  return <HomeVariantA {...props} />
 }

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>02 边注稿纸 · XuYi</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #141413; --muted: #6b6a64;
+    --line: #e8e6dc; --panel: #faf9f5; --accent: #1b365d;
+    --body: #3d3d3a; --margin-w: clamp(200px, 22vw, 300px);
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
+    background: var(--bg); color: var(--fg); min-height: 100vh;
+  }
+  header.top {
+    display: flex; align-items: center; gap: 24px;
+    padding: 18px clamp(24px, 5vw, 64px);
+    border-bottom: 1px solid var(--line);
+    position: sticky; top: 0; background: color-mix(in srgb, var(--bg) 92%, transparent);
+    backdrop-filter: blur(8px); z-index: 5;
+  }
+  .logo { font-size: 20px; color: var(--accent); letter-spacing: 0.08em; text-decoration: none; }
+  nav { display: flex; gap: 18px; font-family: system-ui, sans-serif; font-size: 13px; }
+  nav a { color: var(--muted); text-decoration: none; }
+  nav a:hover, nav a.on { color: var(--accent); }
+  .top .right { margin-left: auto; display: flex; gap: 14px; font-family: system-ui, sans-serif; font-size: 12px; color: var(--muted); }
+  .top .right span { cursor: pointer; }
+  .top .right span:hover { color: var(--accent); }
+
+  .page {
+    display: grid;
+    grid-template-columns: minmax(0, 640px) var(--margin-w);
+    gap: clamp(32px, 5vw, 72px);
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 64px clamp(24px, 5vw, 48px) 140px;
+    justify-content: center;
+  }
+  .kicker { font-family: ui-monospace, monospace; font-size: 12px; color: var(--accent); letter-spacing: 0.12em; }
+  h1 { font-size: 36px; font-weight: 500; line-height: 1.3; margin: 14px 0 16px; }
+  .meta { font-family: system-ui, sans-serif; font-size: 13px; color: var(--muted); padding-bottom: 28px; border-bottom: 1px solid var(--line); }
+  .body p { font-size: 16.5px; line-height: 2.05; color: var(--body); margin-top: 1.5em; position: relative; }
+  .body h2 { font-size: 21px; font-weight: 500; margin: 2.2em 0 0.5em; }
+  .body blockquote { margin: 1.6em 0; padding-left: 18px; border-left: 3px solid var(--accent); color: var(--muted); line-height: 1.9; }
+  .fn {
+    font-family: ui-monospace, monospace; font-size: 11px; color: var(--accent);
+    vertical-align: super; cursor: pointer; padding: 0 2px;
+  }
+  .fn:hover { text-decoration: underline; }
+
+  aside.margin { padding-top: 148px; position: relative; }
+  .mnote {
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 12.5px; line-height: 1.75; color: var(--muted);
+    padding: 12px 0 12px 14px; border-left: 2px solid var(--line);
+    margin-bottom: 28px;
+  }
+  .mnote .lbl {
+    display: block; font-family: ui-monospace, monospace; font-size: 10px;
+    letter-spacing: 0.14em; color: var(--accent); margin-bottom: 6px;
+  }
+  .mnote a { color: var(--accent); text-decoration: none; border-bottom: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); }
+  .mnote:hover { background: var(--panel); }
+  .mini-toc {
+    font-family: system-ui, sans-serif; font-size: 12.5px;
+    background: var(--panel); border: 1px solid var(--line); padding: 14px 16px;
+    margin-bottom: 28px;
+  }
+  .mini-toc .lbl { font-family: ui-monospace, monospace; font-size: 10px; letter-spacing: .14em; color: var(--accent); display: block; margin-bottom: 8px; }
+  .mini-toc a { display: block; color: var(--muted); text-decoration: none; padding: 3px 0; }
+  .mini-toc a:hover, .mini-toc a.on { color: var(--accent); }
+  .related { font-family: system-ui, sans-serif; font-size: 12.5px; }
+  .related .lbl { font-family: ui-monospace, monospace; font-size: 10px; letter-spacing: .14em; color: var(--accent); display: block; margin-bottom: 8px; }
+  .related a { display: block; color: var(--muted); text-decoration: none; padding: 4px 0; border-bottom: 1px dashed var(--line); }
+  .related a:hover { color: var(--accent); }
+
+  .hint { position: fixed; bottom: 20px; right: 24px; font-family: ui-monospace, monospace; font-size: 11px; color: var(--muted); background: var(--panel); border: 1px solid var(--line); padding: 6px 10px; }
+  .back { position: fixed; bottom: 20px; left: 24px; font-family: ui-monospace, monospace; font-size: 11px; color: var(--muted); text-decoration: none; background: var(--panel); border: 1px solid var(--line); padding: 6px 10px; }
+  @media (max-width: 900px) {
+    .page { grid-template-columns: 1fr; }
+    aside.margin { padding-top: 0; border-top: 1px solid var(--line); padding-top: 32px; }
+  }
+</style>
+</head>
+<body>
+  <header class="top">
+    <a class="logo" href="#">XuYi</a>
+    <nav>
+      <a href="#" class="on">文章</a><a href="#">分类</a><a href="#">日记</a><a href="#">关于我</a><a href="#">友联</a>
+    </nav>
+    <div class="right"><span>搜索 ⌘K</span><span>主题 ▾</span></div>
+  </header>
+
+  <div class="page">
+    <article>
+      <div class="kicker">随笔 · 2026-09-18</div>
+      <h1>重新思考博客的信息架构</h1>
+      <div class="meta">徐一 · 1,240 字 · 约 5 分钟</div>
+      <div class="body">
+        <p>传统的「顶部导航 + 内容 + 页脚」是 CMS 时代继承下来的默认答案<span class="fn">[1]</span>。它把「去哪里」和「读什么」分成两个空间：先在顶栏做决定，再跳进一个陌生的页面。</p>
+        <p>边注的想法其实很老——Tufte 的书、中世纪的抄本、甚至《批注本的诞生》都在用同一件事：<strong>正文的旁边是另一个信息层</strong><span class="fn">[2]</span>。网页却几乎把它遗忘了，因为三栏布局在 800px 宽的显示器上活不下来。</p>
+        <h2>现在宽度够了</h2>
+        <p>1440px 是常态。一条 280px 的边注栏不会挤压正文，反而让 640px 的最佳阅读行长得以保留。边注可以放：本节摘要、引用来源、当时的草稿片段、相关文章、读者批注。</p>
+        <blockquote>内容的「旁边」比内容的「上面」更有信息价值——导航不该总是出现在头顶。</blockquote>
+        <h2>导航的降级</h2>
+        <p>当边注承担了目录与关联，顶栏只需要一条细线：logo、几个入口、搜索<span class="fn">[3]</span>。站点从「以页面为单位」变成「以文章为单位」——你打开的永远是一份手稿，其余一切都在页边。</p>
+        <p>试试把鼠标悬停在右边任意一条边上注上。</p>
+      </div>
+    </article>
+
+    <aside class="margin">
+      <div class="mini-toc">
+        <span class="lbl">本页目录</span>
+        <a class="on">传统结构的问题</a>
+        <a>现在宽度够了</a>
+        <a>导航的降级</a>
+      </div>
+      <div class="mnote">
+        <span class="lbl">注 1</span>
+        WordPress 2003 年定型的 default theme 至今仍是很多站的骨架——二十三年没有结构性更新。
+      </div>
+      <div class="mnote">
+        <span class="lbl">注 2 · 源</span>
+        Edward Tufte, <em>Envisioning Information</em>, 1990；另见本站 <a href="#">《友链考古》</a> 中对批注式阅读的讨论。
+      </div>
+      <div class="mnote">
+        <span class="lbl">注 3 · 草稿片段</span>
+        「也许该做一版连顶栏都砍掉的，导航全走 ⌘K。」—— 09-15 备忘
+      </div>
+      <div class="related" style="margin-top: 36px;">
+        <span class="lbl">相关文章</span>
+        <a href="#">把书脊立起来：一次结构实验</a>
+        <a href="#">终端美学为什么耐看</a>
+        <a href="#">友链考古：我读过的 42 个博客</a>
+      </div>
+    </aside>
+  </div>
+
+  <a class="back" href="index.html">← 返回索引</a>
+  <div class="hint">MOCK 02 · 右侧边注常驻</div>
+</body>
+</html>
