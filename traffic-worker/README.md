@@ -68,7 +68,7 @@ wrangler deploy
 ## 博客前端调用示例
 
 ```js
-const res = await fetch('https://traffic-stats.<your-subdomain>.workers.dev/api/traffic')
+const res = await fetch('https://traffic.xuyi.dev/api/traffic')
 if (!res.ok) return // 静默降级，不展示统计
 const data = await res.json()
 // data.products: [{ name, domain, requests, pageViews, bytes, uniquesYesterday }]

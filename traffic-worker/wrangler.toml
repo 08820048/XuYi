@@ -1,6 +1,8 @@
 name = "traffic-stats"
 main = "src/index.js"
 compatibility_date = "2025-06-01"
+# workers.dev 域名在国内无法直连，绑定自定义域名供博客调用
+routes = [{ pattern = "traffic.xuyi.dev", custom_domain = true }]
 
 [vars]
 # 允许跨域访问的来源（英文逗号分隔：博客域名 + 本地开发地址）
