@@ -260,6 +260,16 @@ body:has(.pf-root) {
   color: #fff;
 }
 
+.pf-btn-dark.pf-sub-send {
+  background: #2b679f;
+  border-color: #2b679f;
+}
+
+.pf-btn-dark.pf-sub-send:hover {
+  background: #245785;
+  border-color: #245785;
+}
+
 .pf-root a.pf-btn-visit,
 .pf-btn-visit {
   border: 1px solid #262626;
