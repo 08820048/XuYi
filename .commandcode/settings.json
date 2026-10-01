@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Shell(npx tsc --noEmit 2 >& 1)",
+      "Shell(git:*)",
+      "Shell(git reset lib/repositories/search.ts && git commit -F - <<'EOF' feat: replace the homepage with a portfolio layout Add a tabbed portfolio homepage (work/blog) with project showcases, lightbox screenshots, and design mockups. Drop the old shelf/list layout switch and move the blog list under the blog tab. Co-authored-by: CommandCodeBot <noreply@commandcode.ai> EOF)"
+    ],
+    "deny": [],
+    "defaultMode": "default"
+  }
+}
