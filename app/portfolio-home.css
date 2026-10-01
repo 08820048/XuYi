@@ -624,11 +624,18 @@ body:has(.pf-root) {
 }
 
 .pf-shot-frame {
+  position: relative;
   padding: 12px;
-  border-radius: 22px;
-  background-color: #f3f3f1;
-  background-image: radial-gradient(circle, rgba(17, 17, 17, 0.12) 0.75px, transparent 0.75px);
-  background-size: 18px 18px;
+  border-radius: 0;
+}
+
+.pf-shot-frame::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 254 254' fill='%23d7d7d6'%3E%3Cpath d='M0 7 Q5 6.2 12 6.4 Q128 5.6 242 6.2 Q249 6.5 254 7 Q249 7.4 242 7.6 Q128 8.2 12 7.8 Q5 7.6 0 7 Z'/%3E%3Cpath d='M247 0 Q246.2 5 246.4 12 Q245.6 128 246.2 242 Q246.5 249 247 254 Q247.4 249 247.6 242 Q248.2 128 247.8 12 Q247.6 5 247 0 Z'/%3E%3Cpath d='M254 247 Q249 246.2 242 246.4 Q128 245.6 12 246.2 Q5 246.5 0 247 Q5 247.4 12 247.6 Q128 248.2 242 247.8 Q249 247.6 254 247 Z'/%3E%3Cpath d='M7 254 Q6.2 249 6.4 242 Q5.6 128 6.2 12 Q6.5 5 7 0 Q7.4 5 7.6 12 Q8.2 128 7.8 242 Q7.6 249 7 254 Z'/%3E%3C/svg%3E");
+  background-size: 100% 100%;
+  pointer-events: none;
 }
 
 .pf-shots img,
