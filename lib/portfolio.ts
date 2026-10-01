@@ -1,5 +1,8 @@
 const file = (name: string) => `/portfolio/${name}`;
 
+export const TRAFFIC_API =
+  process.env.NEXT_PUBLIC_TRAFFIC_API || "https://traffic-stats.ornataapp.workers.dev/api/traffic";
+
 export const profile = {
   name: "XuYi",
   avatar: "https://img.xuyi.dev/2026/09/11f5d939f03c890d5f347ca390d51254.jpeg",

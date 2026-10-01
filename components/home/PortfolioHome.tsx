@@ -9,6 +9,7 @@ import { isSponsorActive } from '@/lib/sponsor'
 import { collections, freeProject, profile, projects, type Product } from '@/lib/portfolio'
 import { AppleIcon, GitHubIcon, MailIcon, RssIcon, SearchIcon, XIcon } from './icons'
 import { LightboxProvider, ZoomImage } from './Lightbox'
+import { TrafficStats } from './TrafficStats'
 import { PostTypeBadge } from '@/components/PostTypeBadge'
 import { PostUpdateBadge } from '@/components/PostUpdateBadge'
 
@@ -428,6 +429,8 @@ export function PortfolioHome({
                   </a>
                 </div>
               </section>
+
+              <TrafficStats tab={initialTab} />
 
               <section className="pf-collections" aria-label="产品图标">
                 <h2 className="pf-label">My Project Collections</h2>
