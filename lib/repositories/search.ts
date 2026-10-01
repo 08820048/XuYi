@@ -21,6 +21,18 @@ export async function searchPosts(
   if (!includeDeleted) conditions.push('posts.deleted_at IS NULL')
   const whereClause = conditions.length > 0 ? `AND ${conditions.join(' AND ')}` : ''
 
+  const likePosts = () =>
+    db
+      .prepare(
+        `SELECT * FROM posts
+         WHERE (title LIKE ? OR content LIKE ?)
+         ${whereClause}
+         ORDER BY published_at DESC
+         LIMIT ?`,
+      )
+      .bind(`%${query}%`, `%${query}%`, limit)
+      .all<Post>()
+
   try {
     const ftsResult = await db
       .prepare(
@@ -33,20 +45,11 @@ export async function searchPosts(
       )
       .bind(query, limit)
       .all<Post>()
-    results = ftsResult.results
+    // unicode61 keeps a run of CJK as one token, so a substring MATCH returns
+    // an empty set instead of throwing. Fall back to LIKE in that case.
+    results = ftsResult.results?.length ? ftsResult.results : (await likePosts()).results
   } catch {
-    const pattern = `%${query}%`
-    const likeResult = await db
-      .prepare(
-        `SELECT * FROM posts
-         WHERE (title LIKE ? OR content LIKE ?)
-         ${whereClause}
-         ORDER BY published_at DESC
-         LIMIT ?`,
-      )
-      .bind(pattern, pattern, limit)
-      .all<Post>()
-    results = likeResult.results
+    results = (await likePosts()).results
   }
 
   return results.map(mapPostWithTags)
