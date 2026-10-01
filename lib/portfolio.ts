@@ -23,6 +23,14 @@ export type Product = {
   cta: string;
   badge?: "OPEN";
   apple?: boolean;
+  /**
+   * 产品展示图（点击可放大），图片或视频混合排列，视频会静音自动循环播放。
+   * 要求：
+   * - 图片放 public/portfolio/ 下（推荐 webp）或写完整在线 URL；视频用 mp4
+   * - 展示容器为 240×240 正方形、居中裁切（object-fit: cover），
+   *   请提供 1:1 正方形素材（建议 480×480 以上），横屏素材左右会被裁掉
+   * - 若用横屏截图/录屏，主体放在画面中间，避免贴边
+   */
   shots?: string[];
   miniCode?: string;
 };
@@ -37,7 +45,7 @@ export const freeProject: Product[] = [
     size: "big",
     cta: "访问",
     apple: true,
-    shots: [file("ornata-1.webp"), file("ornata-2.webp"), file("ornata-3.webp")],
+    shots: [file("ornata-1.png"), file("ornata-2.png"), file("ornata-3.mp4")],
   },
   {
     id: "folio",
@@ -88,7 +96,7 @@ export const projects: Product[] = [
     size: "big",
     cta: "去购买",
     apple: true,
-    shots: [file("hoolo-1.webp"), file("hoolo-2.webp"), file("hoolo-3.webp")],
+    shots: [file("hoolo-1.mp4"), file("hoolo-2.png"), file("hoolo-3.png")],
   },
   {
     id: "chupin",

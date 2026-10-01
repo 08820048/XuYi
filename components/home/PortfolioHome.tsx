@@ -8,7 +8,7 @@ import type { PostWithTags } from '@/lib/db'
 import { isSponsorActive } from '@/lib/sponsor'
 import { collections, freeProject, profile, projects, type Product } from '@/lib/portfolio'
 import { AppleIcon, GitHubIcon, MailIcon, RssIcon, SearchIcon, XIcon } from './icons'
-import { LightboxProvider, ZoomImage } from './Lightbox'
+import { LightboxProvider, ZoomImage, ZoomVideo } from './Lightbox'
 import { TrafficStats } from './TrafficStats'
 import { PostTypeBadge } from '@/components/PostTypeBadge'
 import { PostUpdateBadge } from '@/components/PostUpdateBadge'
@@ -41,7 +41,13 @@ function BigCard({ product }: { product: Product }) {
       </div>
       <div className="pf-shots">
         {product.shots?.map((shot, i) => (
-          <ZoomImage key={shot} src={shot} alt={`${product.name} 界面截图 ${i + 1}`} width={530} height={336} />
+          <div className="pf-shot-frame" key={shot}>
+            {/\.(mp4|webm|mov)$/i.test(shot) ? (
+              <ZoomVideo src={shot} alt={`${product.name} 界面演示 ${i + 1}`} width={530} height={336} />
+            ) : (
+              <ZoomImage src={shot} alt={`${product.name} 界面截图 ${i + 1}`} width={530} height={336} />
+            )}
+          </div>
         ))}
       </div>
     </article>
@@ -475,7 +481,6 @@ export function PortfolioHome({
             <div className="pf-foot-row">
               <div>
                 <p className="pf-foot-links">
-                  <Link href="/about">关于</Link>
                   <Link href="/links">友联</Link>
                   <Link href="/diary">日记</Link>
                 </p>

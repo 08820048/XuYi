@@ -619,12 +619,23 @@ body:has(.pf-root) {
 .pf-shots {
   margin-top: 16px;
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
-.pf-shots img {
-  width: calc((100% - 16px) / 3);
-  height: 168px;
+.pf-shot-frame {
+  padding: 12px;
+  border-radius: 22px;
+  background-color: #f3f3f1;
+  background-image: radial-gradient(circle, rgba(17, 17, 17, 0.12) 0.75px, transparent 0.75px);
+  background-size: 18px 18px;
+}
+
+.pf-shots img,
+.pf-shots video {
+  display: block;
+  width: 240px;
+  height: 240px;
   object-fit: cover;
   border-radius: 14px;
   border: 1px solid var(--pf-divider);
@@ -678,6 +689,7 @@ body:has(.pf-root) {
 }
 
 .pf-shots img,
+.pf-shots video,
 .pf-mini-code {
   cursor: zoom-in;
 }
@@ -843,7 +855,8 @@ body:has(.pf-root) {
   display: none;
 }
 
-.pf-lightbox img {
+.pf-lightbox img,
+.pf-lightbox video {
   max-width: 92vw;
   max-height: 88vh;
   width: auto;
@@ -897,9 +910,7 @@ body:has(.pf-root) {
     padding-right: 24px;
   }
 
-  .pf-shots img {
-    width: 252px;
-    height: 160px;
+  .pf-shot-frame {
     flex: none;
     scroll-snap-align: start;
   }
