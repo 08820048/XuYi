@@ -67,6 +67,15 @@ export const freeProject: Product[] = [
     cta: "访问 →",
     badge: "OPEN",
   },
+  {
+    id: "citu",
+    name: "词图",
+    logo: file("logo-citu.svg"),
+    desc: "社区驱动的 AI 生图提示词精选，收录 X 平台优质提示词，永久免费。",
+    link: "https://citu.work/",
+    size: "thin",
+    cta: "访问 →",
+  },
 ];
 
 export const projects: Product[] = [
@@ -132,6 +141,15 @@ export const projects: Product[] = [
     cta: "访问 →",
     badge: "OPEN",
   },
+  {
+    id: "jevsift",
+    name: "JevSift",
+    logo: file("logo-jevsift.svg"),
+    desc: "投研 Agent 的出处核验 API，对照源文判断声明能不能发。支持 HTTP 与 MCP。",
+    link: "https://jevsift.com/pricing",
+    size: "thin",
+    cta: "去购买",
+  },
 ];
 
 export const collections: { name: string; logo: string; link: string }[] = [
@@ -145,4 +163,6 @@ export const collections: { name: string; logo: string; link: string }[] = [
   { name: "鸭小账", logo: file("logo-duck.png"), link: "https://duckbill-site.vercel.app/" },
   { name: "Berth", logo: file("logo-berth.png"), link: "https://berth.fyi/" },
   { name: "星潮", logo: file("logo-xing.png"), link: "https://xingchao.dev/" },
+  { name: "词图", logo: file("logo-citu.svg"), link: "https://citu.work/" },
+  { name: "JevSift", logo: file("logo-jevsift.svg"), link: "https://jevsift.com/" },
 ];
