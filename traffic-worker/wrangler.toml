@@ -1,0 +1,25 @@
+name = "traffic-stats"
+main = "src/index.js"
+compatibility_date = "2025-06-01"
+
+[vars]
+# 允许跨域访问的来源（英文逗号分隔：博客域名 + 本地开发地址）
+CORS_ORIGIN = "https://xuyi.dev,http://localhost:3000"
+# 产品列表：每项 { name, domain, zoneId }，把 zoneId 换成真实 Zone ID
+PRODUCTS = """[
+    { "name": "berth", "domain": "berth.fyi", "zoneId": "78690fabb6301938a80aa1f21a002efb" },
+    { "name": "chupin简历", "domain": "chupin.site", "zoneId": "31beca86a0fca9af9853df694aaedba4" },
+    { "name": "citu", "domain": "citu.work", "zoneId": "1b80a7cbcc28e3718d10bf59ac87e723" },
+    { "name": "clibo", "domain": "clibo.us", "zoneId": "65b49bce24931163e9e88b46496324e3" },
+    { "name": "folio", "domain": "folioedit.dev", "zoneId": "a3f71ae2dc5001726a82064f8feb4b78" },
+    { "name": "hoolo", "domain": "hoolo.cc", "zoneId": "8d48405bdf56f98608d2b21bdfcdc926" },
+    { "name": "jevsift", "domain": "jevsift.com", "zoneId": "37ffa5b9dd5d834dd9eb355a85ab0fbc" },
+    { "name": "ornata", "domain": "ornata.app", "zoneId": "129b42f6740a32ef973081999d405422" },
+    { "name": "toolpop", "domain": "toolpop.win", "zoneId": "e8c25ebb074753b38e36d1899810c520" },
+    { "name": "welight", "domain": "welight.fyi", "zoneId": "874d124b040b3b47dcd3c5fb5c90fe32" },
+    { "name": "xingchao", "domain": "xingchao.dev", "zoneId": "3210fd53119e1cddef89982c41548a11" },
+    { "name": "blog", "domain": "xuyi.dev", "zoneId": "ed54f6877949b90845e4e49f66e88a65" }
+]"""
+
+# CF_API_TOKEN 是 Secret，不要写进本文件，用下面命令设置：
+#   wrangler secret put CF_API_TOKEN
