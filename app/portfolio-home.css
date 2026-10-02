@@ -93,13 +93,13 @@ body:has(.pf-root) {
 
 .pf-card {
   background: var(--pf-card);
-  border-radius: 20px;
+  border-radius: 10px;
   box-shadow: var(--pf-shadow);
 }
 
 .pf-identity {
   padding: 24px;
-  border-radius: 12px;
+  border-radius: 10px;
 }
 
 .pf-avatar-row {
@@ -644,7 +644,7 @@ body:has(.pf-root) {
   width: 240px;
   height: 240px;
   object-fit: cover;
-  border-radius: 14px;
+  border-radius: 8px;
   border: 1px solid var(--pf-divider);
 }
 
