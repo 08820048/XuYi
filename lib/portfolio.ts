@@ -116,7 +116,7 @@ export const projects: Product[] = [
     link: "https://welight.fyi/",
     size: "big",
     cta: "去购买",
-    shots: [file("welight-1.webp"), file("welight-2.webp"), file("welight-3.webp")],
+    shots: [file("welight-1.png"), file("welight-2.png"), file("welight-3.png")],
   },
   {
     id: "clibo",
@@ -127,7 +127,7 @@ export const projects: Product[] = [
     size: "big",
     cta: "去购买",
     apple: true,
-    shots: [file("clibo-1.webp"), file("clibo-2.webp"), file("clibo-3.webp")],
+    shots: [file("clibo-1.mp4"), file("clibo-2.png"), file("clibo-3.mp4")],
   },
   {
     id: "duckbill",
