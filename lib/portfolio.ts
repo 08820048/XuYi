@@ -11,6 +11,8 @@ export const profile = {
   xUrl: "https://x.com/xuyidev",
   email: "ilikexff@gmail.com",
   github: "https://github.com/08820048",
+  threads: "https://www.threads.com/@xuyidev",
+  whatsapp: "https://wa.me/xuyidev",
 } as const;
 
 export type Product = {

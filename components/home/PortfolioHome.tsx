@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 import type { PostWithTags } from '@/lib/db'
 import { isSponsorActive } from '@/lib/sponsor'
 import { collections, freeProject, profile, projects, type Product } from '@/lib/portfolio'
-import { AppleIcon, GitHubIcon, MailIcon, RssIcon, SearchIcon, XIcon } from './icons'
+import { AppleIcon, GitHubIcon, MailIcon, RssIcon, SearchIcon, ThreadsIcon, WhatsAppIcon, XIcon } from './icons'
 import { LightboxProvider, ZoomImage, ZoomVideo } from './Lightbox'
 import { TrafficStats } from './TrafficStats'
 import { PostTypeBadge } from '@/components/PostTypeBadge'
@@ -429,6 +429,12 @@ export function PortfolioHome({
                   </a>
                   <a href={profile.github} target="_blank" rel="noreferrer" aria-label="GitHub">
                     <GitHubIcon />
+                  </a>
+                  <a href={profile.threads} target="_blank" rel="noreferrer" aria-label="Threads">
+                    <ThreadsIcon />
+                  </a>
+                  <a href={profile.whatsapp} target="_blank" rel="noreferrer" aria-label="WhatsApp">
+                    <WhatsAppIcon />
                   </a>
                   <a href="/feed.xml" aria-label="RSS">
                     <RssIcon />
