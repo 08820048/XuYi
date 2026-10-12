@@ -98,7 +98,7 @@ export const projects: Product[] = [
     size: "big",
     cta: "去购买",
     apple: true,
-    shots: [file("runnock-1.webp"), file("runnock-2.webp"), file("runnock-3.webp")],
+    shots: [file("runnock-1.mp4"), file("runnock-2.png"), file("runnock-3.mp4")],
   },
   {
     id: "hoolo",
