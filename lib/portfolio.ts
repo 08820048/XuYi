@@ -90,6 +90,17 @@ export const freeProject: Product[] = [
 
 export const projects: Product[] = [
   {
+    id: "runnock",
+    name: "Runnock",
+    logo: file("logo-runnock.png"),
+    desc: "把 Mac 刘海变成编码智能体的状态岛。",
+    link: "https://runnock.com/#pricing",
+    size: "big",
+    cta: "去购买",
+    apple: true,
+    shots: [file("runnock-1.webp"), file("runnock-2.webp"), file("runnock-3.webp")],
+  },
+  {
     id: "hoolo",
     name: "Hoolo",
     logo: file("logo-hoolo.png"),
@@ -163,6 +174,7 @@ export const projects: Product[] = [
 ];
 
 export const collections: { name: string; logo: string; link: string }[] = [
+  { name: "Runnock", logo: file("logo-runnock.png"), link: "https://runnock.com/" },
   { name: "Hoolo", logo: file("logo-hoolo.png"), link: "https://hoolo.cc/" },
   { name: "Chupin", logo: file("logo-chupin.png"), link: "https://chupin.site/" },
   { name: "Welight", logo: file("logo-welight.png"), link: "https://welight.fyi/" },
