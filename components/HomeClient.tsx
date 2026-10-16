@@ -3,7 +3,6 @@
 import type { Theme } from '@/lib/appearance'
 import type { PostWithTags } from '@/lib/db'
 import type { SiteCategoryLink, SiteNavLink } from '@/lib/site'
-import type { HomeLayout } from '@/lib/home-layout'
 import { PortfolioHome, type HomeTab } from '@/components/home/PortfolioHome'
 
 export type { Theme }
@@ -23,7 +22,6 @@ export interface HomeProps {
   totalPages: number
   categorySlugMap: Record<string, string>
   diaryEntries?: DiaryShelfEntry[]
-  initialHomeLayout?: HomeLayout
   initialTab?: HomeTab
 }
 
