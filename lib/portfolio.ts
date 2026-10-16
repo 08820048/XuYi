@@ -34,7 +34,6 @@ export type Product = {
    * - 若用横屏截图/录屏，主体放在画面中间，避免贴边
    */
   shots?: string[];
-  miniCode?: string;
 };
 
 export const freeProject: Product[] = [
@@ -143,16 +142,6 @@ export const projects: Product[] = [
     shots: [file("clibo-1.mp4"), file("clibo-2.png"), file("clibo-3.mp4")],
   },
   {
-    id: "duckbill",
-    name: "鸭小账",
-    logo: file("logo-duck.png"),
-    desc: "现代化,AI驱动式账本小程序。",
-    link: "https://duckbill-site.vercel.app/",
-    size: "thin",
-    cta: "访问 →",
-    miniCode: "https://img.xuyi.dev/2026/09/be7b9d4a7aa78f6b579d52de90055239.jpeg",
-  },
-  {
     id: "xingchao",
     name: "星潮",
     logo: file("logo-xing.png"),
@@ -182,9 +171,14 @@ export const collections: { name: string; logo: string; link: string }[] = [
   { name: "Ornata", logo: file("logo-ornata.png"), link: "https://ornata.app/" },
   { name: "Clibo", logo: file("logo-clibo.png"), link: "https://clibo.us" },
   { name: "ToolPop", logo: file("logo-pop.png"), link: "https://toolpop.win/" },
-  { name: "鸭小账", logo: file("logo-duck.png"), link: "https://duckbill-site.vercel.app/" },
   { name: "Berth", logo: file("logo-berth.png"), link: "https://berth.fyi/" },
   { name: "星潮", logo: file("logo-xing.png"), link: "https://xingchao.dev/" },
   { name: "词图", logo: file("logo-citu.svg"), link: "https://citu.work/" },
   { name: "JevSift", logo: file("logo-jevsift.svg"), link: "https://jevsift.com/" },
 ];
+
+/** 「100 个产品计划」：目标数量与当前已上线数量（取自产品图标合集）。 */
+export const productPlan = {
+  goal: 100,
+  done: collections.length,
+} as const;

@@ -18,7 +18,6 @@ const PRODUCT_LOGOS: Record<string, string> = {
   Ornata: '/product-logos/ornata.png',
   Clibo: '/product-logos/clibo.png',
   Berth: '/product-logos/berth.png',
-  鸭小账: '/product-logos/duckbill.png',
   '星潮 Xingchao': '/product-logos/xingchao.png',
   Folio: '/product-logos/folio.png',
   Chupin: '/product-logos/chupin.png',
@@ -30,7 +29,6 @@ const PRODUCT_PRICING: Record<string, ProductPricing> = {
   Welight: 'paid',
   Clibo: 'paid',
   ToolPop: 'free',
-  鸭小账: 'free',
   Ornata: 'free',
   Folio: 'free',
 }

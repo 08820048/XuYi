@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { PostWithTags } from '@/lib/db'
 import { isSponsorActive } from '@/lib/sponsor'
-import { collections, freeProject, profile, projects, type Product } from '@/lib/portfolio'
+import { collections, freeProject, productPlan, profile, projects, type Product } from '@/lib/portfolio'
 import { AppleIcon, GitHubIcon, MailIcon, RssIcon, SearchIcon, ThreadsIcon, WhatsAppIcon, XIcon } from './icons'
 import { LightboxProvider, ZoomImage, ZoomVideo } from './Lightbox'
 import { TrafficStats } from './TrafficStats'
@@ -54,6 +54,38 @@ function BigCard({ product }: { product: Product }) {
   )
 }
 
+function ProductPlan() {
+  const { goal, done } = productPlan
+  const percent = Math.round((done / goal) * 100)
+  return (
+    <section className="pf-plan" aria-label="100 个产品计划进度">
+      <h2 className="pf-label">100 Products Plan</h2>
+      <div className="pf-plan-head">
+        <span className="pf-plan-count">{done}</span>
+        <span className="pf-plan-goal">/ {goal}</span>
+        <span className="pf-plan-percent">{percent}%</span>
+      </div>
+      <div
+        className="pf-plan-grid"
+        role="progressbar"
+        aria-valuemin={0}
+        aria-valuemax={goal}
+        aria-valuenow={done}
+        aria-label={`已完成 ${done} / ${goal} 个产品`}
+      >
+        {Array.from({ length: goal }, (_, i) => (
+          <i
+            key={i}
+            className={i < done ? 'is-done' : i === done ? 'is-next' : undefined}
+            style={i < done ? { animationDelay: `${i * 28}ms` } : undefined}
+          />
+        ))}
+      </div>
+      <p className="pf-plan-note">每一个都从解决自己的需求开始。</p>
+    </section>
+  )
+}
+
 function ThinCard({ product }: { product: Product }) {
   return (
     <article className="pf-card pf-thin">
@@ -65,11 +97,7 @@ function ThinCard({ product }: { product: Product }) {
         </div>
         <p className="pf-thin-desc">{product.desc}</p>
       </div>
-      {product.miniCode ? (
-        <ZoomImage className="pf-mini-code" src={product.miniCode} alt="鸭小账小程序码，微信扫码打开" width={80} height={80} />
-      ) : (
-        <VisitButton product={product} />
-      )}
+      <VisitButton product={product} />
     </article>
   )
 }
@@ -456,6 +484,8 @@ export function PortfolioHome({
                   ))}
                 </ul>
               </section>
+
+              <ProductPlan />
             </aside>
 
             <div className="pf-right">
