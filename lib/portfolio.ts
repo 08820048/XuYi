@@ -5,7 +5,7 @@ export const TRAFFIC_API =
 
 export const profile = {
   name: "XuYi",
-  avatar: "https://img.xuyi.dev/2026/09/11f5d939f03c890d5f347ca390d51254.jpeg",
+  avatar: file("avatar.jpg"),
   bio: ["独立产品&游戏开发者。", "从解决自己的需求开始。"],
   blogTagline: "记录成长,写游戏、也写AI。",
   xUrl: "https://x.com/xuyidev",
