@@ -42,8 +42,6 @@ export default async function AdminPostsPage({
       for (const [postId, item] of summaries) {
         translationInfo.set(postId, {
           status: item.has_content ? item.status : null,
-          aiState: item.ai_state,
-          aiError: item.ai_error,
           stale: item.has_content && getTranslationFreshness(item.source_hash, currentHashes.get(postId) ?? '') === 'stale',
         })
       }

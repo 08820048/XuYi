@@ -572,24 +572,3 @@ export async function processPost(
   console.error('AI processing failed after all retries:', lastError)
   return null
 }
-
-/** 用指定系统提示词做一次非流式文本补全（复用编辑器 AI 的供应商解析与三种调用通道）。 */
-export async function completeWithSystemPrompt(
-  text: string,
-  options: {
-    systemPrompt: string
-    temperature?: number
-    profileId?: number
-    db?: D1Database
-    env?: AIEnv
-  },
-): Promise<string> {
-  const stream = await transformEditorSelectionStream(text, 'completion', {
-    actionPrompt: options.systemPrompt,
-    temperature: options.temperature,
-    profileId: options.profileId,
-    db: options.db,
-    env: options.env,
-  })
-  return (await new Response(stream).text()).trim()
-}

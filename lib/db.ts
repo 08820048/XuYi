@@ -43,10 +43,6 @@ export {
 } from '@/lib/repositories/posts'
 export {
   deletePostTranslation,
-  deleteTranslationChunks,
-  getTranslationChunks,
-  saveTranslationChunk,
-  type TranslationChunkRow,
   getCurrentSourceHashes,
   getPostTranslation,
   getPostTranslationLangs,
@@ -55,11 +51,9 @@ export {
   getTranslatedPostsCount,
   searchTranslatedPosts,
   setPostTranslationStatus,
-  setTranslationAiState,
   upsertPostTranslation,
   type PostTranslationInput,
   type PostTranslationSummary,
-  type TranslationAiState,
 } from '@/lib/repositories/post-translations'
 export { searchPosts } from '@/lib/repositories/search'
 export {

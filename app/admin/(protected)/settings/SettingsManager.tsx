@@ -42,8 +42,6 @@ interface Props {
   initialCustomJs: string
   initialAboutMarkdown: string
   initialAboutMarkdownEn: string
-  initialTranslateProfileId: string
-  initialTranslatePrompt: string
   initialCategories: Category[]
   initialFriendLinks: FriendLink[]
   initialBodyFont: string
@@ -56,8 +54,6 @@ export function SettingsManager({
   initialCustomJs,
   initialAboutMarkdown,
   initialAboutMarkdownEn,
-  initialTranslateProfileId,
-  initialTranslatePrompt,
   initialCategories,
   initialFriendLinks,
   initialBodyFont,
@@ -184,7 +180,7 @@ export function SettingsManager({
     },
     {
       id: 'translate',
-      label: '英文翻译',
+      label: '英文站',
       content: (
         <div className="space-y-4">
           {msg && (
@@ -193,8 +189,6 @@ export function SettingsManager({
             </div>
           )}
           <TranslationSettings
-            initialProfileId={initialTranslateProfileId}
-            initialPrompt={initialTranslatePrompt}
             initialAboutEn={initialAboutMarkdownEn}
             onSave={save}
             saving={saving}
