@@ -1,140 +1,26 @@
 /**
- * 文章 AI 翻译的纯逻辑：分块、提示词、拼装。不直接访问 AI / 数据库，便于测试。
- *
- * 流程：Markdown 按段落切成若干块（代码块原样保留、不含中文的块不翻译）→ 逐块翻译 → 拼回。
+ * 文章 AI 翻译的提示词与标题/摘要解析。HTML 切分、占位符、校验见 lib/html-translate.ts。
  */
 
 export const TRANSLATE_LANG_NAMES: Record<string, string> = {
   en: 'English',
 }
 
-export interface TranslationChunk {
-  /** 原文片段（Markdown） */
-  text: string
-  /** false 表示原样保留：围栏代码块，或不含中文的片段（图片、纯英文、分隔线等） */
-  translate: boolean
-}
-
-const CJK = /[㐀-鿿]/
-export const DEFAULT_CHUNK_CHARS = 1500
-
-function splitLongBlock(block: string, maxChars: number): string[] {
-  if (block.length <= maxChars) return [block]
-
-  // 切成最小单元：整行；单行过长再按句子；句子仍过长则硬切。sep 是与前一单元的连接符。
-  const units: Array<{ text: string; sep: string }> = []
-  block.split('\n').forEach((line, lineIndex) => {
-    const lineSep = lineIndex === 0 ? '' : '\n'
-    if (line.length <= maxChars) {
-      units.push({ text: line, sep: lineSep })
-      return
-    }
-    const sentences = line.match(/[^。！？!?；;.]+[。！？!?；;.]*\s*/g) ?? [line]
-    let first = true
-    for (const sentence of sentences) {
-      for (let i = 0; i < sentence.length; i += maxChars) {
-        units.push({ text: sentence.slice(i, i + maxChars), sep: first ? lineSep : '' })
-        first = false
-      }
-    }
-  })
-
-  const parts: string[] = []
-  let current = ''
-  for (const unit of units) {
-    const piece = current ? `${unit.sep}${unit.text}` : unit.text
-    if (current && current.length + piece.length > maxChars) {
-      parts.push(current)
-      current = unit.text
-    } else {
-      current += piece
-    }
-  }
-  if (current) parts.push(current)
-  return parts
-}
-
-/**
- * 把 Markdown 切成翻译块。相邻的可翻译段落合并到 maxChars 以内，减少调用次数；
- * 围栏代码块（``` / ~~~）永远单独成块且不翻译。
- */
-export function splitMarkdownForTranslation(markdown: string, maxChars = DEFAULT_CHUNK_CHARS): TranslationChunk[] {
-  const lines = markdown.replace(/\r\n/g, '\n').split('\n')
-  const blocks: Array<{ text: string; code: boolean }> = []
-  let buffer: string[] = []
-  let fence: { char: string; length: number } | null = null
-
-  const flush = () => {
-    const text = buffer.join('\n').trim()
-    if (text) blocks.push({ text, code: false })
-    buffer = []
-  }
-
-  for (const line of lines) {
-    const match = line.match(/^\s{0,3}(`{3,}|~{3,})/)
-    if (fence) {
-      buffer.push(line)
-      if (match && match[1][0] === fence.char && match[1].length >= fence.length && line.trim() === match[1]) {
-        blocks.push({ text: buffer.join('\n'), code: true })
-        buffer = []
-        fence = null
-      }
-      continue
-    }
-    if (match) {
-      flush()
-      buffer.push(line)
-      fence = { char: match[1][0], length: match[1].length }
-      continue
-    }
-    if (line.trim() === '') {
-      flush()
-      continue
-    }
-    buffer.push(line)
-  }
-  if (fence) blocks.push({ text: buffer.join('\n'), code: true }) // 未闭合的围栏按代码处理
-  else flush()
-
-  const chunks: TranslationChunk[] = []
-  let pending = ''
-
-  const flushPending = () => {
-    if (pending) chunks.push({ text: pending, translate: true })
-    pending = ''
-  }
-
-  for (const block of blocks) {
-    if (block.code || !CJK.test(block.text)) {
-      flushPending()
-      chunks.push({ text: block.text, translate: false })
-      continue
-    }
-    for (const piece of splitLongBlock(block.text, maxChars)) {
-      if (pending && pending.length + piece.length + 2 > maxChars) flushPending()
-      pending = pending ? `${pending}\n\n${piece}` : piece
-    }
-  }
-  flushPending()
-  return chunks
-}
-
-/** 把（已翻译的）块拼回 Markdown。 */
-export function joinTranslatedChunks(chunks: string[]): string {
-  return `${chunks.map((chunk) => chunk.trim()).filter(Boolean).join('\n\n')}\n`
-}
-
-export function buildTranslateSystemPrompt(lang: string, customPrompt?: string | null): string {
+/** 翻译「单元」：一小段文字，可能带占位符 ⟦1⟧…⟦/1⟧（成对，包住一段文字）与 ⟦2/⟧（单个：图片、换行、行内代码）。 */
+export function buildUnitSystemPrompt(lang: string, customPrompt?: string | null): string {
   const language = TRANSLATE_LANG_NAMES[lang] ?? lang
-  const base = `You are a professional translator for a personal tech blog (game development, indie products, AI). Translate the user's Simplified Chinese Markdown into natural, fluent ${language} that reads as if originally written by a native speaker. Keep the author's first-person voice and tone.
+  const base = `You are a professional translator for a personal tech blog (game development, indie products, AI). Translate Simplified Chinese text fragments into natural, fluent ${language} that reads as if originally written by a native speaker. Keep the author's first-person voice and tone.
+
+The input is a list of fragments. Each starts with a line "<<<N>>>" followed by the text of fragment N. A fragment is plain text (one paragraph, heading, list item, caption or table cell) that may contain placeholders:
+- paired placeholders ⟦3⟧ ... ⟦/3⟧ wrap a span of text (bold, italic, a link);
+- single placeholders ⟦4/⟧ stand for an image, a line break or inline code.
 
 Strict rules:
-- Output ONLY the translation. No preface, no explanations, no surrounding code fence.
-- Preserve all Markdown structure exactly: headings, lists, tables, blockquotes, emphasis, footnotes, line breaks.
-- Never translate or alter: code (inline or fenced), URLs, image/link targets, file paths, HTML tags, math ($...$), product and brand names, and anything already in English.
-- Translate link text and image alt text, but keep the targets unchanged.
-- Keep numbers, dates and units; convert Chinese date formats to natural ${language} dates.
-- Do not add or omit content. If the input is a fragment of a longer article, translate only that fragment.`
+- Translate only the human-readable text. Keep EVERY placeholder exactly as written: do not drop, duplicate, renumber, reorder across pairs, or reformat them. A paired placeholder must still wrap the corresponding translated words, and pairs must stay properly nested.
+- Keep HTML entities such as &amp; &lt; &gt; &nbsp; as they are. Never output raw < or > characters. Do not add Markdown or HTML.
+- Do not translate product and brand names, code, URLs, numbers, or text that is already in ${language}.
+- Do not add or omit content.
+- Output format: for each fragment, in the same order, write the line "<<<N>>>" with the same N, then the translation. Output nothing else: no preface, no notes, no code fence.`
   const extra = customPrompt?.trim()
   return extra ? `${base}\n\nAdditional instructions from the author (take precedence):\n${extra}` : base
 }
@@ -170,10 +56,4 @@ export function parseTranslatedMeta(raw: string): TranslatedMeta | null {
   } catch {
     return null
   }
-}
-
-/** 模型偶尔会把整段译文包进 ``` 围栏，这里剥掉最外层（原文本身就是代码块的块不会走到这里）。 */
-export function stripOuterFence(output: string): string {
-  const match = output.trim().match(/^```(?:markdown|md)?\n([\s\S]*?)\n```$/)
-  return match ? match[1] : output.trim()
 }

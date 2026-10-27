@@ -2,14 +2,18 @@ import { completeWithSystemPrompt, getAiRuntimeEnv } from '@/lib/ai'
 import {
   buildMetaSystemPrompt,
   buildMetaUserPrompt,
-  buildTranslateSystemPrompt,
-  joinTranslatedChunks,
+  buildUnitSystemPrompt,
   parseTranslatedMeta,
-  splitMarkdownForTranslation,
-  stripOuterFence,
   type TranslatedMeta,
-  type TranslationChunk,
 } from '@/lib/ai-translate'
+import {
+  assembleHtml,
+  htmlToPlainText,
+  planBatches,
+  planHtmlTranslation,
+  translateUnits,
+  type HtmlTranslationPlan,
+} from '@/lib/html-translate'
 import {
   deleteTranslationChunks,
   getSetting,
@@ -18,18 +22,17 @@ import {
   setTranslationAiState,
   upsertPostTranslation,
 } from '@/lib/db'
-import { renderMarkdownContent } from '@/lib/markdown'
 import { hashTranslationSource } from '@/lib/translation-hash'
 
 /**
- * 分步 AI 翻译。每一步只做一次模型调用，单次请求很短，不依赖后台队列：
- *   start（切块 + 译标题/摘要）→ chunk × N（逐段翻译，结果暂存）→ finish（拼装、渲染、存为草稿）
- * 浏览器反复调用即可；暂存在数据库里，中途中断后可从已完成的段继续。
+ * 分步 AI 翻译。每一步只做少量模型调用，单次请求很短，不依赖后台队列：
+ *   start（切单元 + 译标题/摘要）→ chunk × N（逐批翻译，结果暂存）→ finish（拼装 HTML、存为草稿）
+ * 浏览器反复调用即可；暂存在数据库里，中途中断后可从已完成的批继续。
+ *
+ * 翻译对象是文章的 `html`（不是纯文本 `content`）：只替换文字，标签、属性、图片、视频、排版原样保留。
  */
 
 const META_IDX = -1
-/** 译文比原文短得离谱（< 25%）基本是模型截断或拒答，按失败处理 */
-const MIN_LENGTH_RATIO = 0.25
 
 export const TRANSLATE_PROFILE_SETTING = 'translate_profile_id'
 export const TRANSLATE_PROMPT_SETTING = 'translate_prompt'
@@ -37,6 +40,9 @@ export const TRANSLATE_PROMPT_SETTING = 'translate_prompt'
 export interface TranslatablePost {
   id: number
   title: string
+  /** 编辑器生成的 HTML：翻译与来源指纹都基于它 */
+  html: string
+  /** 纯文本，仅用于生成摘要提示 */
   content: string
   description: string | null
 }
@@ -70,13 +76,13 @@ async function loadAiOptions(ctx: TranslationContext) {
   }
 }
 
-function plan(post: TranslatablePost): { chunks: TranslationChunk[]; translatable: number[] } {
-  const chunks = splitMarkdownForTranslation(post.content)
-  const translatable: number[] = []
-  chunks.forEach((chunk, i) => {
-    if (chunk.translate) translatable.push(i)
-  })
-  return { chunks, translatable }
+function plan(post: TranslatablePost): { plan: HtmlTranslationPlan; batches: number[][] } {
+  const htmlPlan = planHtmlTranslation(post.html)
+  return { plan: htmlPlan, batches: planBatches(htmlPlan.units) }
+}
+
+function sourceHash(post: TranslatablePost) {
+  return hashTranslationSource(post.title, post.html)
 }
 
 function countDone(stored: { idx: number; source_hash: string }[], hash: string, total: number) {
@@ -85,27 +91,25 @@ function countDone(stored: { idx: number; source_hash: string }[], hash: string,
 
 async function translateMeta(ctx: TranslationContext, hash: string): Promise<TranslatedMeta> {
   const options = await loadAiOptions(ctx)
-  const raw = await completeWithSystemPrompt(
-    buildMetaUserPrompt(ctx.post.title, ctx.post.description, ctx.post.content),
-    {
-      systemPrompt: buildMetaSystemPrompt(ctx.lang, options.customPrompt),
-      temperature: 0.3,
-      profileId: options.profileId,
-      db: options.db,
-      env: options.env,
-    },
-  )
+  const excerpt = ctx.post.content?.trim() || htmlToPlainText(ctx.post.html)
+  const raw = await completeWithSystemPrompt(buildMetaUserPrompt(ctx.post.title, ctx.post.description, excerpt), {
+    systemPrompt: buildMetaSystemPrompt(ctx.lang, options.customPrompt),
+    temperature: 0.3,
+    profileId: options.profileId,
+    db: options.db,
+    env: options.env,
+  })
   const meta = parseTranslatedMeta(raw)
   if (!meta) throw new Error('标题/摘要翻译失败：模型没有返回有效 JSON')
   await saveTranslationChunk(ctx.db, ctx.post.id, ctx.lang, META_IDX, hash, JSON.stringify(meta))
   return meta
 }
 
-/** 第一步：切块、译标题/摘要，标记「翻译中」。已有同版本的暂存段会被复用（断点续传）。 */
+/** 第一步：切单元、译标题/摘要，标记「翻译中」。已有同版本的暂存批会被复用（断点续传）。 */
 export async function startTranslation(ctx: TranslationContext): Promise<TranslationProgress> {
-  const hash = await hashTranslationSource(ctx.post.title, ctx.post.content)
-  const { translatable } = plan(ctx.post)
-  if (translatable.length === 0 && !ctx.post.content.trim()) throw new Error('文章正文为空，无法翻译')
+  if (!ctx.post.html.trim()) throw new Error('文章正文为空，无法翻译')
+  const hash = await sourceHash(ctx.post)
+  const { batches } = plan(ctx.post)
 
   await setTranslationAiState(ctx.db, ctx.post.id, ctx.lang, 'translating')
   await deleteTranslationChunks(ctx.db, ctx.post.id, ctx.lang, hash)
@@ -114,69 +118,72 @@ export async function startTranslation(ctx: TranslationContext): Promise<Transla
   if (!stored.some((row) => row.idx === META_IDX && row.source_hash === hash)) {
     await translateMeta(ctx, hash)
   }
-  return { total: translatable.length, done: countDone(stored, hash, translatable.length), hash }
+  return { total: batches.length, done: countDone(stored, hash, batches.length), hash }
 }
 
-/** 第二步（重复）：翻译第 index 个可翻译块。幂等：已翻译的直接返回。 */
+/** 第二步（重复）：翻译第 index 批。幂等：已翻译的直接返回。 */
 export async function translateChunkStep(
   ctx: TranslationContext,
   index: number,
   expectedHash?: string,
 ): Promise<TranslationProgress> {
-  const hash = await hashTranslationSource(ctx.post.title, ctx.post.content)
+  const hash = await sourceHash(ctx.post)
   if (expectedHash && expectedHash !== hash) {
     throw new TranslationConflictError('翻译期间中文原文被修改，请重新开始翻译')
   }
-  const { chunks, translatable } = plan(ctx.post)
-  if (!Number.isInteger(index) || index < 0 || index >= translatable.length) {
-    throw new Error(`段落序号越界：${index}`)
+  const { plan: htmlPlan, batches } = plan(ctx.post)
+  if (!Number.isInteger(index) || index < 0 || index >= batches.length) {
+    throw new Error(`批次序号越界：${index}`)
   }
 
   const stored = await getTranslationChunks(ctx.db, ctx.post.id, ctx.lang)
   if (!stored.some((row) => row.idx === index && row.source_hash === hash)) {
-    const source = chunks[translatable[index]].text
     const options = await loadAiOptions(ctx)
-    const output = stripOuterFence(
-      await completeWithSystemPrompt(source, {
-        systemPrompt: buildTranslateSystemPrompt(ctx.lang, options.customPrompt),
+    const systemPrompt = buildUnitSystemPrompt(ctx.lang, options.customPrompt)
+    const outcome = await translateUnits(htmlPlan.units, batches[index], (input) =>
+      completeWithSystemPrompt(input, {
+        systemPrompt,
         temperature: 0.3,
         profileId: options.profileId,
         db: options.db,
         env: options.env,
       }),
     )
-    if (!output) throw new Error(`第 ${index + 1} 段翻译结果为空`)
-    if (output.length < source.length * MIN_LENGTH_RATIO) {
-      throw new Error(`第 ${index + 1} 段译文异常偏短，疑似被截断，请重试`)
-    }
-    await saveTranslationChunk(ctx.db, ctx.post.id, ctx.lang, index, hash, output)
-    stored.push({ idx: index, source_hash: hash, text: output })
+    const payload: Record<string, string> = {}
+    for (const [unitIndex, text] of outcome.results) payload[String(unitIndex)] = text
+    const text = JSON.stringify(payload)
+    await saveTranslationChunk(ctx.db, ctx.post.id, ctx.lang, index, hash, text)
+    stored.push({ idx: index, source_hash: hash, text })
   }
-  return { total: translatable.length, done: countDone(stored, hash, translatable.length), hash }
+  return { total: batches.length, done: countDone(stored, hash, batches.length), hash }
 }
 
-/** 第三步：拼装、渲染 HTML，存为草稿（需要你预览后再发布），清理暂存。 */
+/** 第三步：把各批译文按原文档结构拼回 HTML，存为草稿（需要你预览后再发布），清理暂存。 */
 export async function finishTranslation(ctx: TranslationContext): Promise<{ title: string }> {
-  const hash = await hashTranslationSource(ctx.post.title, ctx.post.content)
-  const { chunks, translatable } = plan(ctx.post)
+  const hash = await sourceHash(ctx.post)
+  const { plan: htmlPlan, batches } = plan(ctx.post)
   const stored = await getTranslationChunks(ctx.db, ctx.post.id, ctx.lang)
-  const byIdx = new Map(stored.filter((row) => row.source_hash === hash).map((row) => [row.idx, row.text]))
+  const current = new Map(stored.filter((row) => row.source_hash === hash).map((row) => [row.idx, row.text]))
 
-  const metaRaw = byIdx.get(META_IDX)
+  const metaRaw = current.get(META_IDX)
   if (!metaRaw) throw new Error('缺少标题/摘要译文，请重新开始翻译')
   const meta = JSON.parse(metaRaw) as TranslatedMeta
 
-  const missing = translatable.findIndex((_, n) => !byIdx.has(n))
-  if (missing !== -1) throw new Error(`第 ${missing + 1} 段尚未翻译完成`)
+  const translations: string[] = new Array(htmlPlan.units.length)
+  batches.forEach((_, batchIndex) => {
+    const raw = current.get(batchIndex)
+    if (raw === undefined) throw new Error(`第 ${batchIndex + 1} 批尚未翻译完成`)
+    for (const [unitIndex, text] of Object.entries(JSON.parse(raw) as Record<string, string>)) {
+      translations[Number(unitIndex)] = text
+    }
+  })
+  const missing = translations.findIndex((value) => value === undefined)
+  if (missing !== -1) throw new Error(`第 ${missing + 1} 个文字块缺少译文，请重试翻译`)
 
-  let n = 0
-  const parts = chunks.map((chunk) => (chunk.translate ? (byIdx.get(n++) as string) : chunk.text))
-  const content = joinTranslatedChunks(parts)
-  const html = await renderMarkdownContent(content)
-
+  const html = assembleHtml(htmlPlan, translations)
   await upsertPostTranslation(ctx.db, ctx.post.id, ctx.lang, {
     title: meta.title,
-    content,
+    content: htmlToPlainText(html),
     html,
     description: meta.description || null,
     status: 'draft',
