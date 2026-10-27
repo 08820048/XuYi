@@ -125,7 +125,7 @@ export default async function RootLayout({
         <link rel="stylesheet" href="/fonts/google/fonts.css" />
         <link
           rel="preload"
-          href="/fonts/google/bricolage-grotesque-latin.woff2"
+          href="/fonts/google/newsreader-normal-latin.woff2"
           as="font"
           type="font/woff2"
           crossOrigin="anonymous"
