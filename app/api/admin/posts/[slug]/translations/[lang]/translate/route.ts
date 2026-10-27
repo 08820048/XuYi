@@ -43,7 +43,7 @@ export async function POST(req: NextRequest, { params }: Ctx) {
   const ctx: TranslationContext = {
     db: route.db,
     env: route.env,
-    post: { id: post.id, title: post.title, content: post.content, description: post.description },
+    post: { id: post.id, title: post.title, html: post.html, content: post.content, description: post.description },
     lang,
   }
 

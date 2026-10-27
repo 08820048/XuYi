@@ -362,11 +362,12 @@ export async function getCurrentSourceHashes(db: Database, postIds: number[]): P
   if (postIds.length === 0) return hashes
   const placeholders = postIds.map(() => '?').join(',')
   const { results } = await db
-    .prepare(`SELECT id, title, content FROM posts WHERE id IN (${placeholders})`)
+    .prepare(`SELECT id, title, html FROM posts WHERE id IN (${placeholders})`)
     .bind(...postIds)
-    .all<{ id: number; title: string; content: string }>()
+    .all<{ id: number; title: string; html: string }>()
   for (const row of results) {
-    hashes.set(row.id, await hashTranslationSource(row.title, row.content))
+    // 与 translation-service 一致：基于标题 + 编辑器 HTML
+    hashes.set(row.id, await hashTranslationSource(row.title, row.html))
   }
   return hashes
 }
