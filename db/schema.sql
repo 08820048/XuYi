@@ -100,7 +100,9 @@ CREATE TABLE IF NOT EXISTS post_translations (
 
 CREATE INDEX IF NOT EXISTS idx_post_translations_lang_status ON post_translations(lang, status);
 
-post_id INTEGER NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+-- AI 翻译分段暂存（分步翻译、断点续传；翻译完成后清理）。idx = -1 存放标题/摘要译文
+CREATE TABLE IF NOT EXISTS post_translation_chunks (
+  post_id INTEGER NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
   lang TEXT NOT NULL,
   idx INTEGER NOT NULL,
   source_hash TEXT NOT NULL,
