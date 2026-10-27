@@ -9,6 +9,7 @@ import { invalidatePublicContentCache } from '@/lib/cache'
 import { isTranslationLang } from '@/lib/i18n'
 import { renderMarkdownContent } from '@/lib/markdown'
 import { buildAutoDescription } from '@/lib/post-utils'
+import { hashTranslationSource } from '@/lib/translation-hash'
 import {
   ensureAuthenticatedRequest,
   getRouteContextWithDb,
@@ -64,7 +65,9 @@ export async function PUT(req: NextRequest, ctx: Ctx) {
         : buildAutoDescription(content)
     const html = rawHtml || (await renderMarkdownContent(content))
 
-    await upsertPostTranslation(route.db, post.id, lang, { title, content, html, description, status })
+    // 记录这次英文版对应的中文版本：之后中文改了，列表里会提示「中文有更新」
+    const sourceHash = await hashTranslationSource(post.title, post.html)
+    await upsertPostTranslation(route.db, post.id, lang, { title, content, html, description, status, sourceHash })
     await invalidatePublicContentCache(route.env)
 
     return jsonOk({ success: true, slug: post.slug, lang, status })

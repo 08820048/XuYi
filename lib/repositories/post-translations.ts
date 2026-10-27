@@ -15,10 +15,6 @@ export interface PostTranslationInput {
   sourceHash?: string | null
 }
 
-export type TranslationAiState = 'translating' | 'failed'
-
-/** 超过该时长仍处于 translating 视为任务已中断（Worker 被回收、队列丢失等） */
-export const TRANSLATING_TIMEOUT_SECONDS = 10 * 60
 
 // 取某篇文章某种语言的译文（含草稿，调用方按需判断 status）
 export async function getPostTranslation(
@@ -86,40 +82,6 @@ export async function upsertPostTranslation(
     .run()
 }
 
-// 标记 AI 翻译状态。translating 时若还没有译文行，先插入空草稿占位（公开站只读 published，不受影响）；
-// 已有译文时保留原内容，翻译完成前线上版本不变。
-export async function setTranslationAiState(
-  db: Database,
-  postId: number,
-  lang: string,
-  state: TranslationAiState,
-  error?: string | null,
-): Promise<void> {
-  await ensureSchema(db)
-  if (state === 'translating') {
-    await db
-      .prepare(
-        `INSERT INTO post_translations (post_id, lang, title, content, html, status, ai_state)
-         VALUES (?, ?, '', '', '', 'draft', 'translating')
-         ON CONFLICT(post_id, lang) DO UPDATE SET
-           ai_state = 'translating',
-           ai_error = NULL,
-           updated_at = strftime('%s', 'now')`,
-      )
-      .bind(postId, lang)
-      .run()
-    return
-  }
-  await db
-    .prepare(
-      `UPDATE post_translations
-       SET ai_state = 'failed', ai_error = ?, updated_at = strftime('%s', 'now')
-       WHERE post_id = ? AND lang = ?`,
-    )
-    .bind((error ?? '').slice(0, 500), postId, lang)
-    .run()
-}
-
 export async function setPostTranslationStatus(
   db: Database,
   postId: number,
@@ -143,10 +105,8 @@ export async function setPostTranslationStatus(
 export interface PostTranslationSummary {
   post_id: number
   status: TranslationStatus
-  /** 有可展示的译文内容（区别于空占位） */
+  /** 有可展示的英文版内容（区别于早期 AI 翻译遗留的空占位行） */
   has_content: boolean
-  ai_state: TranslationAiState | null
-  ai_error: string | null
   source_hash: string | null
   updated_at: number
 }
@@ -164,8 +124,7 @@ export async function getPostTranslationSummaries(
   const placeholders = postIds.map(() => '?').join(',')
   const { results } = await db
     .prepare(
-      `SELECT post_id, status, (title != '' AND html != '') AS has_content,
-              ai_state, ai_error, source_hash, updated_at
+      `SELECT post_id, status, (title != '' AND html != '') AS has_content, source_hash, updated_at
        FROM post_translations
        WHERE lang = ? AND post_id IN (${placeholders})`,
     )
@@ -174,21 +133,15 @@ export async function getPostTranslationSummaries(
       post_id: number
       status: TranslationStatus
       has_content: number
-      ai_state: TranslationAiState | null
-      ai_error: string | null
       source_hash: string | null
       updated_at: number
     }>()
 
-  const now = Math.floor(Date.now() / 1000)
   for (const row of results) {
-    const timedOut = row.ai_state === 'translating' && now - row.updated_at > TRANSLATING_TIMEOUT_SECONDS
     summaries.set(row.post_id, {
       post_id: row.post_id,
       status: row.status,
       has_content: Boolean(row.has_content),
-      ai_state: timedOut ? 'failed' : row.ai_state,
-      ai_error: timedOut ? '翻译任务超时，请重试' : row.ai_error,
       source_hash: row.source_hash,
       updated_at: row.updated_at,
     })
@@ -302,60 +255,6 @@ export async function searchTranslatedPosts(
   )
 }
 
-// ---------- AI 翻译分段暂存 ----------
-
-export interface TranslationChunkRow {
-  idx: number
-  source_hash: string
-  text: string
-}
-
-export async function getTranslationChunks(db: Database, postId: number, lang: string): Promise<TranslationChunkRow[]> {
-  await ensureSchema(db)
-  const { results } = await db
-    .prepare('SELECT idx, source_hash, text FROM post_translation_chunks WHERE post_id = ? AND lang = ? ORDER BY idx')
-    .bind(postId, lang)
-    .all<TranslationChunkRow>()
-  return results
-}
-
-export async function saveTranslationChunk(
-  db: Database,
-  postId: number,
-  lang: string,
-  idx: number,
-  sourceHash: string,
-  text: string,
-): Promise<void> {
-  await ensureSchema(db)
-  await db
-    .prepare(
-      `INSERT INTO post_translation_chunks (post_id, lang, idx, source_hash, text)
-       VALUES (?, ?, ?, ?, ?)
-       ON CONFLICT(post_id, lang, idx) DO UPDATE SET source_hash = excluded.source_hash, text = excluded.text`,
-    )
-    .bind(postId, lang, idx, sourceHash, text)
-    .run()
-}
-
-/** 清理暂存；传入 keepHash 时只清掉其他版本（中文改动后作废的）分段。 */
-export async function deleteTranslationChunks(
-  db: Database,
-  postId: number,
-  lang: string,
-  keepHash?: string,
-): Promise<void> {
-  await ensureSchema(db)
-  if (keepHash) {
-    await db
-      .prepare('DELETE FROM post_translation_chunks WHERE post_id = ? AND lang = ? AND source_hash != ?')
-      .bind(postId, lang, keepHash)
-      .run()
-    return
-  }
-  await db.prepare('DELETE FROM post_translation_chunks WHERE post_id = ? AND lang = ?').bind(postId, lang).run()
-}
-
 /** 取一批文章当前的「中文来源指纹」，用于与译文里记录的 source_hash 比对判断是否过期。 */
 export async function getCurrentSourceHashes(db: Database, postIds: number[]): Promise<Map<number, string>> {
   const hashes = new Map<number, string>()
@@ -366,7 +265,7 @@ export async function getCurrentSourceHashes(db: Database, postIds: number[]): P
     .bind(...postIds)
     .all<{ id: number; title: string; html: string }>()
   for (const row of results) {
-    // 与 translation-service 一致：基于标题 + 编辑器 HTML
+    // 与保存英文版时记录的指纹口径一致：标题 + 编辑器 HTML
     hashes.set(row.id, await hashTranslationSource(row.title, row.html))
   }
   return hashes

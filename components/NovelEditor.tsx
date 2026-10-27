@@ -100,7 +100,10 @@ function relativeTime(ts: number): string {
 }
 
 interface NovelEditorProps {
-  contentKind?: 'post' | 'diary'
+  /** translation：编辑某篇文章的英文版（initialData.slug 是中文文章的 slug，保存到 post_translations） */
+  contentKind?: 'post' | 'diary' | 'translation'
+  /** 英文版模式下：true 表示英文版还不存在，当前内容是中文版的副本，仅作为起点 */
+  translationSeeded?: boolean
   initialData?: {
     slug: string
     title: string | null
@@ -130,8 +133,12 @@ type DraftMetaState = {
 
 type MetaGenerationTarget = 'summary' | 'tags' | 'slug' | 'cover'
 
-export function NovelEditor({ contentKind = 'post', initialData }: NovelEditorProps = {}) {
+export function NovelEditor({ contentKind = 'post', initialData, translationSeeded = false }: NovelEditorProps = {}) {
   const isDiary = contentKind === 'diary'
+  const isTranslation = contentKind === 'translation'
+  // 英文版已持久化的状态：自动保存只保存内容，不改变它；只有「发布/保存草稿」才会改
+  const translationStatusRef = useRef<'draft' | 'published'>(initialData?.status === 'published' ? 'published' : 'draft')
+  const [seedNoticeOpen, setSeedNoticeOpen] = useState(translationSeeded)
   // ── Core state ──
   const [draftReady, setDraftReady] = useState(false)
   const [initialContent, setInitialContent] = useState<JSONContent>(EMPTY_DOCUMENT)
@@ -450,7 +457,27 @@ export function NovelEditor({ contentKind = 'post', initialData }: NovelEditorPr
     setSaveState('saving')
 
     try {
-      if (currentSlug) {
+      if (isTranslation && currentSlug) {
+        const res = await fetch(`/api/admin/posts/${encodeURIComponent(currentSlug)}/translations/en`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: normalizedTitle,
+            html,
+            content: plainText || JSON.stringify(contentJson),
+            description: normalizedDescription,
+            status: translationStatusRef.current,
+          }),
+          signal: controller.signal,
+        })
+
+        const data = await res.json().catch(() => ({})) as { error?: string }
+        if (!res.ok) {
+          throw new Error(data.error || '自动保存失败')
+        }
+
+        if (requestId !== autosaveSeqRef.current) return
+      } else if (currentSlug) {
         const res = await fetch(isDiary ? '/api/diary' : '/api/posts', {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
@@ -536,7 +563,7 @@ export function NovelEditor({ contentKind = 'post', initialData }: NovelEditorPr
         autosaveAbortRef.current = null
       }
     }
-  }, [abortAutosaveRequest, buildAutosaveSnapshot, draftReady, isDiary, syncPersistedSlug])
+  }, [abortAutosaveRequest, buildAutosaveSnapshot, draftReady, isDiary, isTranslation, syncPersistedSlug])
 
   // ── Draft save ──
   const scheduleDraftSave = useCallback((
@@ -794,6 +821,49 @@ export function NovelEditor({ contentKind = 'post', initialData }: NovelEditorPr
 
     setSaving(true); setSaveState('saving'); setFeedback(null)
 
+    if (isTranslation && editSlug) {
+      try {
+        const nextStatus = publishStatus === 'draft' ? 'draft' : 'published'
+        const response = await fetch(`/api/admin/posts/${encodeURIComponent(editSlug)}/translations/en`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title: normalizedTitle, html, content, description: normalizedDescription, status: nextStatus }),
+        })
+        const result = (await response.json().catch(() => ({}))) as { success?: boolean; error?: string }
+        if (!response.ok || !result.success) throw new Error(result.error || '保存失败')
+
+        translationStatusRef.current = nextStatus
+        lastAutosaveSnapshotRef.current = buildAutosaveSnapshot({
+          currentSlug: editSlug,
+          nextSlug: editSlug,
+          title: normalizedTitle,
+          html,
+          description: normalizedDescription,
+          category,
+          tags,
+          coverImage,
+          postType,
+          sourceUrl: '',
+        })
+        if (!description && normalizedDescription) setDescription(normalizedDescription)
+        setSaveState('saved')
+        setLastSavedAt(Date.now())
+        setSeedNoticeOpen(false)
+        setFeedback({
+          type: 'success',
+          message: nextStatus === 'published' ? '英文版已发布。' : '英文版草稿已保存（未公开）。',
+          slug: editSlug,
+        })
+        setPublishPanelOpen(false)
+      } catch (error) {
+        setSaveState('error')
+        setFeedback({ type: 'error', message: error instanceof Error ? error.message : '保存失败' })
+      } finally {
+        setSaving(false)
+      }
+      return
+    }
+
     try {
       const isEdit = editSlug !== null
       const url = isEdit
@@ -907,7 +977,12 @@ export function NovelEditor({ contentKind = 'post', initialData }: NovelEditorPr
   }, [title, sidebarOpen, draftReady])
 
   // ── Status config ──
-  const STATUS_CONFIG = [
+  const STATUS_CONFIG = isTranslation
+    ? [
+        { key: 'public' as const, label: '发布英文版', desc: '所有人可见，出现在 /en 首页和搜索', Icon: Globe },
+        { key: 'draft' as const, label: '草稿自见', desc: '仅自己可见（后台预览），不对外公开', Icon: Eye },
+      ]
+    : [
     { key: 'public' as const, label: '公开访问', desc: isDiary ? '所有人可见，出现在日记页' : '所有人可见，出现在首页和搜索', Icon: Globe },
     { key: 'draft' as const, label: '草稿自见', desc: '仅自己可见，不会发布', Icon: Eye },
     ...(!isDiary ? [{ key: 'encrypted' as const, label: '加密访问', desc: '需要密码才能查看', Icon: Lock }] : []),
@@ -1005,7 +1080,7 @@ export function NovelEditor({ contentKind = 'post', initialData }: NovelEditorPr
             <div className="mx-0.5 h-5 w-px bg-[var(--editor-line)]" />
 
             {/* Category selector */}
-            {!isDiary && (
+            {!isDiary && !isTranslation && (
               <CategorySelector value={category} onChange={(val) => { setCategory(val); markDirty({ category: val }) }} />
             )}
 
@@ -1019,7 +1094,7 @@ export function NovelEditor({ contentKind = 'post', initialData }: NovelEditorPr
                   className="inline-flex items-center gap-1.5 rounded-l-lg bg-[var(--editor-accent)] pl-3 pr-2 py-1.5 text-sm font-semibold text-white transition hover:brightness-105 disabled:opacity-60"
                 >
                   <Globe className="h-3.5 w-3.5" />
-                  {saving ? '保存中…' : editSlug ? '更新' : '发布'}
+                  {saving ? '保存中…' : isTranslation ? (publishStatus === 'draft' ? '保存草稿' : '发布英文版') : editSlug ? '更新' : '发布'}
                 </button>
                 <button
                   type="button"
@@ -1069,7 +1144,7 @@ export function NovelEditor({ contentKind = 'post', initialData }: NovelEditorPr
                         disabled={saving}
                         className="px-3 py-1.5 text-sm font-semibold text-white bg-[var(--editor-accent)] rounded-lg hover:brightness-105 transition disabled:opacity-50"
                       >
-                        {saving ? '保存中…' : editSlug ? (isDiary ? '更新日记' : '更新文章') : '发布'}
+                        {saving ? '保存中…' : isTranslation ? (publishStatus === 'draft' ? '保存草稿' : '发布英文版') : editSlug ? (isDiary ? '更新日记' : '更新文章') : '发布'}
                       </button>
                     </div>
                   </div>
@@ -1087,8 +1162,13 @@ export function NovelEditor({ contentKind = 'post', initialData }: NovelEditorPr
             }`}>
               <span>{feedback.message}</span>
               {feedback.slug && (
-                <a href={isDiary ? getDiaryPath(feedback.slug) : `/${feedback.slug}`} className="font-medium underline underline-offset-2">
-                  {isDiary ? '打开日记' : '打开文章'}
+                <a
+                  href={isDiary ? getDiaryPath(feedback.slug) : isTranslation ? `/en/${encodeURIComponent(feedback.slug)}${translationStatusRef.current === 'draft' ? '?preview=1' : ''}` : `/${feedback.slug}`}
+                  target={isTranslation ? '_blank' : undefined}
+                  rel={isTranslation ? 'noreferrer' : undefined}
+                  className="font-medium underline underline-offset-2"
+                >
+                  {isDiary ? '打开日记' : isTranslation ? (translationStatusRef.current === 'draft' ? '预览英文版' : '打开英文版') : '打开文章'}
                 </a>
               )}
               <button type="button" onClick={() => setFeedback(null)} className="ml-auto"><X className="h-3.5 w-3.5" /></button>
@@ -1107,11 +1187,23 @@ export function NovelEditor({ contentKind = 'post', initialData }: NovelEditorPr
         {/* Main editor area */}
         <main className="flex-1 min-w-0">
           <div className="mx-auto max-w-4xl px-4 pt-10 pb-8 sm:px-6">
+            {isTranslation && seedNoticeOpen && (
+              <div className="mb-6 flex items-start gap-3 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                <div className="flex-1 leading-relaxed">
+                  这是英文版的<strong>起点</strong>：已把中文版的标题和内容原样复制过来（图片、排版、代码块、表格都在），
+                  请直接把文字改成英文。保存后才会生成英文版；想从空白开始，全选后删除即可。
+                </div>
+                <button type="button" onClick={() => setSeedNoticeOpen(false)} className="shrink-0 text-amber-700 hover:text-amber-900" aria-label="关闭提示">
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            )}
+
             {/* Title input */}
             <div className="pb-4">
               <textarea
                 ref={titleRef}
-                placeholder="无标题"
+                placeholder={isTranslation ? 'Untitled' : '无标题'}
                 value={title}
                 rows={1}
                 onChange={(e) => {
@@ -1224,14 +1316,14 @@ export function NovelEditor({ contentKind = 'post', initialData }: NovelEditorPr
             <div className="w-[280px] px-5 py-6 space-y-6">
               {/* Close button */}
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-[var(--stone-gray)] uppercase tracking-wider">{isDiary ? '日记设置' : '文章设置'}</span>
+                <span className="text-xs font-semibold text-[var(--stone-gray)] uppercase tracking-wider">{isDiary ? '日记设置' : isTranslation ? '英文版设置' : '文章设置'}</span>
                 <button type="button" onClick={() => setSidebarOpen(false)} className="text-[var(--stone-gray)] hover:text-[var(--editor-ink)]">
                   <X className="h-4 w-4" />
                 </button>
               </div>
 
               {/* Post Type */}
-              {!isDiary && (
+              {!isDiary && !isTranslation && (
               <div>
                 <label className="mb-2 block text-xs font-semibold tracking-wider text-[var(--stone-gray)]">文章类型</label>
                 <div className="grid grid-cols-3 gap-1 rounded-lg border border-[var(--editor-line)] bg-[var(--editor-panel)] p-1">
@@ -1278,7 +1370,7 @@ export function NovelEditor({ contentKind = 'post', initialData }: NovelEditorPr
               )}
 
               {/* Tags */}
-              {!isDiary && (
+              {!isDiary && !isTranslation && (
               <div>
                 <div className="mb-2 flex items-center justify-between gap-2">
                   <label className="block text-xs font-semibold tracking-wider text-[var(--stone-gray)]">标签</label>
@@ -1345,7 +1437,7 @@ export function NovelEditor({ contentKind = 'post', initialData }: NovelEditorPr
                     setDescription(nextDescription)
                     markDirty({ description: nextDescription })
                   }}
-                  placeholder="文章摘要（建议 ≤ 160 字）"
+                  placeholder={isTranslation ? 'English summary (up to ~160 characters)' : '文章摘要（建议 ≤ 160 字）'}
                   className="w-full rounded-md border border-[var(--editor-line)] bg-[var(--editor-panel)] px-2.5 py-2 text-sm text-[var(--editor-ink)] outline-none resize-none focus:border-[var(--editor-accent)]"
                 />
                 <div className="mt-1 text-right text-[10px] text-[var(--stone-gray)]">{description.length}/160</div>
@@ -1353,7 +1445,7 @@ export function NovelEditor({ contentKind = 'post', initialData }: NovelEditorPr
               )}
 
               {/* Cover Image */}
-              {!isDiary && (
+              {!isDiary && !isTranslation && (
               <div>
                 <div className="mb-2 flex items-center justify-between gap-2">
                   <label className="block text-xs font-semibold tracking-wider text-[var(--stone-gray)]">封面图</label>
@@ -1414,7 +1506,19 @@ export function NovelEditor({ contentKind = 'post', initialData }: NovelEditorPr
               </div>
               )}
 
-              {/* Slug */}
+              {/* Slug：英文版沿用中文文章的链接，只读 */}
+              {isTranslation && (
+                <div>
+                  <label className="mb-2 block text-xs font-semibold tracking-wider text-[var(--stone-gray)]">链接</label>
+                  <div className="text-xs text-[var(--editor-muted)] break-all">
+                    {SITE_DISPLAY_URL}/en/{editSlug}
+                  </div>
+                  <p className="mt-2 text-[11px] leading-relaxed text-[var(--stone-gray)]">
+                    英文版与中文版共用同一个 slug，在中文版里修改。
+                  </p>
+                </div>
+              )}
+              {!isTranslation && (
               <div>
                 <div className="mb-2 flex items-center justify-between gap-2">
                   <label className="block text-xs font-semibold tracking-wider text-[var(--stone-gray)]">链接</label>
@@ -1459,6 +1563,7 @@ export function NovelEditor({ contentKind = 'post', initialData }: NovelEditorPr
                   {SITE_DISPLAY_URL}{isDiary ? '/diary/' : '/'}{(isDiary ? normalizeDiarySlug(slug) : normalizePostSlug(slug)) || editSlug || '自动生成'}
                 </div>
               </div>
+              )}
             </div>
           )}
         </aside>

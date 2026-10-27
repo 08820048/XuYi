@@ -1,4 +1,4 @@
-import { getPostBySlug } from '@/lib/db'
+import { getPostBySlug, getPostTranslation } from '@/lib/db'
 import { getAppCloudflareEnv } from '@/lib/cloudflare'
 import { isAdminAuthenticated, COOKIE_NAME } from '@/lib/admin-auth'
 import { cookies } from 'next/headers'
@@ -8,7 +8,7 @@ import { NovelEditorClient } from '@/components/NovelEditorClient'
 export default async function EditorPage({
   searchParams,
 }: {
-  searchParams: Promise<{ edit?: string; slug?: string; new?: string }>
+  searchParams: Promise<{ edit?: string; slug?: string; new?: string; lang?: string }>
 }) {
   // 鉴权：只有登录的管理员才能访问编辑器
   const cookieStore = await cookies()
@@ -18,13 +18,16 @@ export default async function EditorPage({
   if (!isAuthenticated) {
     const params = await searchParams
     const editSlug = params.edit ?? params.slug
-    const editParam = editSlug ? `?edit=${editSlug}` : params.new === '1' ? '?new=1' : ''
+    const langParam = params.lang === 'en' ? '&lang=en' : ''
+    const editParam = editSlug ? `?edit=${editSlug}${langParam}` : params.new === '1' ? '?new=1' : ''
     redirect(`/admin/login?redirect_to=${encodeURIComponent(`/editor${editParam}`)}`)
   }
 
   const params = await searchParams
   const edit = params.edit ?? params.slug
   const isNew = params.new === '1'
+  const isTranslation = Boolean(edit) && params.lang === 'en'
+  let translationSeeded = false
 
   let initialData: {
     slug: string
@@ -45,7 +48,19 @@ export default async function EditorPage({
     const env = await getAppCloudflareEnv()
     if (env?.DB) {
       const post = await getPostBySlug(env.DB, edit)
-      if (post) {
+      if (post && isTranslation) {
+        // 英文版：已有就载入；还没有就用中文版的标题和内容原样复制作为起点（保存后才会生成）
+        const translation = await getPostTranslation(env.DB, post.id, 'en').catch(() => null)
+        const hasTranslation = Boolean(translation?.html)
+        translationSeeded = !hasTranslation
+        initialData = {
+          slug: post.slug,
+          title: hasTranslation ? translation!.title : post.title,
+          html: hasTranslation ? translation!.html : post.html,
+          description: hasTranslation ? translation!.description : '',
+          status: hasTranslation && translation!.status === 'published' ? 'published' : 'draft',
+        }
+      } else if (post) {
         initialData = {
           slug: post.slug,
           title: post.title,
@@ -64,5 +79,12 @@ export default async function EditorPage({
     }
   }
 
-  return <NovelEditorClient initialData={initialData} skipDraftRestore={isNew} />
+  return (
+    <NovelEditorClient
+      contentKind={isTranslation && initialData ? 'translation' : 'post'}
+      translationSeeded={translationSeeded}
+      initialData={initialData}
+      skipDraftRestore={isNew}
+    />
+  )
 }

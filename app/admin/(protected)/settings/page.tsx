@@ -10,8 +10,6 @@ export default async function SettingsPage() {
   let customJs = ''
   let aboutMarkdown = ''
   let aboutMarkdownEn = ''
-  let translateProfileId = ''
-  let translatePrompt = ''
   let bodyFont = ''
   let diaryNavEnabled = ''
   let categories: Awaited<ReturnType<typeof getCategories>> = []
@@ -26,8 +24,6 @@ export default async function SettingsPage() {
       customJs = (await getSetting(env.DB, 'custom_js')) || ''
       aboutMarkdown = (await getSetting(env.DB, 'about_markdown')) || ''
       aboutMarkdownEn = (await getSetting(env.DB, 'about_markdown_en')) || ''
-      translateProfileId = (await getSetting(env.DB, 'translate_profile_id')) || ''
-      translatePrompt = (await getSetting(env.DB, 'translate_prompt')) || ''
       bodyFont = (await getSetting(env.DB, 'body_font')) || ''
       diaryNavEnabled = (await getSetting(env.DB, 'diary_nav_enabled')) || ''
       ;[categories, friendLinks] = await Promise.all([
@@ -50,8 +46,6 @@ export default async function SettingsPage() {
         initialCustomJs={customJs}
         initialAboutMarkdown={aboutMarkdown}
         initialAboutMarkdownEn={aboutMarkdownEn}
-        initialTranslateProfileId={translateProfileId}
-        initialTranslatePrompt={translatePrompt}
         initialCategories={categories}
         initialFriendLinks={friendLinks}
         initialBodyFont={bodyFont}
