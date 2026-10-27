@@ -10,10 +10,12 @@ import { PasswordModal } from '@/components/PasswordModal'
 import { Dropdown } from '@/components/Dropdown'
 import type { PostWithTags } from '@/lib/db'
 import { getSiteUrl } from '@/lib/site-config'
+import { TranslationControl, type TranslationInfo } from './TranslationControl'
 
 interface PostRowProps {
   post: PostWithTags
   categories: string[]
+  translation?: TranslationInfo | null
 }
 
 function formatDate(ts: number) {
@@ -31,7 +33,7 @@ function formatDate(ts: number) {
   })
 }
 
-export function PostRow({ post, categories }: PostRowProps) {
+export function PostRow({ post, categories, translation = null }: PostRowProps) {
   const [showPasswordModal, setShowPasswordModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [showPermanentModal, setShowPermanentModal] = useState(false)
@@ -299,6 +301,11 @@ export function PostRow({ post, categories }: PostRowProps) {
               {post.description}
             </p>
           )}
+          {!isDeleted && (
+            <div className="mt-1.5">
+              <TranslationControl slug={post.slug} locked={Boolean(post.password)} info={translation} />
+            </div>
+          )}
         </div>
 
         {/* 分类列 */}
@@ -479,6 +486,12 @@ export function PostRow({ post, categories }: PostRowProps) {
           <span>·</span>
           <span>{formatDate(post.published_at)}</span>
         </div>
+
+        {!isDeleted && (
+          <div className="mb-3 ml-9">
+            <TranslationControl slug={post.slug} locked={Boolean(post.password)} info={translation} />
+          </div>
+        )}
 
         <div className="flex items-center gap-2 ml-9 flex-wrap">
           {isDeleted ? (

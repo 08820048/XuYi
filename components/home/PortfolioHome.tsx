@@ -4,6 +4,10 @@ import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { LanguageSwitch } from '@/components/LanguageSwitch'
+import { LangSync } from '@/components/LangSync'
+import { formatLocaleDate, localePath, t as translate, type Locale } from '@/lib/i18n'
+import { useLocale } from '@/lib/i18n-client'
 import type { PostWithTags } from '@/lib/db'
 import { isSponsorActive } from '@/lib/sponsor'
 import { collections, freeProject, productPlan, profile, projects, type Product } from '@/lib/portfolio'
@@ -15,19 +19,27 @@ import { PostUpdateBadge } from '@/components/PostUpdateBadge'
 
 export type HomeTab = 'work' | 'blog'
 
+function ctaLabel(product: Product, locale: Locale) {
+  if (locale === 'zh') return product.cta
+  if (product.cta.includes('购买')) return translate(locale, 'buy')
+  return product.cta.includes('→') ? `${translate(locale, 'visit')} →` : translate(locale, 'visit')
+}
+
 function VisitButton({ product }: { product: Product }) {
+  const locale = useLocale()
   return (
     <a className="pf-btn pf-btn-visit" href={product.link} target="_blank" rel="noreferrer">
       {product.apple && <AppleIcon />}
-      {product.cta}
+      {ctaLabel(product, locale)}
       <span className="pf-sr"> {product.name}</span>
     </a>
   )
 }
 
-function BigCard({ product }: { product: Product }) {
+function BigCard({ product, no }: { product: Product; no: string }) {
+  const locale = useLocale()
   return (
-    <article className="pf-card pf-big">
+    <article className="pf-card pf-big sv-cart" data-no={no}>
       <div className="pf-big-top">
         <img className="pf-tile" src={product.logo} alt="" />
         <div className="pf-names">
@@ -35,7 +47,7 @@ function BigCard({ product }: { product: Product }) {
             <h3>{product.name}</h3>
             {product.badge && <span className="pf-badge">{product.badge}</span>}
           </div>
-          <p className="pf-big-desc">{product.desc}</p>
+          <p className="pf-big-desc">{locale === 'en' ? product.descEn : product.desc}</p>
         </div>
         <VisitButton product={product} />
       </div>
@@ -43,9 +55,9 @@ function BigCard({ product }: { product: Product }) {
         {product.shots?.map((shot, i) => (
           <div className="pf-shot-frame" key={shot}>
             {/\.(mp4|webm|mov)$/i.test(shot) ? (
-              <ZoomVideo src={shot} alt={`${product.name} 界面演示 ${i + 1}`} width={530} height={336} />
+              <ZoomVideo src={shot} alt={`${product.name} demo ${i + 1}`} width={530} height={336} />
             ) : (
-              <ZoomImage src={shot} alt={`${product.name} 界面截图 ${i + 1}`} width={530} height={336} />
+              <ZoomImage src={shot} alt={`${product.name} screenshot ${i + 1}`} width={530} height={336} />
             )}
           </div>
         ))}
@@ -55,11 +67,12 @@ function BigCard({ product }: { product: Product }) {
 }
 
 function ProductPlan() {
+  const locale = useLocale()
   const { goal, done } = productPlan
   const percent = Math.round((done / goal) * 100)
   return (
-    <section className="pf-plan" aria-label="100 个产品计划进度">
-      <h2 className="pf-label">100 Products Plan</h2>
+    <section className="pf-plan" aria-label={translate(locale, 'planAria')}>
+      <h2 className="pf-label">SAVE FILE · 100 Products</h2>
       <div className="pf-plan-head">
         <span className="pf-plan-count">{done}</span>
         <span className="pf-plan-goal">/ {goal}</span>
@@ -71,7 +84,7 @@ function ProductPlan() {
         aria-valuemin={0}
         aria-valuemax={goal}
         aria-valuenow={done}
-        aria-label={`已完成 ${done} / ${goal} 个产品`}
+        aria-label={translate(locale, 'planDone', { done, goal })}
       >
         {Array.from({ length: goal }, (_, i) => (
           <i
@@ -81,34 +94,40 @@ function ProductPlan() {
           />
         ))}
       </div>
-      <p className="pf-plan-note">每一个都从解决自己的需求开始。</p>
+      <p className="pf-plan-note">{translate(locale, 'planNote')}</p>
     </section>
   )
 }
 
-function ThinCard({ product }: { product: Product }) {
+function ThinCard({ product, no }: { product: Product; no: string }) {
+  const locale = useLocale()
   return (
-    <article className="pf-card pf-thin">
+    <article className="pf-card pf-thin sv-cart" data-no={no}>
       <img className="pf-tile" src={product.logo} alt="" />
       <div className="pf-names">
         <div className="pf-name-line">
           <h3>{product.name}</h3>
           {product.badge && <span className="pf-badge">{product.badge}</span>}
         </div>
-        <p className="pf-thin-desc">{product.desc}</p>
+        <p className="pf-thin-desc">{locale === 'en' ? product.descEn : product.desc}</p>
       </div>
       <VisitButton product={product} />
     </article>
   )
 }
 
-function ProductSection({ label, products }: { label: string; products: Product[] }) {
+function ProductSection({ label, products, start = 1 }: { label: string; products: Product[]; start?: number }) {
   return (
     <section aria-label={label}>
       <h2 className="pf-label">{label}</h2>
-      {products.map((product) =>
-        product.size === 'big' ? <BigCard key={product.id} product={product} /> : <ThinCard key={product.id} product={product} />
-      )}
+      {products.map((product, i) => {
+        const no = String(start + i).padStart(3, '0')
+        return product.size === 'big' ? (
+          <BigCard key={product.id} product={product} no={no} />
+        ) : (
+          <ThinCard key={product.id} product={product} no={no} />
+        )
+      })}
     </section>
   )
 }
@@ -122,6 +141,8 @@ function formatDate(ts: number) {
 }
 
 function BlogSearch() {
+  const locale = useLocale()
+  const t = (key: Parameters<typeof translate>[1]) => translate(locale, key)
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<{ slug: string; title: string; published_at: number }[]>([])
@@ -163,7 +184,7 @@ function BlogSearch() {
     const timer = window.setTimeout(async () => {
       setLoading(true)
       try {
-        const res = await fetch(`/api/search?q=${encodeURIComponent(trimmed)}`)
+        const res = await fetch(`/api/search?q=${encodeURIComponent(trimmed)}${locale === 'en' ? '&lang=en' : ''}`)
         const data = (await res.json()) as { results?: { slug: string; title: string; published_at: number }[] }
         setResults(data.results ?? [])
       } catch {
@@ -173,7 +194,7 @@ function BlogSearch() {
       }
     }, 250)
     return () => window.clearTimeout(timer)
-  }, [open, query])
+  }, [open, query, locale])
 
   return (
     <div className="pf-search">
@@ -181,7 +202,7 @@ function BlogSearch() {
         ref={buttonRef}
         type="button"
         className="pf-search-btn"
-        aria-label="搜索文章"
+        aria-label={t('searchArticles')}
         aria-expanded={open}
         aria-haspopup="dialog"
         onClick={() => setOpen((value) => !value)}
@@ -196,21 +217,21 @@ function BlogSearch() {
               className="pf-search-panel"
               role="dialog"
               aria-modal="true"
-              aria-label="搜索文章"
+              aria-label={t('searchArticles')}
             >
               <input
                 ref={inputRef}
                 value={query}
-                placeholder="搜索文章"
-                aria-label="搜索文章"
+                placeholder={t('searchArticles')}
+                aria-label={t('searchArticles')}
                 onChange={(event) => setQuery(event.target.value)}
               />
               {query.trim() && (
                 <div className="pf-search-results" aria-live="polite">
-                  {loading && results.length === 0 && <p>搜索中…</p>}
-                  {!loading && results.length === 0 && <p>没有找到相关文章</p>}
+                  {loading && results.length === 0 && <p>{t('searching')}</p>}
+                  {!loading && results.length === 0 && <p>{t('noResults')}</p>}
                   {results.map((result) => (
-                    <Link key={result.slug} href={`/${result.slug}`} className="pf-search-hit" onClick={() => setOpen(false)}>
+                    <Link key={result.slug} href={localePath(`/${result.slug}`, locale)} className="pf-search-hit" onClick={() => setOpen(false)}>
                       <span>{result.title}</span>
                       <time dateTime={new Date(result.published_at * 1000).toISOString()}>{formatDate(result.published_at)}</time>
                     </Link>
@@ -225,11 +246,13 @@ function BlogSearch() {
   )
 }
 
-function blogHref(page: number) {
-  return page <= 1 ? '/?tab=blog' : `/?tab=blog&page=${page}`
+function blogHref(page: number, locale: Locale) {
+  return localePath(page <= 1 ? '/?tab=blog' : `/?tab=blog&page=${page}`, locale)
 }
 
 function InlineSubscribe() {
+  const locale = useLocale()
+  const t = (key: Parameters<typeof translate>[1]) => translate(locale, key)
   const [open, setOpen] = useState(false)
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
@@ -280,7 +303,7 @@ function InlineSubscribe() {
     const trimmed = email.trim()
     if (!trimmed || loading || done) return
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
-      setError('请输入有效的邮箱地址。')
+      setError(t('invalidEmail'))
       return
     }
     setLoading(true)
@@ -295,10 +318,10 @@ function InlineSubscribe() {
       if (res.ok && data?.success) {
         setDone(true)
       } else {
-        setError(res.status === 400 ? '请输入有效的邮箱地址。' : '提交失败，请稍后重试。')
+        setError(res.status === 400 ? t('invalidEmail') : t('submitFailed'))
       }
     } catch {
-      setError('网络错误，请稍后重试。')
+      setError(t('networkError'))
     } finally {
       setLoading(false)
     }
@@ -312,14 +335,14 @@ function InlineSubscribe() {
         </a>
         {!open && (
           <button className="pf-btn pf-btn-light" type="button" aria-expanded={false} onClick={() => setOpen(true)}>
-            订阅
+            {t('subscribe')}
           </button>
         )}
       </div>
       <div className={`pf-sub-panel${open ? ' is-open' : ''}`}>
         <div className="pf-sub-panel-inner" inert={!open ? true : undefined}>
           {done ? (
-            <p className="pf-sub-ok" role="status">已订阅</p>
+            <p className="pf-sub-ok" role="status">{t('subscribed')}</p>
           ) : (
             <form className="pf-sub-form" noValidate onSubmit={subscribe}>
               <input
@@ -329,7 +352,7 @@ function InlineSubscribe() {
                 autoComplete="email"
                 maxLength={254}
                 placeholder="you@email"
-                aria-label="邮箱"
+                aria-label={t('emailLabel')}
                 value={email}
                 onChange={(event) => {
                   setEmail(event.target.value)
@@ -343,7 +366,7 @@ function InlineSubscribe() {
                 disabled={loading}
                 onMouseDown={(event) => event.preventDefault()}
               >
-                确认
+                {t('confirm')}
               </button>
             </form>
           )}
@@ -363,6 +386,8 @@ function BlogList({
   currentPage: number
   totalPages: number
 }) {
+  const locale = useLocale()
+  const t = (key: Parameters<typeof translate>[1]) => translate(locale, key)
   const pages: (number | '...')[] = []
   for (let i = 1; i <= totalPages; i++) {
     if (i === 1 || i === totalPages || Math.abs(i - currentPage) <= 1) pages.push(i)
@@ -370,16 +395,19 @@ function BlogList({
   }
 
   return (
-    <section aria-label="博客">
+    <section aria-label={t('tabWriting')}>
       {posts.length === 0 ? (
-        <p className="pf-empty">还没有文章</p>
+        <p className="pf-empty">{t(locale === 'en' ? 'noTranslatedPostsYet' : 'noPostsYet')}</p>
       ) : (
         <div className="pf-post-list">
-          {posts.map((post) => (
-            <Link key={post.slug} href={`/${post.slug}`} className="pf-post">
+          {posts.map((post, i) => (
+            <Link key={post.slug} href={localePath(`/${post.slug}`, locale)} className="pf-post sv-patch">
+              <span className="sv-ver" aria-hidden="true">
+                {i === 0 && currentPage === 1 ? t('latest') : `v${formatDate(post.published_at).slice(2, 7)}`}
+              </span>
               <span className="pf-post-heading">
                 <h3>{post.title}</h3>
-                <PostTypeBadge type={post.post_type} />
+                <PostTypeBadge type={post.post_type} lang={locale} />
                 <PostUpdateBadge post={post} />
               </span>
               <span className="pf-post-leader" aria-hidden="true" />
@@ -392,18 +420,18 @@ function BlogList({
       )}
 
       {totalPages > 1 && (
-        <nav className="pf-pager" aria-label="分页">
-          {currentPage > 1 && <Link href={blogHref(currentPage - 1)}>上一页</Link>}
+        <nav className="pf-pager" aria-label={t('pagination')}>
+          {currentPage > 1 && <Link href={blogHref(currentPage - 1, locale)}>{t('prevPageShort')}</Link>}
           {pages.map((page, i) =>
             page === '...' ? (
               <span key={`dot-${i}`}>…</span>
             ) : (
-              <Link key={page} href={blogHref(page)} aria-current={page === currentPage ? 'page' : undefined}>
+              <Link key={page} href={blogHref(page, locale)} aria-current={page === currentPage ? 'page' : undefined}>
                 {page}
               </Link>
             ),
           )}
-          {currentPage < totalPages && <Link href={blogHref(currentPage + 1)}>下一页</Link>}
+          {currentPage < totalPages && <Link href={blogHref(currentPage + 1, locale)}>{t('nextPageShort')}</Link>}
         </nav>
       )}
     </section>
@@ -422,36 +450,52 @@ export function PortfolioHome({
   initialTab: HomeTab
 }) {
   const router = useRouter()
+  const locale = useLocale()
+  const t = (key: Parameters<typeof translate>[1]) => translate(locale, key)
   const [sponsorActive] = useState(isSponsorActive)
 
   function openBlog() {
     if (initialTab === 'blog' && currentPage === 1) return
-    router.push('/?tab=blog')
+    router.push(localePath('/?tab=blog', locale))
   }
 
   function openWork() {
     if (initialTab === 'work') return
-    router.push('/')
+    router.push(localePath('/', locale))
   }
+
+  const totalProducts = freeProject.length + projects.length
 
   return (
     <LightboxProvider>
-      <div className="pf-root">
+      <div className="pf-root sv-root">
+        <LangSync locale={locale} />
         <div className="pf-page">
-          <div className="pf-grid">
-            <aside className="pf-side">
-              <section className="pf-card pf-identity" aria-label="身份">
-                <div className="pf-avatar-row">
-                  <img className="pf-avatar" src={profile.avatar} alt="XuYi" />
-                  <a className="pf-btn pf-btn-light pf-btn-icon" href={`mailto:${profile.email}`} aria-label="发邮件给 XuYi">
+          <header className="sv-hero" aria-label="XuYi">
+            <div className="sv-hero-bar">
+              <span aria-hidden="true">1P · SAVE 01</span>
+              <span aria-hidden="true">© 2026 XUYI</span>
+              <span className="sv-hero-bar-end">
+                <span aria-hidden="true">{String(totalProducts).padStart(2, '0')} CARTRIDGES</span>
+                <LanguageSwitch />
+              </span>
+            </div>
+            <div className="sv-hero-body">
+              <div className="sv-hero-main">
+                <img className="pf-avatar sv-avatar" src={profile.avatar} alt="XuYi" />
+                <h1 className="sv-title" aria-label={profile.name}>
+                  <span>Xu</span>
+                  <span>Yi</span>
+                </h1>
+                <p className="sv-bio">{(locale === 'en' ? profile.bioEn : profile.bio).join('')}</p>
+                <p className="sv-tagline">{(locale === 'en' ? profile.blogTaglineEn : profile.blogTagline).trim()}</p>
+              </div>
+              <div className="sv-hero-side">
+                <InlineSubscribe />
+                <div className="pf-socials sv-socials">
+                  <a href={`mailto:${profile.email}`} aria-label={t('emailMe')}>
                     <MailIcon />
                   </a>
-                </div>
-                <h1 className="pf-name">{profile.name}</h1>
-                <p className="pf-bio">{`${profile.bio.join('')}${profile.blogTagline}`}</p>
-                <InlineSubscribe />
-                <hr className="pf-divider" />
-                <div className="pf-socials">
                   <a href={profile.xUrl} target="_blank" rel="noreferrer" aria-label="X">
                     <XIcon />
                   </a>
@@ -468,12 +512,39 @@ export function PortfolioHome({
                     <RssIcon />
                   </a>
                 </div>
-              </section>
+              </div>
+            </div>
+          </header>
 
-              <TrafficStats tab={initialTab} />
+          <div className="pf-grid sv-grid">
+            <div className="pf-right sv-main">
+              <div className="pf-switch-row sv-menu-row">
+                <div className="sv-menu" role="tablist" aria-label={t('contentSwitch')}>
+                  <button type="button" role="tab" aria-selected={initialTab === 'work'} onClick={openWork}>
+                    <i aria-hidden="true">▶</i>{t('tabWork')}
+                  </button>
+                  <button type="button" role="tab" aria-selected={initialTab === 'blog'} onClick={openBlog}>
+                    <i aria-hidden="true">▶</i>{t('tabWriting')}
+                  </button>
+                </div>
+                {initialTab === 'blog' && <BlogSearch />}
+              </div>
 
-              <section className="pf-collections" aria-label="产品图标">
-                <h2 className="pf-label">My Project Collections</h2>
+              {initialTab === 'work' ? (
+                <>
+                  <ProductSection label="FREE PROJECT" products={freeProject} start={1} />
+                  <ProductSection label="PROJECTS" products={projects} start={freeProject.length + 1} />
+                </>
+              ) : (
+                <BlogList posts={posts} currentPage={currentPage} totalPages={totalPages} />
+              )}
+            </div>
+
+            <aside className="pf-side sv-hud">
+              <ProductPlan />
+
+              <section className="pf-collections" aria-label="Inventory">
+                <h2 className="pf-label">Inventory</h2>
                 <ul className="pf-icon-row">
                   {collections.map((item) => (
                     <li key={item.name}>
@@ -485,50 +556,26 @@ export function PortfolioHome({
                 </ul>
               </section>
 
-              <ProductPlan />
+              <TrafficStats tab={initialTab} />
             </aside>
-
-            <div className="pf-right">
-              <div className="pf-switch-row">
-                <div className="pf-switch" role="tablist" aria-label="内容切换">
-                  <span className={`pf-switch-pill${initialTab === 'blog' ? ' is-blog' : ''}`} aria-hidden="true" />
-                  <button type="button" role="tab" aria-selected={initialTab === 'work'} onClick={openWork}>
-                    作品
-                  </button>
-                  <button type="button" role="tab" aria-selected={initialTab === 'blog'} onClick={openBlog}>
-                    写作
-                  </button>
-                </div>
-                {initialTab === 'blog' && <BlogSearch />}
-              </div>
-
-              {initialTab === 'work' ? (
-                <>
-                  <ProductSection label="FREE PROJECT" products={freeProject} />
-                  <ProductSection label="PROJECTS" products={projects} />
-                </>
-              ) : (
-                <BlogList posts={posts} currentPage={currentPage} totalPages={totalPages} />
-              )}
-            </div>
           </div>
 
           <footer className="pf-foot">
             <div className="pf-foot-row">
               <div>
                 <p className="pf-foot-links">
-                  <Link href="/links">友联</Link>
-                  <Link href="/diary">日记</Link>
+                  <Link href={localePath('/links', locale)}>{t('linksTitle')}</Link>
+                  <Link href={localePath('/diary', locale)}>{t('diaryTitle')}</Link>
                 </p>
                 <p>
-                  合作交流,请联系:
+                  {t('collabContact')}
                   {' '}
                   <a href={`mailto:${profile.email}`}>{profile.email}</a>
                 </p>
               </div>
               {sponsorActive && (
-                <aside className="pf-sponsor" aria-label="赞助">
-                  <span>赞助</span>
+                <aside className="pf-sponsor" aria-label={t('sponsor')}>
+                  <span>{t('sponsor')}</span>
                   <span aria-hidden="true">·</span>
                   <a href="https://bufancv.com" target="_blank" rel="noopener noreferrer">
                     AI简历

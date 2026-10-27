@@ -1,15 +1,4 @@
-import { getAppCloudflareEnv } from '@/lib/cloudflare'
-import { getSetting } from '@/lib/db'
-import { renderMarkdownContent } from '@/lib/markdown'
-import { getSiteHeaderData } from '@/lib/site'
-import { SiteShell } from '@/components/SiteShell'
-import { MathRenderEnhancer } from '@/components/MathRenderEnhancer'
-import { CodeHighlightEnhancer } from '@/components/CodeHighlightEnhancer'
-import { DiagramRenderEnhancer } from '@/components/DiagramRenderEnhancer'
-import { highlightHtml } from '@/lib/shiki-highlight'
-import { TwitterEmbedsEnhancer } from '@/components/TwitterEmbedsEnhancer'
-import { GitHubAlertEnhancer } from '@/components/GitHubAlertEnhancer'
-import { AboutShowcase } from '@/components/AboutShowcase'
+import { AboutView } from '@/components/pages/AboutView'
 
 export const metadata = {
   title: '关于我',
@@ -18,59 +7,6 @@ export const metadata = {
 
 export const dynamic = 'force-dynamic'
 
-const fallbackMarkdown = `# 关于我
-
-这里还没有填写内容。
-
-站点管理员可以进入后台 **站点设置 -> 关于我** 编写这页内容。
-`
-
-export default async function AboutPage() {
-  const env = await getAppCloudflareEnv()
-  const contentContainerId = 'about-markdown-content'
-
-  if (!env?.DB) {
-    const html = await highlightHtml(await renderMarkdownContent(fallbackMarkdown))
-
-    return (
-      <SiteShell>
-          <AboutContent containerId={contentContainerId} html={html} />
-      </SiteShell>
-    )
-  }
-
-  const [headerData, aboutMarkdown] = await Promise.all([
-    getSiteHeaderData(env.DB),
-    getSetting(env.DB, 'about_markdown'),
-  ])
-  const markdown = aboutMarkdown?.trim() ? aboutMarkdown : fallbackMarkdown
-  const html = await highlightHtml(await renderMarkdownContent(markdown))
-
-  return (
-    <SiteShell
-      initialTheme={headerData.defaultTheme}
-      navLinks={headerData.navLinks}
-    >
-        <AboutContent containerId={contentContainerId} html={html} />
-    </SiteShell>
-  )
-}
-
-function AboutContent({
-  containerId,
-  html,
-}: {
-  containerId: string
-  html: string
-}) {
-  return (
-    <article>
-      <AboutShowcase id={containerId} html={html} />
-      <CodeHighlightEnhancer containerId={containerId} html={html} />
-      <MathRenderEnhancer containerId={containerId} html={html} />
-      <DiagramRenderEnhancer containerId={containerId} html={html} />
-      <TwitterEmbedsEnhancer containerId={containerId} html={html} />
-      <GitHubAlertEnhancer containerId={containerId} html={html} />
-    </article>
-  )
+export default function AboutPage() {
+  return <AboutView />
 }

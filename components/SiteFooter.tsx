@@ -6,6 +6,8 @@ import { usePathname } from 'next/navigation'
 import { refreshAdminSession, useAdminSession } from '@/lib/admin-session-client'
 import { isSponsorActive } from '@/lib/sponsor'
 import { splitSiteNavLinks, type SiteNavLink } from '@/lib/site'
+import { localePath, localizeNavLabel, t } from '@/lib/i18n'
+import { useLocale } from '@/lib/i18n-client'
 
 export function SiteFooter({ navLinks }: { navLinks?: SiteNavLink[] }) {
   const [open, setOpen] = useState(false)
@@ -16,6 +18,7 @@ export function SiteFooter({ navLinks }: { navLinks?: SiteNavLink[] }) {
   const inputRef = useRef<HTMLInputElement>(null)
   const { authenticated: isAdmin } = useAdminSession()
   const pathname = usePathname()
+  const locale = useLocale()
   const { footerLinks } = splitSiteNavLinks(navLinks)
 
   useEffect(() => {
@@ -92,7 +95,9 @@ export function SiteFooter({ navLinks }: { navLinks?: SiteNavLink[] }) {
               </button>
             )}
             {footerLinks.map((link) => {
-              const active = pathname === link.url || pathname.startsWith(`${link.url}/`)
+              const href = localePath(link.url, locale)
+              const label = localizeNavLabel(link.label, locale)
+              const active = pathname === href || pathname.startsWith(`${href}/`)
               const className = active
                 ? 'text-[var(--editor-ink)] underline underline-offset-2'
                 : 'hover:text-[var(--editor-ink)] transition-colors duration-150 underline-offset-2 hover:underline'
@@ -106,11 +111,11 @@ export function SiteFooter({ navLinks }: { navLinks?: SiteNavLink[] }) {
                       rel={link.openInNewTab ? 'noopener noreferrer' : undefined}
                       className={className}
                     >
-                      {link.label}
+                      {label}
                     </a>
                   ) : (
-                    <Link href={link.url} className={className}>
-                      {link.label}
+                    <Link href={href} className={className}>
+                      {label}
                     </Link>
                   )}
                 </span>
@@ -119,10 +124,10 @@ export function SiteFooter({ navLinks }: { navLinks?: SiteNavLink[] }) {
           </div>
           {sponsorActive && (
             <aside
-              aria-label="赞助"
+              aria-label={t(locale, 'sponsor')}
               className="mt-3 flex items-center justify-start gap-1.5 sm:absolute sm:right-0 sm:top-1/2 sm:mt-0 sm:-translate-y-1/2"
             >
-              <span>赞助</span>
+              <span>{t(locale, 'sponsor')}</span>
               <span aria-hidden="true">·</span>
               <a
                 href="https://bufancv.com"

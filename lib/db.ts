@@ -8,6 +8,7 @@ export {
   type Post,
   type PostAiSnapshotRow,
   type PostCategoryRow,
+  type PostTranslation,
   type PostWithTags,
   type SettingRow,
   type StatsRow,
@@ -40,6 +41,26 @@ export {
   updatePost,
   updatePostBySlug,
 } from '@/lib/repositories/posts'
+export {
+  deletePostTranslation,
+  deleteTranslationChunks,
+  getTranslationChunks,
+  saveTranslationChunk,
+  type TranslationChunkRow,
+  getCurrentSourceHashes,
+  getPostTranslation,
+  getPostTranslationLangs,
+  getPostTranslationSummaries,
+  getTranslatedPosts,
+  getTranslatedPostsCount,
+  searchTranslatedPosts,
+  setPostTranslationStatus,
+  setTranslationAiState,
+  upsertPostTranslation,
+  type PostTranslationInput,
+  type PostTranslationSummary,
+  type TranslationAiState,
+} from '@/lib/repositories/post-translations'
 export { searchPosts } from '@/lib/repositories/search'
 export {
   createCategory,

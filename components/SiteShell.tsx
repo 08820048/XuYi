@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import '@/app/inner-v2.css'
 import { SiteHeader } from './SiteHeader'
 import { SiteFooter } from './SiteFooter'
 import type { Theme } from '@/lib/appearance'

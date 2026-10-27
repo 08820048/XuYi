@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { bind as bindCuelume } from 'cuelume'
+import { useT } from '@/lib/i18n-client'
 
 interface HeadingItem {
   id: string
@@ -31,6 +32,7 @@ function getHeadingLevel(tagName: string): HeadingItem['level'] {
 }
 
 export function ArticleTableOfContents({ containerId }: ArticleTableOfContentsProps) {
+  const { t } = useT()
   const tocRef = useRef<HTMLElement>(null)
   const [headings, setHeadings] = useState<HeadingItem[]>([])
   const [activeId, setActiveId] = useState('')
@@ -137,8 +139,8 @@ export function ArticleTableOfContents({ containerId }: ArticleTableOfContentsPr
   if (visibleHeadings.length < 2) return null
 
   return (
-    <aside ref={tocRef} className="article-toc" aria-label="文章目录">
-      <div className="article-toc__label">文章目录</div>
+    <aside ref={tocRef} className="article-toc" aria-label={t('toc')}>
+      <div className="article-toc__label">{t('toc')}</div>
       <nav className="article-toc__nav" onMouseLeave={() => setHoveredIndex(null)}>
         {visibleHeadings.map((heading, index) => {
           const isActive = heading.id === activeId
@@ -160,7 +162,7 @@ export function ArticleTableOfContents({ containerId }: ArticleTableOfContentsPr
               <span className="article-toc__rule" aria-hidden />
               <span className="article-toc__tooltip" role="tooltip">
                 <span className="article-toc__tooltip-kicker">
-                  {heading.level === 1 ? '章节' : heading.level === 2 ? '小节' : '段落'}
+                  {heading.level === 1 ? t('tocChapter') : heading.level === 2 ? t('tocSection') : t('tocParagraph')}
                 </span>
                 <span className="article-toc__text">{heading.text}</span>
               </span>

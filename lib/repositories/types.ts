@@ -29,6 +29,22 @@ export interface PostWithTags extends Omit<Post, 'tags'> {
   tags: string[]
 }
 
+export interface PostTranslation {
+  id: number
+  post_id: number
+  lang: string
+  title: string
+  content: string
+  html: string
+  description: string | null
+  status: 'draft' | 'published'
+  source_hash: string | null
+  ai_state: 'translating' | 'failed' | null
+  ai_error: string | null
+  created_at: number
+  updated_at: number
+}
+
 export interface DiaryEntry {
   id: number
   slug: string

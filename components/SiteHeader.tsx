@@ -5,8 +5,10 @@ import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
 import { SearchEntry } from './SearchEntry'
+import { LanguageSwitch } from './LanguageSwitch'
+import { useLocale } from '@/lib/i18n-client'
+import { localePath, localizeNavLabel, t } from '@/lib/i18n'
 import { splitSiteNavLinks, type SiteNavLink } from '@/lib/site'
-import { SignatureLogo } from '@/components/SignatureLogo'
 
 export type NavLink = SiteNavLink
 
@@ -22,15 +24,18 @@ export function SiteHeader({
   const { headerLinks: links } = splitSiteNavLinks(navLinks)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const pathname = usePathname()
+  const locale = useLocale()
 
   const isActive = (url: string) => {
     if (url.startsWith('http') || url.startsWith('//')) return false
-    if (url === '/') return pathname === '/'
-    return pathname === url || pathname.startsWith(`${url}/`)
+    const target = localePath(url, locale)
+    if (url === '/') return pathname === target
+    return pathname === target || pathname.startsWith(`${target}/`)
   }
 
   const renderLink = (link: NavLink, onClick?: () => void) => {
     const className = `site-nav-link${isActive(link.url) ? ' is-active' : ''}`
+    const label = localizeNavLabel(link.label, locale)
 
     if (link.openInNewTab || link.url.startsWith('http')) {
       return (
@@ -42,7 +47,7 @@ export function SiteHeader({
           className={className}
           onClick={onClick}
         >
-          {link.label}
+          {label}
         </a>
       )
     }
@@ -50,11 +55,11 @@ export function SiteHeader({
     return (
       <Link
         key={link.label}
-        href={link.url}
+        href={localePath(link.url, locale)}
         className={className}
         onClick={onClick}
       >
-        {link.label}
+        {label}
       </Link>
     )
   }
@@ -65,11 +70,14 @@ export function SiteHeader({
         <div className="site-header-row h-14 flex items-center justify-between gap-4">
           <div className="site-header-primary min-w-0 flex items-center">
             <Link
-              href="/"
+              href={localePath('/', locale)}
               className="site-logo-link transition-opacity duration-200 hover:opacity-75"
-              aria-label="返回首页"
+              aria-label={t(locale, 'backHome')}
             >
-              <SignatureLogo />
+              <span className="sv-wordmark" aria-hidden="true">
+                <span>Xu</span>
+                <span>Yi</span>
+              </span>
             </Link>
           </div>
 
@@ -77,16 +85,18 @@ export function SiteHeader({
             {/* Desktop nav */}
             <nav className="site-nav hidden sm:flex items-center flex-shrink-0">
               {links.map(link => renderLink(link))}
+              <LanguageSwitch className="site-nav-link" />
               <SearchEntry />
             </nav>
 
             {/* Mobile: search icon + hamburger */}
             <div className="sm:hidden flex items-center gap-1">
+              <LanguageSwitch className="site-nav-action" />
               <SearchEntry />
               <button
                 className="site-nav-action"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                aria-label={mobileMenuOpen ? '关闭菜单' : '打开菜单'}
+                aria-label={mobileMenuOpen ? t(locale, 'closeMenu') : t(locale, 'openMenu')}
               >
                 {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>

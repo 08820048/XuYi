@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAppCloudflareEnv } from '@/lib/cloudflare'
 import { searchPostsWithStrategy } from '@/lib/related-content'
+import { searchTranslatedPosts } from '@/lib/db'
+import { isTranslationLang } from '@/lib/i18n'
 
 export async function GET(req: NextRequest) {
   try {
@@ -14,6 +16,23 @@ export async function GET(req: NextRequest) {
 
     if (!env?.DB) {
       return NextResponse.json({ results: [] })
+    }
+
+    const lang = req.nextUrl.searchParams.get('lang')
+    if (isTranslationLang(lang)) {
+      const translated = await searchTranslatedPosts(env.DB, lang, query.trim(), 50)
+      return NextResponse.json({
+        strategy: 'like',
+        source: 'translations',
+        results: translated.map((p) => ({
+          slug: p.slug,
+          title: p.title,
+          description: p.description,
+          category: p.category,
+          published_at: p.published_at,
+          password: false,
+        })),
+      })
     }
 
     const result = await searchPostsWithStrategy(env.DB, env, query.trim(), { limit: 50 })
