@@ -26,7 +26,7 @@ body:has(.sv-root) {
   --pf-badge: var(--sv-red);
   --pf-shadow: 4px 4px 0 var(--sv-ink);
   --pf-shadow-hover: 6px 6px 0 var(--sv-ink);
-  font-family: "Bricolage Grotesque", "Noto Sans SC", -apple-system, "PingFang SC", sans-serif;
+  font-family: "Bricolage Grotesque", -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", "Noto Sans CJK SC", sans-serif;
 }
 
 .sv-root .pf-page {

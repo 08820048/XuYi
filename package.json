@@ -24,7 +24,7 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@opennextjs/cloudflare": "^1.19.1",
+    "@opennextjs/cloudflare": "^1.20.13",
     "@tiptap/core": "^3.22.3",
     "@tiptap/extension-code-block-lowlight": "^3.22.4",
     "@tiptap/extension-image": "^3.22.3",
@@ -47,8 +47,8 @@
     "lowlight": "^3.3.0",
     "lucide-react": "^1.8.0",
     "mermaid": "^11.17.2",
-    "nanoid": "^5.1.7",
-    "next": "16.2.3",
+    "nanoid": "^5.1.16",
+    "next": "16.4.3",
     "novel": "^1.0.2",
     "openai": "^6.34.0",
     "opentype.js": "^2.0.0",
@@ -75,11 +75,11 @@
     "drizzle-kit": "^0.31.10",
     "esbuild": "^0.28.0",
     "eslint": "^9",
-    "eslint-config-next": "16.2.3",
+    "eslint-config-next": "16.4.3",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.5",
-    "wrangler": "^4.84.1"
+    "wrangler": "^4.152.0"
   },
   "description": "Open-source Cloudflare blog starter with Next.js 16, D1, R2, built-in themes, and AI provider presets.",
   "license": "MIT",
@@ -127,5 +127,9 @@
         "description": "可选。订阅邮件的发件人地址，如 `XuYi <blog@xuyi.dev>`；需先在 Resend 验证发信域名。"
       }
     }
+  },
+  "overrides": {
+    "undici@7.29.1": "7.30.1",
+    "glob@10.3.3": "10.5.0"
   }
 }

@@ -122,13 +122,13 @@ export default async function RootLayout({
     >
       <head>
         <link rel="stylesheet" href="/fonts/jinkai/jinkai.css" />
+        <link rel="stylesheet" href="/fonts/google/fonts.css" />
         <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap"
-        />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Silkscreen&family=Noto+Sans+SC:wght@500;700;900&display=swap"
+          rel="preload"
+          href="/fonts/google/bricolage-grotesque-latin.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
         />
         {font?.link && effectiveFont !== 'kaiti' && (
           <link rel="stylesheet" href={font.link} />
