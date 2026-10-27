@@ -76,10 +76,6 @@ export async function HomeView({
           }),
         }}
       />
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Silkscreen&family=Inter:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700&display=swap"
-      />
       <HomeClient
         initialTheme="kami"
         posts={posts}

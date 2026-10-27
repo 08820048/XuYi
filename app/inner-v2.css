@@ -19,7 +19,7 @@ body:has(.site-shell) {
   --sv-card: #f7f2e5;
   --sv-red: #d93a22;
   --sv-px: "Silkscreen", var(--font-mono);
-  --sv-display: "Bricolage Grotesque", "Noto Sans SC", -apple-system, "PingFang SC", sans-serif;
+  --sv-display: "Bricolage Grotesque", -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", "Noto Sans CJK SC", sans-serif;
 
   --kami-canvas: transparent;
   --kami-parchment: var(--sv-paper);

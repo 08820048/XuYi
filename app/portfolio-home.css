@@ -20,7 +20,7 @@ body:has(.pf-root) {
   --pf-shadow-hover: 0 2px 4px rgba(0, 0, 0, 0.05), 0 14px 32px rgba(0, 0, 0, 0.08);
   min-height: 100vh;
   color: var(--pf-ink);
-  font-family: "Bricolage Grotesque", "Noto Sans SC", -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: "Bricolage Grotesque", -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", "Noto Sans CJK SC", sans-serif;
   font-size: 14px;
   line-height: 1.55;
   letter-spacing: normal;
