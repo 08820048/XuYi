@@ -126,6 +126,10 @@ export default async function RootLayout({
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap"
         />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Silkscreen&family=Noto+Sans+SC:wght@500;700;900&display=swap"
+        />
         {font?.link && effectiveFont !== 'kaiti' && (
           <link rel="stylesheet" href={font.link} />
         )}

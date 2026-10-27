@@ -5,6 +5,8 @@ import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Search } from 'lucide-react'
+import { useT } from '@/lib/i18n-client'
+import { formatLocaleDate, localePath } from '@/lib/i18n'
 
 interface SearchResult {
   slug: string
@@ -23,6 +25,7 @@ export function SearchBar() {
   const [selectedIndex, setSelectedIndex] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
+  const { locale, t } = useT()
 
   useEffect(() => {
     if (isOpen) {
@@ -61,7 +64,7 @@ export function SearchBar() {
     const timer = setTimeout(async () => {
       setLoading(true)
       try {
-        const res = await fetch(`/api/search?q=${encodeURIComponent(trimmed)}`)
+        const res = await fetch(`/api/search?q=${encodeURIComponent(trimmed)}${locale === 'en' ? '&lang=en' : ''}`)
         const data = (await res.json()) as { results?: SearchResult[] }
         setResults(data.results || [])
         setSelectedIndex(0)
@@ -73,15 +76,15 @@ export function SearchBar() {
     }, 300)
 
     return () => clearTimeout(timer)
-  }, [query])
+  }, [query, locale])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (results.length > 0 && results[selectedIndex]) {
-      router.push(`/${results[selectedIndex].slug}`)
+      router.push(localePath(`/${results[selectedIndex].slug}`, locale))
       setIsOpen(false)
     } else if (query.trim()) {
-      router.push(`/search?q=${encodeURIComponent(query.trim())}`)
+      router.push(localePath(`/search?q=${encodeURIComponent(query.trim())}`, locale))
       setIsOpen(false)
     }
   }
@@ -100,10 +103,10 @@ export function SearchBar() {
     const date = new Date(ts * 1000)
     const now = new Date()
     const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24))
-    if (diffDays === 0) return '今天'
-    if (diffDays === 1) return '昨天'
-    if (diffDays < 7) return `${diffDays}天前`
-    return date.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' })
+    if (diffDays === 0) return t('today')
+    if (diffDays === 1) return t('yesterday')
+    if (diffDays < 7) return t('daysAgo', { n: diffDays })
+    return formatLocaleDate(ts, locale, { month: 'short', day: 'numeric' })
   }
 
   return (
@@ -111,8 +114,8 @@ export function SearchBar() {
       <button
         onClick={() => setIsOpen(true)}
         className="site-nav-action"
-        title="搜索 (⌘K)"
-        aria-label="搜索"
+        title={`${t('search')} (⌘K)`}
+        aria-label={t('search')}
       >
         <Search className="w-[18px] h-[18px]" />
       </button>
@@ -138,7 +141,7 @@ export function SearchBar() {
                     type="text"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    placeholder="搜索文章..."
+                    placeholder={t('searchPlaceholder')}
                     className="flex-1 text-base bg-transparent outline-none placeholder:text-[var(--stone-gray)]/60 text-[var(--editor-ink)]"
                     autoComplete="off"
                     spellCheck={false}
@@ -166,7 +169,7 @@ export function SearchBar() {
                   {results.map((result, index) => (
                     <Link
                       key={result.slug}
-                      href={`/${result.slug}`}
+                      href={localePath(`/${result.slug}`, locale)}
                       onClick={() => setIsOpen(false)}
                       className={`block mx-2 px-3 py-2.5 rounded-lg transition-colors ${
                         index === selectedIndex
@@ -199,8 +202,8 @@ export function SearchBar() {
                   <div className="w-10 h-10 mx-auto mb-3 rounded-full bg-[var(--editor-soft)] flex items-center justify-center">
                     <Search className="w-5 h-5 text-[var(--stone-gray)]" />
                   </div>
-                  <p className="text-sm text-[var(--editor-muted)]">没有找到相关文章</p>
-                  <p className="text-xs text-[var(--stone-gray)] mt-1">试试其他关键词</p>
+                  <p className="text-sm text-[var(--editor-muted)]">{t('noResults')}</p>
+                  <p className="text-xs text-[var(--stone-gray)] mt-1">{t('tryOtherKeywords')}</p>
                 </div>
               )}
 
@@ -209,15 +212,15 @@ export function SearchBar() {
                 <div className="flex items-center gap-4 px-5 py-2.5 border-t border-[var(--editor-line)] bg-[var(--editor-panel)]/50">
                   <div className="flex items-center gap-1.5 text-[11px] text-[var(--stone-gray)]">
                     <kbd className="px-1 py-0.5 bg-[var(--kami-ivory)] border border-[var(--kami-warm-sand)] rounded text-[10px] font-mono">↑↓</kbd>
-                    <span>选择</span>
+                    <span>{t('searchShortcutSelect')}</span>
                   </div>
                   <div className="flex items-center gap-1.5 text-[11px] text-[var(--stone-gray)]">
                     <kbd className="px-1 py-0.5 bg-[var(--kami-ivory)] border border-[var(--kami-warm-sand)] rounded text-[10px] font-mono">↵</kbd>
-                    <span>打开</span>
+                    <span>{t('searchShortcutOpen')}</span>
                   </div>
                   <div className="flex items-center gap-1.5 text-[11px] text-[var(--stone-gray)]">
                     <kbd className="px-1 py-0.5 bg-[var(--kami-ivory)] border border-[var(--kami-warm-sand)] rounded text-[10px] font-mono">esc</kbd>
-                    <span>关闭</span>
+                    <span>{t('searchShortcutClose')}</span>
                   </div>
                 </div>
               )}

@@ -1,7 +1,9 @@
-import { getPosts, searchPosts, getCategories } from '@/lib/db'
+import { getPosts, searchPosts, getCategories, getPostTranslationSummaries, getCurrentSourceHashes } from '@/lib/db'
+import { getTranslationFreshness } from '@/lib/translation-hash'
 import { getAppCloudflareEnv } from '@/lib/cloudflare'
 import Link from 'next/link'
 import { PostRow } from './PostRow'
+import type { TranslationInfo } from './TranslationControl'
 import { FilterBar } from './FilterBar'
 
 export const metadata = { title: '文章管理' }
@@ -26,6 +28,27 @@ export default async function AdminPostsPage({
       }
     } catch (error) {
       console.error('Posts fetch error:', error)
+    }
+  }
+
+  // 英文译文状态（仅取状态，不取正文；已过期用中文正文指纹比对）
+  const translationInfo = new Map<number, TranslationInfo>()
+  if (env?.DB && sourcePosts.length > 0) {
+    try {
+      const ids = sourcePosts.map((p) => p.id)
+      const summaries = await getPostTranslationSummaries(env.DB, ids, 'en')
+      const withHash = Array.from(summaries.values()).filter((item) => item.source_hash).map((item) => item.post_id)
+      const currentHashes = await getCurrentSourceHashes(env.DB, withHash)
+      for (const [postId, item] of summaries) {
+        translationInfo.set(postId, {
+          status: item.has_content ? item.status : null,
+          aiState: item.ai_state,
+          aiError: item.ai_error,
+          stale: item.has_content && getTranslationFreshness(item.source_hash, currentHashes.get(postId) ?? '') === 'stale',
+        })
+      }
+    } catch (error) {
+      console.error('Translation summaries error:', error)
     }
   }
 
@@ -135,7 +158,7 @@ export default async function AdminPostsPage({
           {/* 文章列表 */}
           <div className="divide-y divide-[var(--editor-line)]">
             {posts.map((post) => (
-              <PostRow key={post.slug} post={post} categories={dbCategories} />
+              <PostRow key={post.slug} post={post} categories={dbCategories} translation={translationInfo.get(post.id) ?? null} />
             ))}
           </div>
         </div>

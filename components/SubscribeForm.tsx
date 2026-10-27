@@ -3,8 +3,10 @@
 // 首页邮件订阅表单：纯客户端提交（首页有 revalidate 页面缓存，不能走服务端注入）
 import { ArrowRight, LoaderCircle, Mail } from 'lucide-react'
 import { useState } from 'react'
+import { useT } from '@/lib/i18n-client'
 
 export function SubscribeForm({ minimal = false }: { minimal?: boolean }) {
+  const { t } = useT()
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [successMessage, setSuccessMessage] = useState('')
@@ -27,13 +29,13 @@ export function SubscribeForm({ minimal = false }: { minimal?: boolean }) {
       const data = await res.json().catch(() => null)
 
       if (res.ok && data?.success) {
-        setSuccessMessage('订阅成功，下一篇文章发布时会通知你。')
+        setSuccessMessage(t('subscribeSuccess'))
         setEmail('')
       } else {
-        setError(res.status === 400 ? '请输入有效的邮箱地址。' : '提交失败，请稍后重试。')
+        setError(res.status === 400 ? t('invalidEmail') : t('submitFailed'))
       }
     } catch {
-      setError('网络错误，请稍后重试。')
+      setError(t('networkError'))
     } finally {
       setLoading(false)
     }
@@ -46,10 +48,10 @@ export function SubscribeForm({ minimal = false }: { minimal?: boolean }) {
     >
       {!minimal && (
         <header className="subscribe-panel-copy">
-          <p className="kami-label">Newsletter</p>
-          <h3 className="subscribe-panel-title">订阅更新</h3>
+          <p className="kami-label">{t('newsletter')}</p>
+          <h3 className="subscribe-panel-title">{t('subscribeTitle')}</h3>
           <p className="subscribe-panel-lead">
-            新文章发布时收到邮件通知，随时可退订。
+            {t('subscribeLead')}
           </p>
         </header>
       )}

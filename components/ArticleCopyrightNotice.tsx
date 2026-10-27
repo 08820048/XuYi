@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect } from 'react'
-import { ARTICLE_COPYRIGHT_NOTICE, formatArticleCopyrightText } from '@/lib/article-copyright'
+import { formatArticleCopyrightText } from '@/lib/article-copyright'
+import { useT } from '@/lib/i18n-client'
 
 export function ArticleCopyrightNotice({
   containerId,
@@ -14,7 +15,8 @@ export function ArticleCopyrightNotice({
   articleUrl: string
   sourceUrl?: string | null
 }) {
-  const clipboardNotice = formatArticleCopyrightText({ title, articleUrl, sourceUrl })
+  const { locale, t } = useT()
+  const clipboardNotice = formatArticleCopyrightText({ title, articleUrl, sourceUrl, locale })
 
   useEffect(() => {
     const container = document.getElementById(containerId)
@@ -55,18 +57,18 @@ export function ArticleCopyrightNotice({
   }, [clipboardNotice, containerId])
 
   return (
-    <section className="kami-note article-copyright-notice" aria-label="版权声明">
-      <p className="kami-label">版权声明</p>
-      <p>{ARTICLE_COPYRIGHT_NOTICE}</p>
+    <section className="kami-note article-copyright-notice" aria-label={t('copyrightTitle')}>
+      <p className="kami-label">{t('copyrightTitle')}</p>
+      <p>{t('copyrightBody')}</p>
       <p>
-        本文链接：
+        {t('articleLink')}
         <a href={articleUrl}>
           {articleUrl}
         </a>
       </p>
       {sourceUrl && (
         <p>
-          原文链接：
+          {t('sourceLink')}
           <a
             href={sourceUrl}
             target="_blank"

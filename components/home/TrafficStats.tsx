@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { TRAFFIC_API } from '@/lib/portfolio'
+import { useLocale } from '@/lib/i18n-client'
 
 type TrafficResponse = {
   products: { name: string; domain: string; daily?: { date: string; pageViews: number }[] }[]
@@ -130,6 +131,7 @@ function EyeGlyph() {
 }
 
 export function TrafficStats({ tab }: { tab: 'work' | 'blog' }) {
+  const isEn = useLocale() === 'en'
   const [data, setData] = useState<TrafficResponse | null>(null)
   const [range, setRange] = useState<Range>(30)
 
@@ -440,7 +442,7 @@ export function TrafficStats({ tab }: { tab: 'work' | 'blog' }) {
       <div className="pf-stats-kpi">
         <div className="pf-stats-kpi-head">
           <span className="pf-stats-kpi-icon"><EyeGlyph /></span>
-          <span className="pf-stats-kpi-label">{tab === 'blog' ? '博客浏览量' : '作品浏览量'}</span>
+          <span className="pf-stats-kpi-label">{tab === 'blog' ? (isEn ? 'Blog views' : '博客浏览量') : (isEn ? 'Work views' : '作品浏览量')}</span>
         </div>
         <div className="pf-stats-kpi-hero" ref={heroRef}>+0</div>
         <div className="pf-stats-kpi-delta" ref={deltaRef}>—</div>
@@ -493,7 +495,7 @@ export function TrafficStats({ tab }: { tab: 'work' | 'blog' }) {
         </div>
       </div>
 
-      <div className="pf-stats-ranges" ref={trackRef} role="tablist" aria-label="时间范围">
+      <div className="pf-stats-ranges" ref={trackRef} role="tablist" aria-label={isEn ? 'Time range' : '时间范围'}>
         <span className="pf-stats-pill" ref={pillRef} aria-hidden="true" />
         {RANGES.map((r, i) => (
           <button
@@ -506,7 +508,7 @@ export function TrafficStats({ tab }: { tab: 'work' | 'blog' }) {
             aria-selected={range === r}
             onClick={() => setRange(r)}
           >
-            {r}天
+            {isEn ? `${r}d` : `${r}天`}
           </button>
         ))}
       </div>

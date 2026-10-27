@@ -3,6 +3,8 @@
 import { hasPostUpdate } from '@/lib/post-update'
 import type { PostWithTags } from '@/lib/repositories/types'
 import { useEffect, useState } from 'react'
+import { formatLocaleDate } from '@/lib/i18n'
+import { useT } from '@/lib/i18n-client'
 
 export const POST_UPDATE_SEEN_EVENT = 'qmblog:post-update-seen'
 const POST_UPDATE_SEEN_KEY_PREFIX = 'qmblog:post-update-seen:'
@@ -56,6 +58,7 @@ export function PostUpdateBadge({
   post: UpdateBadgePost
   className?: string
 }) {
+  const { locale, t } = useT()
   const [visible, setVisible] = useState(() => hasPostUpdate(post))
 
   useEffect(() => {
@@ -85,10 +88,10 @@ export function PostUpdateBadge({
 
   return (
     <span
-      title={`更新于 ${new Date(post.content_updated_at * 1000).toLocaleDateString('zh-CN')}`}
+      title={t('updatedOn', { date: formatLocaleDate(post.content_updated_at, locale, { year: 'numeric', month: 'numeric', day: 'numeric' }) })}
       className={['kami-tag shrink-0', className].filter(Boolean).join(' ')}
     >
-      + 有更新
+      + {t('hasUpdate')}
     </span>
   )
 }

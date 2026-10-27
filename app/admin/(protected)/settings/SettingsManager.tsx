@@ -9,6 +9,7 @@ import { CustomJsEditor } from './CustomJsEditor'
 import { ApiTokensManager } from './ApiTokensManager'
 import { ThemeManager } from './ThemeManager'
 import { AboutMarkdownEditor } from './AboutMarkdownEditor'
+import { TranslationSettings } from './TranslationSettings'
 import { CategoryManager } from '../categories/CategoryManager'
 import { FriendLinksManager } from '../friend-links/FriendLinksManager'
 import { AiProviderManager } from './AiProviderManager'
@@ -40,6 +41,9 @@ interface Props {
   initialNavLinks: string
   initialCustomJs: string
   initialAboutMarkdown: string
+  initialAboutMarkdownEn: string
+  initialTranslateProfileId: string
+  initialTranslatePrompt: string
   initialCategories: Category[]
   initialFriendLinks: FriendLink[]
   initialBodyFont: string
@@ -51,6 +55,9 @@ export function SettingsManager({
   initialNavLinks,
   initialCustomJs,
   initialAboutMarkdown,
+  initialAboutMarkdownEn,
+  initialTranslateProfileId,
+  initialTranslatePrompt,
   initialCategories,
   initialFriendLinks,
   initialBodyFont,
@@ -170,6 +177,26 @@ export function SettingsManager({
           <AboutMarkdownEditor
             initialValue={initialAboutMarkdown}
             onSave={(val) => save('about_markdown', val)}
+            saving={saving}
+          />
+        </div>
+      ),
+    },
+    {
+      id: 'translate',
+      label: '英文翻译',
+      content: (
+        <div className="space-y-4">
+          {msg && (
+            <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-800">
+              {msg}
+            </div>
+          )}
+          <TranslationSettings
+            initialProfileId={initialTranslateProfileId}
+            initialPrompt={initialTranslatePrompt}
+            initialAboutEn={initialAboutMarkdownEn}
+            onSave={save}
             saving={saving}
           />
         </div>

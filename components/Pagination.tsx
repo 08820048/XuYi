@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { localeFromPathname, t } from '@/lib/i18n'
 
 interface PaginationProps {
   currentPage: number
@@ -8,6 +9,7 @@ interface PaginationProps {
 
 export function Pagination({ currentPage, totalPages, basePath }: PaginationProps) {
   if (totalPages <= 1) return null
+  const locale = localeFromPathname(basePath)
 
   const pages: (number | '...')[] = []
   for (let i = 1; i <= totalPages; i++) {
@@ -22,10 +24,10 @@ export function Pagination({ currentPage, totalPages, basePath }: PaginationProp
     page === 1 ? basePath : `${basePath}${basePath.includes('?') ? '&' : '?'}page=${page}`
 
   return (
-    <nav className="kami-pagination flex flex-wrap items-center justify-center gap-1 mt-14" aria-label="分页导航">
+    <nav className="kami-pagination flex flex-wrap items-center justify-center gap-1 mt-14" aria-label={t(locale, 'pagination')}>
       {currentPage > 1 && (
         <Link href={href(currentPage - 1)} className="kami-page-link px-3 py-2 text-sm">
-          ← 上一页
+          {t(locale, 'prevPage')}
         </Link>
       )}
 
@@ -51,7 +53,7 @@ export function Pagination({ currentPage, totalPages, basePath }: PaginationProp
 
       {currentPage < totalPages && (
         <Link href={href(currentPage + 1)} className="kami-page-link px-3 py-2 text-sm">
-          下一页 →
+          {t(locale, 'nextPage')}
         </Link>
       )}
     </nav>

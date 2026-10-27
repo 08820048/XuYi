@@ -99,6 +99,60 @@ export async function ensureSchema(db: Database) {
       // table already exists or current DB runtime does not allow this migration
     }
 
+    try {
+      await db.prepare(`
+        CREATE TABLE IF NOT EXISTS post_translations (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          post_id INTEGER NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+          lang TEXT NOT NULL,
+          title TEXT NOT NULL,
+          content TEXT NOT NULL,
+          html TEXT NOT NULL,
+          description TEXT,
+          status TEXT NOT NULL DEFAULT 'published' CHECK(status IN ('draft', 'published')),
+          source_hash TEXT,
+          ai_state TEXT CHECK(ai_state IN ('translating', 'failed')),
+          ai_error TEXT,
+          created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+          updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+          UNIQUE(post_id, lang)
+        )
+      `).run()
+      // 011 阶段建的表没有 AI 状态列，这里补齐
+      for (const sql of [
+        "ALTER TABLE post_translations ADD COLUMN source_hash TEXT",
+        "ALTER TABLE post_translations ADD COLUMN ai_state TEXT CHECK(ai_state IN ('translating', 'failed'))",
+        "ALTER TABLE post_translations ADD COLUMN ai_error TEXT",
+      ]) {
+        try {
+          await db.prepare(sql).run()
+        } catch {
+          // column already exists
+        }
+      }
+      await db.prepare(
+        'CREATE INDEX IF NOT EXISTS idx_post_translations_lang_status ON post_translations(lang, status)'
+      ).run()
+    } catch {
+      // table already exists or current DB runtime does not allow this migration
+    }
+
+    try {
+      await db.prepare(`
+        CREATE TABLE IF NOT EXISTS post_translation_chunks (
+          post_id INTEGER NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+          lang TEXT NOT NULL,
+          idx INTEGER NOT NULL,
+          source_hash TEXT NOT NULL,
+          text TEXT NOT NULL,
+          created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+          PRIMARY KEY (post_id, lang, idx)
+        )
+      `).run()
+    } catch {
+      // table already exists or current DB runtime does not allow this migration
+    }
+
     schemaInitialized = true
   } catch (error: unknown) {
     console.error('Schema migration failed:', error)

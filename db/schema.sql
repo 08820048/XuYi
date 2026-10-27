@@ -81,6 +81,36 @@ CREATE TABLE IF NOT EXISTS friend_links (
 
 CREATE INDEX IF NOT EXISTS idx_friend_links_visible_order ON friend_links(is_visible, sort_order, id);
 
+CREATE TABLE IF NOT EXISTS post_translations (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  post_id INTEGER NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+  lang TEXT NOT NULL,
+  title TEXT NOT NULL,
+  content TEXT NOT NULL,
+  html TEXT NOT NULL,
+  description TEXT,
+  status TEXT NOT NULL DEFAULT 'published' CHECK(status IN ('draft', 'published')),
+  source_hash TEXT,
+  ai_state TEXT CHECK(ai_state IN ('translating', 'failed')),
+  ai_error TEXT,
+  created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  UNIQUE(post_id, lang)
+);
+
+CREATE INDEX IF NOT EXISTS idx_post_translations_lang_status ON post_translations(lang, status);
+
+-- AI 翻译分段暂存（分步翻译、断点续传；翻译完成后清理）。idx = -1 存放标题/摘要译文
+CREATE TABLE IF NOT EXISTS post_translation_chunks (
+  post_id INTEGER NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+  lang TEXT NOT NULL,
+  idx INTEGER NOT NULL,
+  source_hash TEXT NOT NULL,
+  text TEXT NOT NULL,
+  created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  PRIMARY KEY (post_id, lang, idx)
+);
+
 -- 邮件订阅表：新提交直接 subscribed；pending 保留用于兼容历史确认链接
 -- token 用于退订，历史 pending 记录也用于确认
 CREATE TABLE IF NOT EXISTS subscribers (
