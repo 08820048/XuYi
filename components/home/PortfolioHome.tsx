@@ -72,7 +72,7 @@ function ProductPlan() {
   const percent = Math.round((done / goal) * 100)
   return (
     <section className="pf-plan" aria-label={translate(locale, 'planAria')}>
-      <h2 className="pf-label">SAVE FILE · 100 Products</h2>
+      <h2 className="pf-label">100 Products</h2>
       <div className="pf-plan-head">
         <span className="pf-plan-count">{done}</span>
         <span className="pf-plan-goal">/ {goal}</span>
@@ -400,11 +400,8 @@ function BlogList({
         <p className="pf-empty">{t(locale === 'en' ? 'noTranslatedPostsYet' : 'noPostsYet')}</p>
       ) : (
         <div className="pf-post-list">
-          {posts.map((post, i) => (
+          {posts.map((post) => (
             <Link key={post.slug} href={localePath(`/${post.slug}`, locale)} className="pf-post sv-patch">
-              <span className="sv-ver" aria-hidden="true">
-                {i === 0 && currentPage === 1 ? t('latest') : `v${formatDate(post.published_at).slice(2, 7)}`}
-              </span>
               <span className="pf-post-heading">
                 <h3>{post.title}</h3>
                 <PostTypeBadge type={post.post_type} lang={locale} />
@@ -464,8 +461,6 @@ export function PortfolioHome({
     router.push(localePath('/', locale))
   }
 
-  const totalProducts = freeProject.length + projects.length
-
   return (
     <LightboxProvider>
       <div className="pf-root sv-root">
@@ -473,12 +468,8 @@ export function PortfolioHome({
         <div className="pf-page">
           <header className="sv-hero" aria-label="XuYi">
             <div className="sv-hero-bar">
-              <span aria-hidden="true">1P · SAVE 01</span>
-              <span aria-hidden="true">© 2026 XUYI</span>
-              <span className="sv-hero-bar-end">
-                <span aria-hidden="true">{String(totalProducts).padStart(2, '0')} CARTRIDGES</span>
-                <LanguageSwitch />
-              </span>
+              <span aria-hidden="true">© 2026 XuYi</span>
+              <LanguageSwitch />
             </div>
             <div className="sv-hero-body">
               <div className="sv-hero-main">
@@ -521,10 +512,10 @@ export function PortfolioHome({
               <div className="pf-switch-row sv-menu-row">
                 <div className="sv-menu" role="tablist" aria-label={t('contentSwitch')}>
                   <button type="button" role="tab" aria-selected={initialTab === 'work'} onClick={openWork}>
-                    <i aria-hidden="true">▶</i>{t('tabWork')}
+                    {t('tabWork')}
                   </button>
                   <button type="button" role="tab" aria-selected={initialTab === 'blog'} onClick={openBlog}>
-                    <i aria-hidden="true">▶</i>{t('tabWriting')}
+                    {t('tabWriting')}
                   </button>
                 </div>
                 {initialTab === 'blog' && <BlogSearch />}

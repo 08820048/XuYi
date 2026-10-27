@@ -1,300 +1,276 @@
 /*
- * XuYi inner pages — "title screen / save file" redesign.
+ * XuYi inner pages — quiet editorial.
  * Scoped to .site-shell (article, links, diary, category, about, search).
  * Re-skins the kami tokens so rich-content etc. follow automatically.
  */
 
 html:has(.site-shell),
 body:has(.site-shell) {
-  background-color: #ebe5d6;
-  background-image:
-    linear-gradient(rgba(23, 21, 15, 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(23, 21, 15, 0.045) 1px, transparent 1px);
-  background-size: 24px 24px;
+  background-color: #f6f4ef;
+  background-image: none;
 }
 
 .site-shell {
-  --sv-ink: #17150f;
-  --sv-paper: #ebe5d6;
-  --sv-card: #f7f2e5;
-  --sv-red: #d93a22;
-  --sv-px: "Silkscreen", var(--font-mono);
-  --sv-display: "Bricolage Grotesque", -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", "Noto Sans CJK SC", sans-serif;
+  --sv-ink: #1d1c1a;
+  --sv-paper: #f6f4ef;
+  --sv-card: #fcfbf8;
+  --sv-accent: #4f6558;
+  --sv-line: rgba(29, 28, 26, 0.12);
+  --sv-display: "Newsreader", "Iowan Old Style", "Songti SC", "Source Han Serif SC", "Noto Serif SC", Georgia, serif;
+  --sv-ui: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
 
   --kami-canvas: transparent;
   --kami-parchment: var(--sv-paper);
   --kami-ivory: var(--sv-card);
-  --kami-warm-sand: rgba(23, 21, 15, 0.22);
-  --kami-ink: #c2321c;
-  --kami-ink-light: #d93a22;
+  --kami-warm-sand: var(--sv-line);
+  --kami-ink: var(--sv-accent);
+  --kami-ink-light: #6a8173;
   --kami-near-black: var(--sv-ink);
-  --kami-dark-warm: #2b271d;
-  --kami-olive: #4a463a;
-  --kami-stone: #6f6957;
-  --kami-tag: #f1d6cb;
-  --kami-tag-quiet: #e3dcc8;
+  --kami-dark-warm: #33312c;
+  --kami-olive: #5a574f;
+  --kami-stone: #8a867c;
+  --kami-tag: #e6ebe7;
+  --kami-tag-quiet: #eeece6;
   --background: transparent;
-  --editor-accent: #c2321c;
-  --editor-link: #c2321c;
-  --article-quote-border: #c2321c;
-  --editor-line: rgba(23, 21, 15, 0.22);
-  --editor-soft: #e3dcc8;
+  --editor-accent: var(--sv-accent);
+  --editor-link: var(--sv-accent);
+  --article-quote-border: rgba(79, 101, 88, 0.5);
+  --editor-line: var(--sv-line);
+  --editor-soft: #eeece6;
   --editor-code-bg: var(--sv-card);
-  --editor-selection: #f1d6cb;
-  --interaction-hover: var(--sv-card);
-  --interaction-active: #e3dcc8;
-  --kami-page-width: 52rem;
+  --editor-selection: #dfe7e1;
+  --interaction-hover: rgba(29, 28, 26, 0.04);
+  --interaction-active: #eeece6;
+  --kami-page-width: 50rem;
   background: transparent;
 }
 
 .site-shell ::selection {
-  background: var(--sv-red);
-  color: #fff;
+  background: #dfe7e1;
+  color: var(--sv-ink);
 }
 
 /* ---------- header ---------- */
 .site-shell .site-header {
-  background: var(--sv-ink);
-  border-bottom: 2px solid var(--sv-ink);
+  background: rgba(246, 244, 239, 0.88);
+  backdrop-filter: saturate(1.4) blur(12px);
+  -webkit-backdrop-filter: saturate(1.4) blur(12px);
+  border-bottom: 1px solid var(--sv-line);
 }
 
 .site-shell .site-header-row {
-  height: 3.25rem;
+  height: 3.5rem;
 }
 
 .sv-wordmark {
   display: inline-flex;
   font-family: var(--sv-display);
-  font-size: 1.75rem;
-  font-weight: 800;
+  font-size: 1.5rem;
+  font-weight: 400;
   line-height: 1;
-  letter-spacing: -0.06em;
-  color: var(--sv-paper);
+  letter-spacing: -0.02em;
+  color: var(--sv-ink);
 }
 
 .sv-wordmark span:last-child {
-  color: #ff5a3c;
-}
-
-.site-shell .site-logo-link:hover .sv-wordmark {
-  transform: translate(-1px, -1px);
-  text-shadow: 2px 2px 0 rgba(255, 90, 60, 0.55);
+  font-style: italic;
+  color: var(--sv-accent);
 }
 
 .site-shell .site-nav-link,
 .site-shell .site-nav-action {
   position: relative;
-  border-radius: 0;
-  color: rgba(235, 229, 214, 0.72);
-  font-family: var(--sv-display);
-  font-size: 0.875rem;
-  font-weight: 700;
-  letter-spacing: 0;
+  border-radius: 999px;
+  color: var(--kami-olive);
+  font-family: var(--sv-ui);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  transition: color 0.2s, background-color 0.2s;
 }
 
 .site-shell .site-nav-link:is(:hover, :focus-visible),
 .site-shell .site-nav-action:is(:hover, :focus-visible) {
-  background: transparent;
-  color: var(--sv-paper);
+  background: rgba(29, 28, 26, 0.05);
+  color: var(--sv-ink);
 }
 
 .site-shell .site-nav-link.is-active {
-  color: var(--sv-paper);
-}
-
-.site-shell .site-nav-link.is-active::before {
-  content: "▶";
-  position: absolute;
-  left: -0.2rem;
-  top: 50%;
-  transform: translateY(-50%) scale(0.7);
-  color: #ff5a3c;
-  font-family: var(--sv-px);
-}
-
-.site-shell .site-nav-link.is-active {
-  padding-left: 1.2rem;
+  color: var(--sv-ink);
+  background: rgba(29, 28, 26, 0.06);
 }
 
 .site-shell .site-mobile-menu {
-  background-color: var(--sv-ink) !important;
-  border-top: 1px solid rgba(235, 229, 214, 0.2);
-}
-
-.site-shell .site-header :is(svg) {
-  color: var(--sv-paper);
+  background-color: var(--sv-paper) !important;
+  border-top: 1px solid var(--sv-line);
 }
 
 .site-shell .site-header .sv-lang {
   margin-inline: 0.35rem;
-  padding: 1px 7px 0;
-  border: 1.5px solid rgba(235, 229, 214, 0.6);
-  border-radius: 0;
-  font-family: var(--sv-px);
+  padding: 2px 10px;
+  border: 1px solid var(--sv-line);
+  border-radius: 999px;
   font-size: 0.6875rem;
-  letter-spacing: 0.12em;
-  color: var(--sv-paper);
+  letter-spacing: 0.1em;
+  color: var(--kami-olive);
+  opacity: 1;
 }
 
 .site-shell .site-header .sv-lang:hover {
-  background: #ff5a3c;
-  border-color: #ff5a3c;
-  color: #fff;
+  background: var(--sv-ink);
+  border-color: var(--sv-ink);
+  color: var(--sv-paper);
 }
 
 /* ---------- footer ---------- */
 .site-shell .site-footer {
-  margin-top: 2rem;
+  margin-top: 3rem;
   background: transparent !important;
-  border-top: 2px solid var(--sv-ink);
+  border-top: 1px solid var(--sv-line);
 }
 
 .site-shell .site-footer-inner {
-  font-family: var(--sv-px);
-  font-size: 0.6875rem;
-  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: var(--kami-stone);
 }
 
 /* ---------- page skeleton ---------- */
 .site-shell .kami-page-main {
   background: transparent;
-  padding-top: 3rem;
+  padding-top: 4rem;
 }
 
 .site-shell .kami-label {
   display: inline-block;
-  font-family: var(--sv-px);
+  font-family: var(--sv-ui);
   font-size: 0.6875rem;
-  font-weight: 400;
-  letter-spacing: 0.12em;
+  font-weight: 500;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--sv-ink);
+  color: var(--kami-stone);
 }
 
 .site-shell .kami-display {
   font-family: var(--sv-display);
-  font-size: clamp(3.5rem, 11vw, 7.5rem);
-  font-weight: 800;
-  line-height: 0.9;
-  letter-spacing: -0.05em;
-  text-shadow: 0.03em 0.03em 0 var(--sv-red);
+  font-size: clamp(3rem, 9vw, 5.5rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.03em;
 }
 
 .site-shell .kami-lead {
   font-family: var(--sv-display);
-  font-weight: 500;
+  font-weight: 400;
   color: var(--kami-olive);
 }
 
 .site-shell .kami-page-header {
-  border-bottom: 2px solid var(--sv-ink);
-}
-
-.site-shell .kami-page-header .kami-label,
-.site-shell .kami-section > .kami-label {
-  padding: 0.2rem 0.5rem 0.1rem;
-  background: var(--sv-ink);
-  color: var(--sv-paper);
-  margin-bottom: 1.1rem;
+  border-bottom: 1px solid var(--sv-line);
 }
 
 .site-shell .kami-section-title {
   font-family: var(--sv-display);
-  font-weight: 800;
-  letter-spacing: -0.03em;
+  font-weight: 400;
+  letter-spacing: -0.015em;
 }
 
 .site-shell .kami-section + .kami-section,
 .site-shell .related-records.kami-section {
-  border-top: 2px solid var(--sv-ink);
+  border-top: 1px solid var(--sv-line);
 }
 
 /* ---------- tags / buttons / inputs ---------- */
 .site-shell .kami-tag {
-  border-radius: 0;
-  border: 1.5px solid var(--sv-ink);
+  border-radius: 999px;
+  border: 1px solid var(--sv-line);
   background: transparent;
-  color: var(--sv-ink);
-  font-family: var(--sv-px);
-  letter-spacing: 0.08em;
+  color: var(--kami-olive);
+  letter-spacing: 0.04em;
 }
 
 .site-shell .kami-btn-primary,
 .site-shell .kami-btn-secondary {
-  border: 2px solid var(--sv-ink);
-  border-radius: 0;
-  box-shadow: 3px 3px 0 var(--sv-ink);
-  font-family: var(--sv-display);
-  font-weight: 700;
-  transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
+  border: 1px solid var(--sv-ink);
+  border-radius: 999px;
+  box-shadow: none;
+  font-family: var(--sv-ui);
+  font-weight: 500;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
 }
 
 .site-shell .kami-btn-primary {
-  background: var(--sv-red);
-  color: #fff;
+  background: var(--sv-ink);
+  color: var(--sv-paper);
 }
 
 .site-shell .kami-btn-secondary {
-  background: var(--sv-paper);
+  background: transparent;
   color: var(--sv-ink);
+  border-color: var(--sv-line);
 }
 
-.site-shell .kami-btn-primary:hover:not(:disabled),
+.site-shell .kami-btn-primary:hover:not(:disabled) {
+  opacity: 1;
+  background: var(--sv-accent);
+  border-color: var(--sv-accent);
+}
+
 .site-shell .kami-btn-secondary:hover:not(:disabled) {
   opacity: 1;
-  transform: translate(-1px, -1px);
-  box-shadow: 4px 4px 0 var(--sv-ink);
-}
-
-.site-shell .kami-btn-primary:active:not(:disabled),
-.site-shell .kami-btn-secondary:active:not(:disabled) {
-  transform: translate(3px, 3px);
-  box-shadow: 0 0 0 var(--sv-ink);
+  border-color: var(--sv-ink);
 }
 
 .site-shell .kami-input {
-  border: 2px solid var(--sv-ink);
-  border-radius: 0;
+  border: 1px solid var(--sv-line);
+  border-radius: 10px;
   background: var(--sv-card);
 }
 
 .site-shell .kami-input:focus {
   background: #fff;
   border-color: var(--sv-ink);
-  box-shadow: 3px 3px 0 var(--sv-red);
+  box-shadow: none;
+  outline: none;
 }
 
 /* ---------- post lists (category, search, related) ---------- */
 .site-shell .kami-post {
-  border-bottom: 1px solid var(--kami-warm-sand);
+  border-bottom: 1px solid var(--sv-line);
 }
 
 .site-shell .kami-post-link {
-  padding: 1rem 0.25rem;
-  transition: background-color 0.1s, padding-left 0.12s;
+  padding: 1.15rem 0;
+  transition: padding-left 0.25s ease;
 }
 
 .site-shell .kami-post-link:is(:hover, :focus-visible) {
-  background: var(--sv-card);
-  padding-left: 0.75rem;
+  background: transparent;
+  padding-left: 0.5rem;
 }
 
 .site-shell .kami-post-title {
-  font-weight: 600;
+  font-family: var(--sv-display);
+  font-weight: 400;
+}
+
+.site-shell .kami-post-link:hover .kami-post-title {
+  color: var(--sv-accent);
 }
 
 .site-shell .kami-post-leader {
-  border-top: 1px dotted rgba(23, 21, 15, 0.35);
+  border-top: 0;
 }
 
 .site-shell .kami-post-date {
-  font-family: var(--sv-px);
-  font-size: 0.6875rem;
-  letter-spacing: 0.06em;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: var(--kami-stone);
+  font-variant-numeric: tabular-nums;
 }
 
 .site-shell .kami-pagination .kami-page-active {
-  border-radius: 0;
+  border-radius: 999px;
   background: var(--sv-ink);
   color: var(--sv-paper);
 }
@@ -302,15 +278,9 @@ body:has(.site-shell) {
 /* ---------- article ---------- */
 .site-shell .kami-article-header {
   max-width: none;
-  margin-bottom: 3rem;
-  padding: 0 0 1.75rem;
-  border-bottom: 2px solid var(--sv-ink);
-}
-
-.site-shell .kami-article-kicker .kami-label {
-  padding: 0.2rem 0.55rem 0.1rem;
-  background: var(--sv-red);
-  color: #fff;
+  margin-bottom: 3.5rem;
+  padding: 0 0 2rem;
+  border-bottom: 1px solid var(--sv-line);
 }
 
 .site-shell .kami-article-title,
@@ -318,133 +288,117 @@ body:has(.site-shell) {
 [data-font="kaiti"] .site-shell .kami-article-title {
   margin-top: 1.25rem;
   font-family: var(--sv-display);
-  font-size: clamp(2.25rem, 6vw, 4rem);
-  font-weight: 800;
-  line-height: 1.04;
-  letter-spacing: -0.04em;
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
   color: var(--sv-ink);
 }
 
 .site-shell .kami-article-meta {
-  margin-top: 1.4rem;
-  padding-top: 0.9rem;
-  border-top: 1px dashed rgba(23, 21, 15, 0.4);
-  font-family: var(--sv-px);
-  font-size: 0.6875rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--kami-olive);
+  margin-top: 1.5rem;
+  font-family: var(--sv-ui);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: var(--kami-stone);
 }
 
 .site-shell .kami-article-meta > span + span::before,
 .site-shell .kami-article-meta > time + span::before {
-  content: "/";
-  margin-right: 0.85rem;
-  color: var(--sv-red);
+  content: "·";
+  margin-right: 0.75rem;
+  color: var(--kami-stone);
 }
 
 .site-shell .kami-note {
-  border: 2px solid var(--sv-ink);
-  border-radius: 0;
+  border: 1px solid var(--sv-line);
+  border-radius: 12px;
   background: var(--sv-card);
-  box-shadow: 4px 4px 0 var(--sv-ink);
 }
 
 .site-shell .rich-content {
   max-width: 44rem;
   font-size: 1.125rem;
-  line-height: 1.8;
+  line-height: 1.85;
 }
 
 .site-shell :is(.novel-prose, .rich-content) h2,
 [data-font="kaiti"] .site-shell :is(.rich-content) h2 {
-  position: relative;
-  padding-left: 1rem;
   font-family: var(--sv-display);
   font-size: 1.625rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-}
-
-.site-shell :is(.novel-prose, .rich-content) h2::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0.2em;
-  bottom: 0.2em;
-  width: 6px;
-  background: var(--sv-red);
+  font-weight: 500;
+  letter-spacing: -0.01em;
 }
 
 .site-shell :is(.novel-prose, .rich-content) h3,
 [data-font="kaiti"] .site-shell :is(.rich-content) h3 {
   font-family: var(--sv-display);
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .site-shell :is(.novel-prose, .rich-content) a {
-  text-decoration-thickness: 2px;
-  text-decoration-color: rgba(217, 58, 34, 0.45);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  text-decoration-color: rgba(79, 101, 88, 0.45);
+  transition: text-decoration-color 0.2s, color 0.2s;
 }
 
 .site-shell :is(.novel-prose, .rich-content) a:hover {
-  background: var(--sv-red);
-  color: #fff;
-  text-decoration-color: transparent;
+  color: var(--sv-accent);
+  text-decoration-color: currentColor;
 }
 
 .site-shell :is(.novel-prose, .rich-content) blockquote:not(.github-alert) {
-  border: 2px solid var(--sv-ink);
-  border-left: 8px solid var(--sv-red);
+  border: 0;
+  border-left: 2px solid rgba(79, 101, 88, 0.5);
   border-radius: 0;
-  background: var(--sv-card);
-  box-shadow: 4px 4px 0 var(--sv-ink);
+  background: transparent;
+  box-shadow: none;
   font-style: normal;
-  color: var(--kami-dark-warm);
+  color: var(--kami-olive);
 }
 
 .site-shell :is(.novel-prose, .rich-content) hr {
-  border-top: 2px dashed rgba(23, 21, 15, 0.4);
+  border-top: 1px solid var(--sv-line);
 }
 
 .site-shell :is(.novel-prose, .rich-content) code {
-  border-radius: 0;
-  background: rgba(23, 21, 15, 0.08);
+  border-radius: 4px;
+  background: rgba(29, 28, 26, 0.06);
 }
 
 .site-shell :is(.novel-prose, .rich-content) pre {
-  border: 2px solid var(--sv-ink);
-  border-radius: 0;
-  background: var(--sv-ink);
-  box-shadow: 4px 4px 0 var(--sv-red);
+  border: 0;
+  border-radius: 10px;
+  background: #23221f;
+  box-shadow: none;
 }
 
 .site-shell :is(.novel-prose, .rich-content) pre.shiki {
-  border: 2px solid var(--sv-ink);
+  border: 1px solid var(--sv-line);
   background-color: var(--sv-card);
 }
 
 .site-shell :is(.novel-prose, .rich-content) table {
-  border: 2px solid var(--sv-ink);
-  border-radius: 0;
+  border: 1px solid var(--sv-line);
+  border-radius: 8px;
 }
 
 .site-shell :is(.novel-prose, .rich-content) table th {
-  background: var(--sv-ink);
-  color: var(--sv-paper);
-  font-family: var(--sv-display);
-  font-weight: 700;
+  background: rgba(29, 28, 26, 0.04);
+  color: var(--sv-ink);
+  font-weight: 600;
 }
 
 .site-shell :is(.diary-media, .rich-content img, .kami-media) {
-  border: 2px solid var(--sv-ink);
-  border-radius: 0;
-  box-shadow: 4px 4px 0 var(--sv-ink);
+  border: 0;
+  border-radius: 10px;
+  box-shadow: 0 0 0 1px var(--sv-line);
 }
 
 .site-shell .article-copyright-notice {
-  border: 2px solid var(--sv-ink);
-  border-radius: 0;
+  border: 1px solid var(--sv-line);
+  border-radius: 12px;
   background: var(--sv-card);
 }
 
@@ -455,43 +409,43 @@ body:has(.site-shell) {
 
 .site-shell .kami-card {
   position: relative;
-  border: 2px solid var(--sv-ink);
-  border-radius: 0;
+  border: 1px solid var(--sv-line);
+  border-radius: 14px;
   background: var(--sv-card);
-  box-shadow: 4px 4px 0 var(--sv-ink);
-  transition: transform 0.12s ease-out, box-shadow 0.12s ease-out;
+  box-shadow: none;
+  transition: border-color 0.25s, box-shadow 0.25s;
 }
 
 .site-shell .kami-card:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 var(--sv-red);
+  border-color: rgba(29, 28, 26, 0.24);
+  box-shadow: 0 10px 30px rgba(29, 28, 26, 0.06);
 }
 
 .site-shell .kami-card-avatar {
   width: 3rem;
   height: 3rem;
-  border: 2px solid var(--sv-ink);
-  border-radius: 0;
+  border: 1px solid var(--sv-line);
+  border-radius: 50%;
   background: var(--sv-paper);
   color: var(--sv-ink);
   font-family: var(--sv-display);
-  font-weight: 800;
+  font-weight: 500;
 }
 
 .site-shell .kami-card .kami-label {
   margin-bottom: 0.3rem;
-  color: var(--sv-red);
+  color: var(--sv-accent);
 }
 
 .site-shell .kami-card-title {
   font-family: var(--sv-display);
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  font-weight: 500;
+  letter-spacing: -0.01em;
 }
 
 /* ---------- diary ---------- */
 .site-shell .kami-diary {
-  border-top: 2px solid var(--sv-ink);
+  border-top: 1px solid var(--sv-line);
 }
 
 .site-shell .kami-diary:first-child {
@@ -499,83 +453,97 @@ body:has(.site-shell) {
 }
 
 .site-shell .kami-metric {
-  font-family: var(--sv-px);
+  font-family: var(--sv-display);
   font-weight: 400;
-  color: var(--sv-red);
+  color: var(--sv-accent);
 }
 
 .site-shell .kami-diary-caption {
-  font-family: var(--sv-px);
-  letter-spacing: 0.08em;
-  color: var(--kami-olive);
+  letter-spacing: 0.04em;
+  color: var(--kami-stone);
 }
 
 .site-shell .kami-diary-title {
   font-family: var(--sv-display);
-  font-weight: 800;
-  letter-spacing: -0.03em;
+  font-weight: 400;
+  letter-spacing: -0.015em;
 }
 
 .site-shell .kami-back {
-  font-family: var(--sv-px);
-  letter-spacing: 0.08em;
-  color: var(--sv-ink);
+  letter-spacing: 0.04em;
+  color: var(--kami-stone);
+  transition: color 0.2s;
 }
 
 .site-shell .kami-back:hover {
-  color: var(--sv-red);
+  color: var(--sv-ink);
 }
 
 /* ---------- subscribe ---------- */
 .site-shell .subscribe-panel {
-  margin-top: 3.5rem;
-  padding: 1.5rem;
-  border: 2px solid var(--sv-ink);
+  margin-top: 4rem;
+  padding: 2rem;
+  border: 1px solid var(--sv-line);
+  border-radius: 16px;
   background: var(--sv-card);
-  box-shadow: 4px 4px 0 var(--sv-ink);
 }
 
 .site-shell .subscribe-panel-title {
   font-family: var(--sv-display);
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  font-weight: 400;
+  letter-spacing: -0.01em;
 }
 
 .site-shell .subscribe-field {
   background: var(--sv-paper) !important;
-  border: 2px solid var(--sv-ink) !important;
-  border-radius: 0 !important;
+  border: 1px solid var(--sv-line) !important;
+  border-radius: 999px !important;
 }
 
 .site-shell .subscribe-field:focus-within {
   border-color: var(--sv-ink) !important;
-  box-shadow: 3px 3px 0 var(--sv-red) !important;
+  box-shadow: none !important;
 }
 
 .site-shell .subscribe-submit {
-  border: 2px solid var(--sv-ink) !important;
-  border-radius: 0 !important;
-  background: var(--sv-red) !important;
-  color: #fff !important;
-  box-shadow: 3px 3px 0 var(--sv-ink) !important;
-  font-family: var(--sv-display);
-  font-weight: 700 !important;
+  border: 1px solid var(--sv-ink) !important;
+  border-radius: 999px !important;
+  background: var(--sv-ink) !important;
+  color: var(--sv-paper) !important;
+  box-shadow: none !important;
+  font-weight: 500 !important;
   opacity: 1 !important;
 }
 
 .site-shell .subscribe-submit:disabled {
   background: var(--kami-tag-quiet) !important;
+  border-color: transparent !important;
   color: var(--kami-stone) !important;
-  box-shadow: none !important;
 }
 
 /* ---------- mobile ---------- */
 @media (max-width: 639px) {
   .site-shell .kami-page-main {
-    padding-top: 2rem;
+    padding-top: 2.5rem;
   }
 
   .site-shell .rich-content {
     font-size: 1.0625rem;
+  }
+}
+
+/* ---------- article pages: wider reading column ---------- */
+.site-shell:has(.kami-article-header) {
+  --kami-page-width: 64rem;
+  --kami-content-width: 58rem;
+}
+
+.site-shell:has(.kami-article-header) .rich-content {
+  max-width: var(--kami-content-width);
+}
+
+@media (min-width: 1280px) {
+  body:has(.kami-article-header) .article-toc-dock {
+    left: calc(50% + 33rem);
   }
 }

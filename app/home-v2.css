@@ -1,131 +1,135 @@
-/* XuYi home — "title screen / save file" redesign. Loaded after portfolio-home.css. */
+/* XuYi home — quiet editorial. Loaded after portfolio-home.css. */
 
 html:has(.sv-root),
 body:has(.sv-root) {
-  background-color: #ebe5d6;
-  background-image:
-    linear-gradient(rgba(23, 21, 15, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(23, 21, 15, 0.05) 1px, transparent 1px);
-  background-size: 24px 24px;
-  color: #17150f;
+  background-color: #f6f4ef;
+  background-image: none;
+  color: #1d1c1a;
 }
 
 .sv-root {
-  --sv-ink: #17150f;
-  --sv-paper: #ebe5d6;
-  --sv-card: #f7f2e5;
-  --sv-red: #e5432a;
-  --sv-px: "Silkscreen", "JetBrains Mono", ui-monospace, monospace;
+  --sv-ink: #1d1c1a;
+  --sv-paper: #f6f4ef;
+  --sv-card: #fcfbf8;
+  --sv-accent: #4f6558;
+  --sv-line: rgba(29, 28, 26, 0.12);
+  --sv-serif: "Newsreader", "Iowan Old Style", "Songti SC", "Source Han Serif SC", "Noto Serif SC", Georgia, serif;
   --pf-card: var(--sv-card);
   --pf-ink: var(--sv-ink);
-  --pf-ink-soft: #4a463a;
-  --pf-muted: #7b7563;
-  --pf-label: #7b7563;
-  --pf-line: rgba(23, 21, 15, 0.22);
-  --pf-divider: rgba(23, 21, 15, 0.12);
-  --pf-badge: var(--sv-red);
-  --pf-shadow: 4px 4px 0 var(--sv-ink);
-  --pf-shadow-hover: 6px 6px 0 var(--sv-ink);
-  font-family: "Bricolage Grotesque", -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", "Noto Sans CJK SC", sans-serif;
+  --pf-ink-soft: #4a4842;
+  --pf-muted: #8a867c;
+  --pf-label: #8a867c;
+  --pf-line: var(--sv-line);
+  --pf-divider: rgba(29, 28, 26, 0.08);
+  --pf-badge: var(--sv-accent);
+  --pf-shadow: none;
+  --pf-shadow-hover: 0 10px 30px rgba(29, 28, 26, 0.06);
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
 }
 
 .sv-root .pf-page {
-  max-width: 1160px;
-  padding-top: 20px;
+  max-width: 1080px;
+  padding-top: 28px;
+}
+
+.sv-root :focus-visible {
+  outline: 1.5px solid var(--sv-accent);
+  outline-offset: 3px;
 }
 
 /* ---------- language switch ---------- */
 .sv-lang {
   display: inline-flex;
   align-items: center;
-  padding: 1px 7px 0;
-  border: 1.5px solid currentColor;
-  font-family: var(--sv-px, "Silkscreen", monospace);
+  padding: 2px 10px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
   font-size: 11px;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   line-height: 1.6;
   color: inherit;
   text-decoration: none;
+  opacity: 0.7;
+  transition: opacity 0.2s, background-color 0.2s, color 0.2s;
 }
 
 .sv-lang:hover {
-  background: var(--sv-red, #e5432a);
-  border-color: var(--sv-red, #e5432a);
-  color: #fff;
+  opacity: 1;
+  background: var(--sv-ink, #1d1c1a);
+  border-color: var(--sv-ink, #1d1c1a);
+  color: #f6f4ef;
 }
 
 .sv-root .pf-root a.sv-lang,
 .sv-root a.sv-lang {
+  color: var(--sv-ink);
+}
+
+.sv-root a.sv-lang:hover {
   color: var(--sv-paper);
 }
 
 /* ---------- hero ---------- */
 .sv-hero {
-  border: 2px solid var(--sv-ink);
-  background: var(--sv-card);
-  box-shadow: 8px 8px 0 var(--sv-ink);
-  margin-bottom: 44px;
+  margin-bottom: 64px;
+  padding-bottom: 48px;
+  border-bottom: 1px solid var(--sv-line);
 }
 
 .sv-hero-bar {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
-  padding: 8px 18px;
-  background: var(--sv-ink);
-  color: var(--sv-paper);
-  font-family: var(--sv-px);
-  font-size: 11px;
-  letter-spacing: 0.14em;
-}
-
-.sv-hero-bar-end {
-  display: inline-flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
+  margin-bottom: 56px;
+  color: var(--pf-muted);
+  font-size: 12px;
+  letter-spacing: 0.08em;
 }
 
 .sv-hero-body {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 300px;
-  gap: 32px;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 48px;
   align-items: end;
-  padding: 36px 36px 32px;
 }
 
 .sv-avatar {
-  width: 56px;
-  height: 56px;
-  border: 2px solid var(--sv-ink);
-  border-radius: 0;
-  image-rendering: auto;
-  box-shadow: 3px 3px 0 var(--sv-red);
+  width: 52px;
+  height: 52px;
+  border: 0;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px var(--sv-line);
 }
 
 .sv-title {
   display: flex;
-  margin: 18px 0 0 -0.04em;
-  font-size: clamp(96px, 17vw, 208px);
-  font-weight: 800;
-  line-height: 0.82;
-  letter-spacing: -0.06em;
+  margin: 28px 0 0 -0.03em;
+  font-family: var(--sv-serif);
+  font-size: clamp(64px, 10vw, 112px);
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: -0.035em;
   color: var(--sv-ink);
 }
 
 .sv-title span:last-child {
-  color: var(--sv-red);
-  text-shadow: 0.025em 0.025em 0 var(--sv-ink);
+  font-style: italic;
+  color: var(--sv-accent);
 }
 
 .sv-bio {
-  margin: 26px 0 0;
-  font-size: 20px;
-  font-weight: 600;
-  line-height: 1.35;
+  max-width: 34em;
+  margin: 28px 0 0;
+  font-family: var(--sv-serif);
+  font-size: 21px;
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--pf-ink-soft);
 }
 
 .sv-tagline {
-  margin: 6px 0 0;
+  margin: 10px 0 0;
   color: var(--pf-muted);
   font-size: 14px;
 }
@@ -133,50 +137,42 @@ body:has(.sv-root) {
 .sv-hero-side {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
 }
 
 .sv-socials {
-  gap: 0;
-  border: 2px solid var(--sv-ink);
-  width: fit-content;
+  gap: 4px;
+  margin-left: -8px;
 }
 
 .sv-socials a {
-  width: 38px;
-  height: 36px;
-  color: var(--sv-ink);
-  border-right: 2px solid var(--sv-ink);
-}
-
-.sv-socials a:last-child {
-  border-right: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: var(--pf-muted);
+  transition: color 0.2s, background-color 0.2s;
 }
 
 .sv-socials a:hover {
   opacity: 1;
-  background: var(--sv-ink);
-  color: var(--sv-paper);
+  background: rgba(29, 28, 26, 0.06);
+  color: var(--sv-ink);
 }
 
-/* buttons: square, hard shadow */
+/* ---------- buttons ---------- */
 .sv-root .pf-btn {
-  border-radius: 0;
-  height: 40px;
-  font-weight: 700;
-  border: 2px solid var(--sv-ink);
-  box-shadow: 3px 3px 0 var(--sv-ink);
-  transition: transform 0.1s ease-out, box-shadow 0.1s ease-out, background-color 0.1s;
+  height: 38px;
+  border-radius: 999px;
+  font-weight: 500;
+  border: 1px solid var(--sv-ink);
+  box-shadow: none;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
 }
 
-.sv-root .pf-btn:hover {
-  transform: translate(-1px, -1px);
-  box-shadow: 4px 4px 0 var(--sv-ink);
-}
-
+.sv-root .pf-btn:hover,
 .sv-root .pf-btn:active {
-  transform: translate(3px, 3px);
-  box-shadow: 0 0 0 var(--sv-ink);
+  transform: none;
+  box-shadow: none;
 }
 
 .sv-root .pf-btn-dark,
@@ -188,116 +184,128 @@ body:has(.sv-root) {
 
 .sv-root .pf-btn-dark:hover,
 .sv-root a.pf-btn-dark:hover {
-  background: var(--sv-ink);
-  color: var(--sv-paper);
+  background: var(--sv-accent);
+  border-color: var(--sv-accent);
+  color: #fff;
 }
 
 .sv-root .pf-btn-light {
-  background: var(--sv-paper);
+  background: transparent;
   color: var(--sv-ink);
+  border-color: var(--sv-line);
+}
+
+.sv-root .pf-btn-light:hover {
   border-color: var(--sv-ink);
 }
 
 .sv-root .pf-btn-dark.pf-sub-send {
-  background: var(--sv-red);
+  background: var(--sv-ink);
   border-color: var(--sv-ink);
-  color: #fff;
+  color: var(--sv-paper);
 }
 
 .sv-root a.pf-btn-visit,
 .sv-root .pf-btn-visit {
-  background: var(--sv-red);
-  border: 2px solid var(--sv-ink);
-  color: #fff;
-  font-size: 14px;
-  font-weight: 700;
-  box-shadow: 3px 3px 0 var(--sv-ink);
+  background: transparent;
+  border: 1px solid var(--sv-ink);
+  color: var(--sv-ink);
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: none;
 }
 
 .sv-root a.pf-btn-visit:hover {
-  background: var(--sv-red);
+  background: var(--sv-ink);
   border-color: var(--sv-ink);
-  color: #fff;
+  color: var(--sv-paper);
 }
 
 .sv-root .pf-sub-form input {
-  border-radius: 0;
-  border: 2px solid var(--sv-ink);
-  background: var(--sv-paper);
-  height: 40px;
+  border-radius: 999px;
+  border: 1px solid var(--sv-line);
+  background: var(--sv-card);
+  height: 38px;
 }
 
 .sv-root .pf-sub-form input:focus,
 .sv-root .pf-sub-form input:focus-visible {
-  border-radius: 0;
+  border-radius: 999px;
   border-color: var(--sv-ink);
   background: #fff;
+  outline: none;
 }
 
 /* ---------- layout ---------- */
 .sv-grid {
-  grid-template-columns: minmax(0, 1fr) 300px;
-  gap: 36px;
+  grid-template-columns: minmax(0, 1fr) 272px;
+  gap: 56px;
 }
 
 .sv-hud {
-  top: 24px;
+  top: 28px;
   gap: 0;
 }
 
 .sv-hud > section,
 .sv-hud > .pf-stats {
-  margin: 0 0 20px;
-  padding: 16px;
-  border: 2px solid var(--sv-ink);
-  background: var(--sv-card);
+  margin: 0 0 32px;
+  padding: 0 0 28px;
+  border: 0;
+  border-bottom: 1px solid var(--sv-line);
+  background: transparent;
   border-radius: 0;
-  box-shadow: 4px 4px 0 var(--sv-ink);
+  box-shadow: none;
+}
+
+.sv-hud > :last-child {
+  border-bottom: 0;
 }
 
 .sv-root .pf-label {
-  font-family: var(--sv-px);
   font-size: 11px;
-  font-weight: 400;
-  letter-spacing: 0.12em;
-  color: var(--sv-ink);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--pf-label);
 }
 
-/* menu */
+/* tabs */
 .sv-menu-row {
-  margin-bottom: 24px;
+  margin-bottom: 36px;
 }
 
 .sv-menu {
   display: flex;
-  gap: 28px;
+  gap: 32px;
 }
 
 .sv-menu button {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 0;
+  position: relative;
+  padding: 0 0 8px;
   border: 0;
   background: none;
-  color: rgba(23, 21, 15, 0.38);
-  font-family: inherit;
-  font-size: 34px;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  line-height: 1;
+  color: var(--pf-muted);
+  font-family: var(--sv-serif);
+  font-size: 28px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
   cursor: pointer;
-  transition: color 0.12s;
+  transition: color 0.2s;
 }
 
-.sv-menu button i {
-  font-family: var(--sv-px);
-  font-size: 18px;
-  font-style: normal;
-  color: var(--sv-red);
-  opacity: 0;
-  transform: translateX(-6px);
-  transition: opacity 0.12s, transform 0.12s;
+.sv-menu button::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--sv-ink);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease;
 }
 
 .sv-menu button:hover {
@@ -308,63 +316,47 @@ body:has(.sv-root) {
   color: var(--sv-ink);
 }
 
-.sv-menu button[aria-selected="true"] i {
-  opacity: 1;
-  transform: none;
-  animation: sv-blink 1.1s steps(2, jump-none) infinite;
+.sv-menu button[aria-selected="true"]::after {
+  transform: scaleX(1);
 }
 
-@keyframes sv-blink {
-  50% {
-    opacity: 0.15;
-  }
-}
-
-/* ---------- cartridges ---------- */
+/* ---------- product cards ---------- */
 .sv-cart {
   position: relative;
-  border: 2px solid var(--sv-ink);
-  border-radius: 0;
+  border: 1px solid var(--sv-line);
+  border-radius: 14px;
   background: var(--sv-card);
-  box-shadow: 4px 4px 0 var(--sv-ink);
+  box-shadow: none;
   clip-path: none;
-}
-
-.sv-cart::before {
-  content: "No." attr(data-no);
-  position: absolute;
-  top: -2px;
-  right: 18px;
-  padding: 3px 8px 2px;
-  background: var(--sv-ink);
-  color: var(--sv-paper);
-  font-family: var(--sv-px);
-  font-size: 10px;
-  letter-spacing: 0.12em;
+  transition: border-color 0.25s, box-shadow 0.25s;
 }
 
 .sv-root .pf-big:hover,
 .sv-root .pf-thin:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 var(--sv-ink);
+  transform: none;
+  border-color: rgba(29, 28, 26, 0.22);
+  box-shadow: var(--pf-shadow-hover);
 }
 
 .sv-root .pf-tile {
-  border-radius: 0;
-  border: 2px solid var(--sv-ink);
+  border-radius: 12px;
+  border: 1px solid var(--sv-line);
 }
 
 .sv-root .pf-name-line h3 {
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  font-family: var(--sv-serif);
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
 }
 
 .sv-root .pf-badge {
-  border-radius: 0;
-  color: #fff;
-  font-family: var(--sv-px);
-  font-weight: 400;
-  letter-spacing: 0.1em;
+  border-radius: 999px;
+  background: transparent;
+  border: 1px solid currentColor;
+  color: var(--sv-accent);
+  font-weight: 500;
+  letter-spacing: 0.04em;
 }
 
 .sv-root .pf-shots {
@@ -387,59 +379,53 @@ body:has(.sv-root) {
   width: 100%;
   height: auto;
   aspect-ratio: 1;
-  border-radius: 0;
-  border: 2px solid var(--sv-ink);
+  border-radius: 8px;
+  border: 1px solid var(--sv-line);
 }
 
-/* ---------- patch-notes writing list ---------- */
+/* ---------- writing list ---------- */
 .sv-root .pf-post-list {
-  border-top: 2px solid var(--sv-ink);
+  border-top: 1px solid var(--sv-line);
 }
 
 .sv-patch {
-  align-items: center;
+  align-items: baseline;
   gap: 16px;
-  padding: 16px 4px;
-  border-bottom: 1px solid var(--pf-line);
-  transition: background-color 0.1s, padding-left 0.12s;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--sv-line);
+  transition: padding-left 0.25s ease;
 }
 
 .sv-patch:hover {
-  background: var(--sv-card);
-  padding-left: 12px;
-}
-
-.sv-ver {
-  flex: none;
-  min-width: 64px;
-  padding: 3px 6px 2px;
-  border: 1.5px solid var(--sv-ink);
-  font-family: var(--sv-px);
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-align: center;
-}
-
-.sv-patch:first-child .sv-ver {
-  background: var(--sv-red);
-  border-color: var(--sv-red);
-  color: #fff;
+  background: transparent;
+  padding-left: 8px;
 }
 
 .sv-root .pf-post h3 {
-  font-family: var(--font-serif, Georgia, serif);
-  font-size: 1.125rem;
+  font-family: var(--sv-serif);
+  font-size: 1.1875rem;
+  font-weight: 400;
+  line-height: 1.4;
   color: var(--sv-ink);
 }
 
+.sv-patch:hover h3 {
+  color: var(--sv-accent);
+}
+
 .sv-root .pf-post-leader {
-  border-top-color: rgba(23, 21, 15, 0.3);
+  border-top: 0;
 }
 
 .sv-root .pf-post time {
-  font-family: var(--sv-px);
-  font-size: 11px;
-  letter-spacing: 0.06em;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--pf-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.sv-root .pf-pager a {
+  border-radius: 999px;
 }
 
 .sv-root .pf-pager a[aria-current="page"] {
@@ -447,29 +433,30 @@ body:has(.sv-root) {
   color: var(--sv-paper);
 }
 
-/* ---------- save-file progress (100 products) ---------- */
+/* ---------- plan progress ---------- */
 .sv-root .pf-plan-count {
-  font-family: var(--sv-px);
+  font-family: var(--sv-serif);
   font-size: 44px;
-  letter-spacing: 0;
-  color: var(--sv-red);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: var(--sv-ink);
 }
 
 .sv-root .pf-plan-grid {
-  gap: 3px;
+  gap: 4px;
 }
 
 .sv-root .pf-plan-grid i {
-  border-radius: 0;
-  background: rgba(23, 21, 15, 0.12);
+  border-radius: 50%;
+  background: rgba(29, 28, 26, 0.08);
 }
 
 .sv-root .pf-plan-grid i.is-done {
-  background: var(--sv-ink);
+  background: var(--sv-accent);
 }
 
 .sv-root .pf-plan-grid i.is-next {
-  box-shadow: inset 0 0 0 1.5px var(--sv-red);
+  box-shadow: inset 0 0 0 1px var(--sv-accent);
   background: transparent;
 }
 
@@ -481,14 +468,19 @@ body:has(.sv-root) {
 /* search */
 .sv-root .pf-search-btn,
 .sv-root .pf-search-panel {
-  border-radius: 0;
-  border: 2px solid var(--sv-ink);
+  border-radius: 999px;
+  border: 1px solid var(--sv-line);
+}
+
+.sv-root .pf-search-panel {
+  border-radius: 14px;
 }
 
 .sv-root .pf-foot {
-  border-top: 2px solid var(--sv-ink);
-  margin-top: 56px;
+  border-top: 1px solid var(--sv-line);
+  margin-top: 72px;
   padding-top: 28px;
+  color: var(--pf-muted);
 }
 
 /* ---------- responsive ---------- */
@@ -496,6 +488,10 @@ body:has(.sv-root) {
   .sv-hero-body,
   .sv-grid {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sv-hero-body {
+    gap: 32px;
   }
 
   .sv-hud {
@@ -514,8 +510,17 @@ body:has(.sv-root) {
     overflow-x: clip;
   }
 
-  .sv-hero-bar span:last-child {
-    display: none;
+  .sv-hero {
+    margin-bottom: 44px;
+    padding-bottom: 36px;
+  }
+
+  .sv-hero-bar {
+    margin-bottom: 36px;
+  }
+
+  .sv-bio {
+    font-size: 18px;
   }
 
   .sv-root .pf-big-top {
@@ -536,34 +541,11 @@ body:has(.sv-root) {
     width: 220px;
   }
 
-  .sv-hero {
-    box-shadow: 5px 5px 0 var(--sv-ink);
-  }
-
-  .sv-hero-body {
-    padding: 24px 18px 22px;
-  }
-
-  .sv-hero-bar > span:nth-child(2),
-  .sv-hero-bar-end > span {
-    display: none;
+  .sv-menu {
+    gap: 24px;
   }
 
   .sv-menu button {
-    font-size: 28px;
-  }
-
-  .sv-ver {
-    display: none;
-  }
-
-  .sv-cart::before {
-    right: 10px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .sv-menu button[aria-selected="true"] i {
-    animation: none;
+    font-size: 24px;
   }
 }
