@@ -129,11 +129,7 @@
     }
   },
   "overrides": {
-    "miniflare": {
-      "undici": "^7.30.1"
-    },
-    "@node-minify/core": {
-      "glob": "^10.5.0"
-    }
+    "undici@7.29.1": "7.30.1",
+    "glob@10.3.3": "10.5.0"
   }
 }
