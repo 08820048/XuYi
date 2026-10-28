@@ -145,7 +145,7 @@
 
 .island-wordmark {
   font-family: var(--sv-display, "Newsreader", Georgia, serif);
-  font-size: 24px;
+  font-size: 21px;
   letter-spacing: -0.02em;
   white-space: nowrap;
 }
@@ -482,10 +482,10 @@
   min-width: 0;
   overflow: hidden;
   font-family: var(--sv-display, "Newsreader", Georgia, serif);
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 400;
   letter-spacing: -0.01em;
-  line-height: 1.3;
+  line-height: 1.35;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -533,7 +533,7 @@
   margin: 0 0 4px;
   color: var(--isl-card-fg);
   font-family: var(--sv-display, "Newsreader", Georgia, serif);
-  font-size: 18px;
+  font-size: 16px;
 }
 
 @media (prefers-reduced-motion: reduce) {

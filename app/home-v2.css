@@ -39,7 +39,7 @@ body:has(.sv-root) {
 .sv-page {
   max-width: 1320px;
   margin: 0 auto;
-  padding: 130px 40px 40px;
+  padding: 104px 40px 40px;
 }
 
 /* language pill (also used inside the island) */
@@ -70,15 +70,15 @@ body:has(.sv-root) {
   align-items: flex-end;
   gap: 40px;
   flex-wrap: wrap;
-  padding: 10px 0 54px;
+  padding: 6px 0 36px;
 }
 
 .sv-intro h1 {
   max-width: 24em;
   font-family: var(--sv-serif);
-  font-size: clamp(20px, 2.2vw, 28px);
+  font-size: clamp(16px, 1.5vw, 19px);
   font-weight: 400;
-  line-height: 1.4;
+  line-height: 1.55;
   letter-spacing: -0.01em;
 }
 
@@ -212,11 +212,11 @@ body:has(.sv-root) {
 
 .sv-row-head {
   display: grid;
-  grid-template-columns: 78px minmax(0, 1fr) minmax(120px, 300px) 28px;
+  grid-template-columns: 52px minmax(0, 1fr) minmax(120px, 340px) 28px;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
   width: 100%;
-  padding: clamp(10px, 1.6vw, 20px) 0;
+  padding: 14px 0;
   border: 0;
   background: none;
   color: inherit;
@@ -226,27 +226,27 @@ body:has(.sv-root) {
 }
 
 .sv-n {
-  align-self: start;
-  padding-top: 0.9em;
+  align-self: center;
+  padding-top: 0;
   font-family: var(--sv-serif);
-  font-size: 18px;
+  font-size: 13px;
   font-style: italic;
   color: var(--pf-muted);
 }
 
 .sv-row-head h3 {
   font-family: var(--sv-serif);
-  font-size: clamp(48px, 8.6vw, 132px);
+  font-size: clamp(26px, 3vw, 40px);
   font-weight: 400;
-  line-height: 0.98;
-  letter-spacing: -0.045em;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
   transition: transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .sv-row-head:hover h3,
 .sv-row-head:focus-visible h3,
 .sv-row.is-open h3 {
-  transform: translateX(18px);
+  transform: translateX(8px);
 }
 
 .sv-badge {
@@ -265,16 +265,16 @@ body:has(.sv-root) {
 }
 
 .sv-meta {
-  font-size: 13.5px;
-  line-height: 1.55;
-  opacity: 0;
-  transform: translateX(-8px);
+  font-size: 13px;
+  line-height: 1.5;
+  opacity: 0.55;
+  transform: none;
   transition: opacity 0.4s, transform 0.4s;
 }
 
 .sv-row-head:hover .sv-meta,
 .sv-row-head:focus-visible .sv-meta {
-  opacity: 0.85;
+  opacity: 0.9;
   transform: none;
 }
 
@@ -324,7 +324,7 @@ body:has(.sv-root) {
 .sv-row-inner {
   min-height: 0;
   overflow: hidden;
-  padding-left: 98px;
+  padding-left: 68px;
 }
 
 .sv-row-top {
@@ -338,14 +338,14 @@ body:has(.sv-root) {
   flex: 1;
   max-width: 34em;
   font-family: var(--sv-serif);
-  font-size: 20px;
-  line-height: 1.5;
+  font-size: 16px;
+  line-height: 1.55;
 }
 
 .sv-root .pf-tile {
-  width: 56px;
-  height: 56px;
-  border-radius: 14px;
+  width: 44px;
+  height: 44px;
+  border-radius: 11px;
   border: 1px solid var(--sv-line);
 }
 
@@ -381,8 +381,8 @@ body:has(.sv-root) {
   left: 0;
   top: 0;
   z-index: 30;
-  width: 132px;
-  height: 132px;
+  width: 84px;
+  height: 84px;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.25s;
@@ -395,14 +395,14 @@ body:has(.sv-root) {
 .sv-follow img {
   width: 100%;
   height: 100%;
-  border-radius: 28px;
-  box-shadow: 0 30px 70px rgb(0 0 0 / 0.28);
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgb(0 0 0 / 0.24);
 }
 
 /* ---------- writing ---------- */
 .sv-teaser,
 .sv-writing {
-  padding-top: 110px;
+  padding-top: 72px;
 }
 
 .sv-writing {
@@ -418,7 +418,7 @@ body:has(.sv-root) {
 
 .sv-sec-head h2 {
   font-family: var(--sv-serif);
-  font-size: clamp(22px, 2.4vw, 30px);
+  font-size: 18px;
   font-weight: 400;
   letter-spacing: -0.01em;
 }
@@ -443,7 +443,7 @@ body:has(.sv-root) {
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 24px;
   align-items: baseline;
-  padding: 24px 0;
+  padding: 16px 0;
   border-bottom: 1px solid var(--sv-line);
   overflow: hidden;
   isolation: isolate;
@@ -481,15 +481,15 @@ body:has(.sv-root) {
 }
 
 .sv-post:hover .sv-post-title {
-  padding-left: 20px;
+  padding-left: 12px;
 }
 
 .sv-post h3 {
   font-family: var(--sv-serif);
-  font-size: clamp(24px, 3.4vw, 46px);
+  font-size: clamp(17px, 1.5vw, 20px);
   font-weight: 400;
-  line-height: 1.18;
-  letter-spacing: -0.03em;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
 }
 
 .sv-post time {
@@ -500,7 +500,7 @@ body:has(.sv-root) {
 }
 
 .sv-post:hover time {
-  padding-right: 20px;
+  padding-right: 12px;
 }
 
 .sv-root .pf-pager {
@@ -534,8 +534,8 @@ body:has(.sv-root) {
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 64px;
   align-items: start;
-  margin-top: 110px;
-  padding-top: 40px;
+  margin-top: 72px;
+  padding-top: 32px;
   border-top: 1px solid var(--sv-line);
 }
 
@@ -549,7 +549,7 @@ body:has(.sv-root) {
 
 .sv-root .pf-plan-count {
   font-family: var(--sv-serif);
-  font-size: 56px;
+  font-size: 34px;
   font-weight: 400;
   letter-spacing: -0.02em;
   color: var(--sv-ink);
@@ -583,16 +583,16 @@ body:has(.sv-root) {
 
 /* ---------- footer ---------- */
 .sv-foot {
-  margin-top: 90px;
-  padding-top: 20px;
+  margin-top: 64px;
+  padding-top: 12px;
   color: var(--pf-muted);
 }
 
 .sv-foot-big {
   font-family: var(--sv-serif);
-  font-size: clamp(70px, 15vw, 220px);
-  line-height: 0.85;
-  letter-spacing: -0.06em;
+  font-size: clamp(40px, 5vw, 64px);
+  line-height: 1;
+  letter-spacing: -0.04em;
   color: var(--sv-ink);
 }
 
@@ -606,8 +606,8 @@ body:has(.sv-root) {
   align-items: flex-end;
   gap: 24px;
   flex-wrap: wrap;
-  margin-top: 40px;
-  padding-top: 24px;
+  margin-top: 24px;
+  padding-top: 20px;
   border-top: 1px solid var(--sv-line);
   font-size: 13px;
 }
@@ -649,7 +649,7 @@ body:has(.sv-root) {
   }
 
   .sv-row-head h3 {
-    font-size: clamp(40px, 13vw, 84px);
+    font-size: clamp(24px, 7vw, 30px);
   }
 
   .sv-meta {

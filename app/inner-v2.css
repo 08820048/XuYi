@@ -76,7 +76,7 @@ body:has(.site-shell) {
 /* ---------- page skeleton ---------- */
 .site-shell .kami-page-main {
   background: transparent;
-  padding-top: 7.5rem;
+  padding-top: 6.5rem;
 }
 
 .site-shell .kami-label {
@@ -91,10 +91,10 @@ body:has(.site-shell) {
 
 .site-shell .kami-display {
   font-family: var(--sv-display);
-  font-size: clamp(3rem, 9vw, 5.5rem);
+  font-size: clamp(1.75rem, 3.6vw, 2.5rem);
   font-weight: 400;
-  line-height: 1;
-  letter-spacing: -0.03em;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
 }
 
 .site-shell .kami-lead {
@@ -216,8 +216,8 @@ body:has(.site-shell) {
 /* ---------- article ---------- */
 .site-shell .kami-article-header {
   max-width: none;
-  margin-bottom: 3.5rem;
-  padding: 0 0 2rem;
+  margin-bottom: 2.5rem;
+  padding: 0 0 1.5rem;
   border-bottom: 1px solid var(--sv-line);
 }
 
@@ -226,10 +226,10 @@ body:has(.site-shell) {
 [data-font="kaiti"] .site-shell .kami-article-title {
   margin-top: 1.25rem;
   font-family: var(--sv-display);
-  font-size: clamp(2rem, 5vw, 3.25rem);
+  font-size: clamp(1.5rem, 2.8vw, 2.125rem);
   font-weight: 400;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
   color: var(--sv-ink);
 }
 
@@ -256,14 +256,14 @@ body:has(.site-shell) {
 
 .site-shell .rich-content {
   max-width: 44rem;
-  font-size: 1.125rem;
-  line-height: 1.85;
+  font-size: 1.0625rem;
+  line-height: 1.8;
 }
 
 .site-shell :is(.novel-prose, .rich-content) h2,
 [data-font="kaiti"] .site-shell :is(.rich-content) h2 {
   font-family: var(--sv-display);
-  font-size: 1.625rem;
+  font-size: 1.375rem;
   font-weight: 500;
   letter-spacing: -0.01em;
 }
@@ -466,7 +466,7 @@ body:has(.site-shell) {
   }
 
   .site-shell .rich-content {
-    font-size: 1.0625rem;
+    font-size: 1rem;
   }
 }
 
@@ -499,7 +499,7 @@ body:has(.site-shell) {
 }
 
 .site-shell:lang(en) .rich-content {
-  font-size: 1.1875rem;
+  font-size: 1.0625rem;
   line-height: 1.7;
   font-optical-sizing: auto;
   hyphens: manual;
@@ -515,7 +515,7 @@ body:has(.site-shell) {
 
 @media (max-width: 639px) {
   .site-shell:lang(en) .rich-content {
-    font-size: 1.125rem;
+    font-size: 1rem;
   }
 }
 
