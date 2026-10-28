@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import '@/app/inner-v2.css'
-import { SiteHeader } from './SiteHeader'
+import { SiteIsland } from './SiteIsland'
 import { SiteFooter } from './SiteFooter'
 import { ShellRoot } from './ShellRoot'
 import type { Theme } from '@/lib/appearance'
@@ -24,7 +24,7 @@ export function SiteShell({
 }: SiteShellProps) {
   return (
     <ShellRoot>
-      <SiteHeader navLinks={navLinks} />
+      <SiteIsland navLinks={navLinks} />
       <div className="site-shell-body">
         <main id={mainId} className={mainClassName} aria-label={mainAriaLabel}>
           {children}

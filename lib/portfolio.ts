@@ -28,6 +28,9 @@ export type Product = {
   size: "big" | "thin";
   cta: string;
   badge?: "OPEN";
+  /** 悬停该产品时整页的背景色（浅色模式）与文字色；深色模式会自动压暗。 */
+  tint: string;
+  tintInk: string;
   apple?: boolean;
   /**
    * 产品展示图（点击可放大），图片或视频混合排列，视频会静音自动循环播放。
@@ -43,6 +46,8 @@ export type Product = {
 export const freeProject: Product[] = [
   {
     id: "ornata",
+    tint: "#f0d7b6",
+    tintInk: "#3a2a18",
     name: "Ornata",
     logo: file("logo-ornata.png"),
     desc: "一款新概念、轻量化的笔记,尽享丝滑。",
@@ -55,6 +60,8 @@ export const freeProject: Product[] = [
   },
   {
     id: "folio",
+    tint: "#c9e2d4",
+    tintInk: "#1d3328",
     name: "Folio",
     logo: file("logo-folio.png"),
     desc: "为读代码而做的 Mac 编辑器。",
@@ -66,6 +73,8 @@ export const freeProject: Product[] = [
   },
   {
     id: "toolpop",
+    tint: "#e4e2dc",
+    tintInk: "#25231f",
     name: "ToolPop",
     logo: file("logo-pop.png"),
     desc: "功能齐全的在线工具站,无登录,直接用。",
@@ -76,6 +85,8 @@ export const freeProject: Product[] = [
   },
   {
     id: "berth",
+    tint: "#d8d1f0",
+    tintInk: "#2a2347",
     name: "Berth",
     logo: file("logo-berth.png"),
     desc: "菜单栏看端口，一键释放。",
@@ -87,6 +98,8 @@ export const freeProject: Product[] = [
   },
   {
     id: "citu",
+    tint: "#dcd2f7",
+    tintInk: "#2c2150",
     name: "词图",
     logo: file("logo-citu.svg"),
     desc: "社区驱动的 AI 生图提示词精选，收录 X 平台优质提示词，永久免费。",
@@ -100,6 +113,8 @@ export const freeProject: Product[] = [
 export const projects: Product[] = [
   {
     id: "runnock",
+    tint: "#f4cdc3",
+    tintInk: "#4a1f17",
     name: "Runnock",
     logo: file("logo-runnock.png"),
     desc: "把 Mac 刘海变成编码智能体的状态岛。",
@@ -112,6 +127,8 @@ export const projects: Product[] = [
   },
   {
     id: "hoolo",
+    tint: "#cfd9eb",
+    tintInk: "#1c2a47",
     name: "Hoolo",
     logo: file("logo-hoolo.png"),
     desc: "妈妈再也不用担心我的Mac像狗窝,杂乱无章了。",
@@ -124,6 +141,8 @@ export const projects: Product[] = [
   },
   {
     id: "chupin",
+    tint: "#f3e6b4",
+    tintInk: "#3d3312",
     name: "Chupin",
     logo: file("logo-chupin.png"),
     desc: "一页纸在线简历。支持PDF导出、邮件发送。",
@@ -135,6 +154,8 @@ export const projects: Product[] = [
   },
   {
     id: "welight",
+    tint: "#d5ecc9",
+    tintInk: "#1f3a17",
     name: "Welight",
     logo: file("logo-welight.png"),
     desc: "公众号创作排版神器,好看的排版,从来简约。",
@@ -146,6 +167,8 @@ export const projects: Product[] = [
   },
   {
     id: "clibo",
+    tint: "#cdeadc",
+    tintInk: "#17382a",
     name: "Clibo",
     logo: file("logo-clibo.png"),
     desc: "复制过的东西,也可以有迹可循。",
@@ -158,6 +181,8 @@ export const projects: Product[] = [
   },
   {
     id: "xingchao",
+    tint: "#cde0f5",
+    tintInk: "#16304f",
     name: "星潮",
     logo: file("logo-xing.png"),
     desc: "自托管的 QQ 群助手,能量超乎你想象。",
@@ -169,6 +194,8 @@ export const projects: Product[] = [
   },
   {
     id: "jevsift",
+    tint: "#e9e2c8",
+    tintInk: "#38321a",
     name: "JevSift",
     logo: file("logo-jevsift.svg"),
     desc: "投研 Agent 的出处核验 API，对照源文判断声明能不能发。支持 HTTP 与 MCP。",

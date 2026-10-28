@@ -3,14 +3,14 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { LanguageSwitch } from '@/components/LanguageSwitch'
 import { LangSync } from '@/components/LangSync'
-import { formatLocaleDate, localePath, t as translate, type Locale } from '@/lib/i18n'
+import { SiteIsland } from '@/components/SiteIsland'
+import { localePath, t as translate, type Locale } from '@/lib/i18n'
 import { useLocale } from '@/lib/i18n-client'
 import type { PostWithTags } from '@/lib/db'
+import type { SiteNavLink } from '@/lib/site'
 import { isSponsorActive } from '@/lib/sponsor'
-import { collections, freeProject, productPlan, profile, projects, type Product } from '@/lib/portfolio'
+import { freeProject, productPlan, profile, projects, type Product } from '@/lib/portfolio'
 import { AppleIcon, GitHubIcon, MailIcon, RssIcon, SearchIcon, ThreadsIcon, WhatsAppIcon, XIcon } from './icons'
 import { LightboxProvider, ZoomImage, ZoomVideo } from './Lightbox'
 import { TrafficStats } from './TrafficStats'
@@ -33,36 +33,6 @@ function VisitButton({ product }: { product: Product }) {
       {ctaLabel(product, locale)}
       <span className="pf-sr"> {product.name}</span>
     </a>
-  )
-}
-
-function BigCard({ product, no }: { product: Product; no: string }) {
-  const locale = useLocale()
-  return (
-    <article className="pf-card pf-big sv-cart" data-no={no}>
-      <div className="pf-big-top">
-        <img className="pf-tile" src={product.logo} alt="" />
-        <div className="pf-names">
-          <div className="pf-name-line">
-            <h3>{product.name}</h3>
-            {product.badge && <span className="pf-badge">{product.badge}</span>}
-          </div>
-          <p className="pf-big-desc">{locale === 'en' ? product.descEn : product.desc}</p>
-        </div>
-        <VisitButton product={product} />
-      </div>
-      <div className="pf-shots">
-        {product.shots?.map((shot, i) => (
-          <div className="pf-shot-frame" key={shot}>
-            {/\.(mp4|webm|mov)$/i.test(shot) ? (
-              <ZoomVideo src={shot} alt={`${product.name} demo ${i + 1}`} width={530} height={336} />
-            ) : (
-              <ZoomImage src={shot} alt={`${product.name} screenshot ${i + 1}`} width={530} height={336} />
-            )}
-          </div>
-        ))}
-      </div>
-    </article>
   )
 }
 
@@ -95,39 +65,6 @@ function ProductPlan() {
         ))}
       </div>
       <p className="pf-plan-note">{translate(locale, 'planNote')}</p>
-    </section>
-  )
-}
-
-function ThinCard({ product, no }: { product: Product; no: string }) {
-  const locale = useLocale()
-  return (
-    <article className="pf-card pf-thin sv-cart" data-no={no}>
-      <img className="pf-tile" src={product.logo} alt="" />
-      <div className="pf-names">
-        <div className="pf-name-line">
-          <h3>{product.name}</h3>
-          {product.badge && <span className="pf-badge">{product.badge}</span>}
-        </div>
-        <p className="pf-thin-desc">{locale === 'en' ? product.descEn : product.desc}</p>
-      </div>
-      <VisitButton product={product} />
-    </article>
-  )
-}
-
-function ProductSection({ label, products, start = 1 }: { label: string; products: Product[]; start?: number }) {
-  return (
-    <section aria-label={label}>
-      <h2 className="pf-label">{label}</h2>
-      {products.map((product, i) => {
-        const no = String(start + i).padStart(3, '0')
-        return product.size === 'big' ? (
-          <BigCard key={product.id} product={product} no={no} />
-        ) : (
-          <ThinCard key={product.id} product={product} no={no} />
-        )
-      })}
     </section>
   )
 }
@@ -377,6 +314,173 @@ function InlineSubscribe() {
   )
 }
 
+/** 悬停 / 展开某个产品时，整页换成它的颜色（颜色值写在 lib/portfolio.ts 里，深色模式由 CSS 自动压暗）。 */
+function useProductTint(product: Product | null) {
+  useEffect(() => {
+    const root = document.documentElement
+    if (!product) {
+      root.style.removeProperty('--hb')
+      root.style.removeProperty('--hb-dark')
+      root.style.removeProperty('--hi')
+      return
+    }
+    root.style.setProperty('--hb', product.tint)
+    root.style.setProperty('--hb-dark', `color-mix(in srgb, ${product.tint} 20%, #151412)`)
+    root.style.setProperty('--hi', product.tintInk)
+    return () => {
+      root.style.removeProperty('--hb')
+      root.style.removeProperty('--hb-dark')
+      root.style.removeProperty('--hi')
+    }
+  }, [product])
+}
+
+/** 悬停时跟着鼠标走的产品图标（仅在有鼠标的设备上启用）。 */
+function useFollowIcon(active: Product | null) {
+  const ref = useRef<HTMLDivElement>(null)
+  const imgRef = useRef<HTMLImageElement>(null)
+  const pointer = useRef({ x: -300, y: -300, cx: -300, cy: -300, enabled: false })
+
+  useEffect(() => {
+    const state = pointer.current
+    state.enabled = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+    if (!state.enabled) return
+    const onMove = (event: MouseEvent) => {
+      state.x = event.clientX
+      state.y = event.clientY
+    }
+    window.addEventListener('mousemove', onMove, { passive: true })
+    let frame = 0
+    const tick = () => {
+      state.cx += (state.x - state.cx) * 0.16
+      state.cy += (state.y - state.cy) * 0.16
+      const tilt = Math.max(-14, Math.min(14, (state.x - state.cx) * 0.12))
+      if (ref.current) ref.current.style.transform = `translate3d(${state.cx - 26}px, ${state.cy - 96}px, 0) rotate(${tilt}deg)`
+      frame = requestAnimationFrame(tick)
+    }
+    frame = requestAnimationFrame(tick)
+    return () => {
+      window.removeEventListener('mousemove', onMove)
+      cancelAnimationFrame(frame)
+    }
+  }, [])
+
+  useEffect(() => {
+    const node = ref.current
+    if (!node || !pointer.current.enabled) return
+    if (active && imgRef.current) imgRef.current.src = active.logo
+    node.classList.toggle('is-show', Boolean(active))
+  }, [active])
+
+  return (
+    <div ref={ref} className="sv-follow" aria-hidden="true">
+      <img ref={imgRef} alt="" width={132} height={132} />
+    </div>
+  )
+}
+
+function ProductList() {
+  const locale = useLocale()
+  const t = (key: Parameters<typeof translate>[1]) => translate(locale, key)
+  const groups = [
+    { label: 'FREE PROJECT', items: freeProject, start: 1 },
+    { label: 'PROJECTS', items: projects, start: freeProject.length + 1 },
+  ]
+  const all = [...freeProject, ...projects]
+  const [hoverId, setHoverId] = useState<string | null>(null)
+  const [openId, setOpenId] = useState<string | null>(null)
+  const [seen, setSeen] = useState<Set<string>>(new Set())
+  const hovered = all.find((p) => p.id === hoverId) ?? null
+  const opened = all.find((p) => p.id === openId) ?? null
+
+  useProductTint(hovered ?? opened)
+  const follow = useFollowIcon(hovered)
+
+  function toggle(id: string) {
+    setOpenId((current) => (current === id ? null : id))
+    setSeen((current) => new Set(current).add(id))
+  }
+
+  return (
+    <div className="sv-list" onMouseLeave={() => setHoverId(null)}>
+      {groups.map((group) => (
+        <section key={group.label} aria-label={group.label}>
+          <h2 className="pf-label sv-group">{group.label}</h2>
+          {group.items.map((product, i) => {
+            const isOpen = openId === product.id
+            const no = String(group.start + i).padStart(2, '0')
+            const desc = locale === 'en' ? product.descEn : product.desc
+            return (
+              <article key={product.id} className={`sv-row${isOpen ? ' is-open' : ''}${hoverId === product.id ? ' is-hover' : ''}`}>
+                <button
+                  type="button"
+                  className="sv-row-head"
+                  aria-expanded={isOpen}
+                  aria-controls={`prod-${product.id}`}
+                  onClick={() => toggle(product.id)}
+                  onMouseEnter={() => setHoverId(product.id)}
+                  onFocus={() => setHoverId(product.id)}
+                  onBlur={() => setHoverId(null)}
+                >
+                  <span className="sv-n">{no}</span>
+                  <h3>
+                    {product.name}
+                    {product.badge && <span className="sv-badge">{product.badge}</span>}
+                  </h3>
+                  <span className="sv-meta">{desc}</span>
+                  <span className="sv-chevron" aria-hidden="true" />
+                </button>
+                <div id={`prod-${product.id}`} className="sv-row-body" inert={!isOpen ? true : undefined}>
+                  <div className="sv-row-inner">
+                    <div className="sv-row-top">
+                      <img className="pf-tile" src={product.logo} alt="" />
+                      <p className="sv-desc">{desc}</p>
+                      <VisitButton product={product} />
+                    </div>
+                    {seen.has(product.id) && product.shots && product.shots.length > 0 && (
+                      <div className="pf-shots">
+                        {product.shots.map((shot, k) => (
+                          <div className="pf-shot-frame" key={shot}>
+                            {/\.(mp4|webm|mov)$/i.test(shot) ? (
+                              <ZoomVideo src={shot} alt={`${product.name} demo ${k + 1}`} width={530} height={336} />
+                            ) : (
+                              <ZoomImage src={shot} alt={`${product.name} screenshot ${k + 1}`} width={530} height={336} loading="lazy" />
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </article>
+            )
+          })}
+        </section>
+      ))}
+      {follow}
+      <span className="pf-sr">{t('tabWork')}</span>
+    </div>
+  )
+}
+
+function PostRows({ posts }: { posts: PostWithTags[] }) {
+  const locale = useLocale()
+  return (
+    <div className="sv-posts">
+      {posts.map((post) => (
+        <Link key={post.slug} href={localePath(`/${post.slug}`, locale)} className="sv-post">
+          <span className="sv-post-title">
+            <h3>{post.title}</h3>
+            <PostTypeBadge type={post.post_type} lang={locale} />
+            <PostUpdateBadge post={post} />
+          </span>
+          <time dateTime={new Date(post.published_at * 1000).toISOString()}>{formatDate(post.published_at)}</time>
+        </Link>
+      ))}
+    </div>
+  )
+}
+
 function BlogList({
   posts,
   currentPage,
@@ -399,21 +503,7 @@ function BlogList({
       {posts.length === 0 ? (
         <p className="pf-empty">{t(locale === 'en' ? 'noTranslatedPostsYet' : 'noPostsYet')}</p>
       ) : (
-        <div className="pf-post-list">
-          {posts.map((post) => (
-            <Link key={post.slug} href={localePath(`/${post.slug}`, locale)} className="pf-post sv-patch">
-              <span className="pf-post-heading">
-                <h3>{post.title}</h3>
-                <PostTypeBadge type={post.post_type} lang={locale} />
-                <PostUpdateBadge post={post} />
-              </span>
-              <span className="pf-post-leader" aria-hidden="true" />
-              <time dateTime={new Date(post.published_at * 1000).toISOString()}>
-                {formatDate(post.published_at)}
-              </time>
-            </Link>
-          ))}
-        </div>
+        <PostRows posts={posts} />
       )}
 
       {totalPages > 1 && (
@@ -440,127 +530,98 @@ export function PortfolioHome({
   currentPage,
   totalPages,
   initialTab,
+  navLinks,
 }: {
   posts: PostWithTags[]
   currentPage: number
   totalPages: number
   initialTab: HomeTab
+  navLinks?: SiteNavLink[]
 }) {
-  const router = useRouter()
   const locale = useLocale()
   const t = (key: Parameters<typeof translate>[1]) => translate(locale, key)
   const [sponsorActive] = useState(isSponsorActive)
-
-  function openBlog() {
-    if (initialTab === 'blog' && currentPage === 1) return
-    router.push(localePath('/?tab=blog', locale))
-  }
-
-  function openWork() {
-    if (initialTab === 'work') return
-    router.push(localePath('/', locale))
-  }
+  const bio = (locale === 'en' ? profile.bioEn : profile.bio).join('')
+  const tagline = (locale === 'en' ? profile.blogTaglineEn : profile.blogTagline).trim()
 
   return (
     <LightboxProvider>
       <div className="pf-root sv-root">
         <LangSync locale={locale} />
-        <div className="pf-page">
-          <header className="sv-hero" aria-label="XuYi">
-            <div className="sv-hero-bar">
-              <span aria-hidden="true">© 2026 XuYi</span>
-              <LanguageSwitch />
-            </div>
-            <div className="sv-hero-body">
-              <div className="sv-hero-main">
-                <img className="pf-avatar sv-avatar" src={profile.avatar} alt="XuYi" />
-                <h1 className="sv-title" aria-label={profile.name}>
-                  <span>Xu</span>
-                  <span>Yi</span>
-                </h1>
-                <p className="sv-bio">{(locale === 'en' ? profile.bioEn : profile.bio).join('')}</p>
-                <p className="sv-tagline">{(locale === 'en' ? profile.blogTaglineEn : profile.blogTagline).trim()}</p>
-              </div>
-              <div className="sv-hero-side">
-                <InlineSubscribe />
-                <div className="pf-socials sv-socials">
-                  <a href={`mailto:${profile.email}`} aria-label={t('emailMe')}>
-                    <MailIcon />
-                  </a>
-                  <a href={profile.xUrl} target="_blank" rel="noreferrer" aria-label="X">
-                    <XIcon />
-                  </a>
-                  <a href={profile.github} target="_blank" rel="noreferrer" aria-label="GitHub">
-                    <GitHubIcon />
-                  </a>
-                  <a href={profile.threads} target="_blank" rel="noreferrer" aria-label="Threads">
-                    <ThreadsIcon />
-                  </a>
-                  <a href={profile.whatsapp} target="_blank" rel="noreferrer" aria-label="WhatsApp">
-                    <WhatsAppIcon />
-                  </a>
-                  <a href="/feed.xml" aria-label="RSS">
-                    <RssIcon />
-                  </a>
-                </div>
+        <SiteIsland navLinks={navLinks} />
+
+        <div className="sv-page">
+          <header className="sv-intro">
+            <h1 aria-label={profile.name}>
+              {bio}
+              <br />
+              <em>{tagline}</em>
+            </h1>
+            <div className="sv-intro-side">
+              <InlineSubscribe />
+              <div className="pf-socials sv-socials">
+                <a href={`mailto:${profile.email}`} aria-label={t('emailMe')}>
+                  <MailIcon />
+                </a>
+                <a href={profile.xUrl} target="_blank" rel="noreferrer" aria-label="X">
+                  <XIcon />
+                </a>
+                <a href={profile.github} target="_blank" rel="noreferrer" aria-label="GitHub">
+                  <GitHubIcon />
+                </a>
+                <a href={profile.threads} target="_blank" rel="noreferrer" aria-label="Threads">
+                  <ThreadsIcon />
+                </a>
+                <a href={profile.whatsapp} target="_blank" rel="noreferrer" aria-label="WhatsApp">
+                  <WhatsAppIcon />
+                </a>
+                <a href="/feed.xml" aria-label="RSS">
+                  <RssIcon />
+                </a>
               </div>
             </div>
           </header>
 
-          <div className="pf-grid sv-grid">
-            <div className="pf-right sv-main">
-              <div className="pf-switch-row sv-menu-row">
-                <div className="sv-menu" role="tablist" aria-label={t('contentSwitch')}>
-                  <button type="button" role="tab" aria-selected={initialTab === 'work'} onClick={openWork}>
-                    {t('tabWork')}
-                  </button>
-                  <button type="button" role="tab" aria-selected={initialTab === 'blog'} onClick={openBlog}>
-                    {t('tabWriting')}
-                  </button>
-                </div>
-                {initialTab === 'blog' && <BlogSearch />}
-              </div>
-
-              {initialTab === 'work' ? (
-                <>
-                  <ProductSection label="FREE PROJECT" products={freeProject} start={1} />
-                  <ProductSection label="PROJECTS" products={projects} start={freeProject.length + 1} />
-                </>
-              ) : (
-                <BlogList posts={posts} currentPage={currentPage} totalPages={totalPages} />
+          {initialTab === 'work' ? (
+            <>
+              <ProductList />
+              {posts.length > 0 && (
+                <section className="sv-teaser" aria-label={t('tabWriting')}>
+                  <div className="sv-sec-head">
+                    <h2>{t('tabWriting')}</h2>
+                    <Link href={localePath('/?tab=blog', locale)}>{t('viewAllPosts')} →</Link>
+                  </div>
+                  <PostRows posts={posts.slice(0, 4)} />
+                </section>
               )}
+            </>
+          ) : (
+            <section className="sv-writing">
+              <div className="sv-sec-head">
+                <h2>{t('tabWriting')}</h2>
+                <BlogSearch />
+              </div>
+              <BlogList posts={posts} currentPage={currentPage} totalPages={totalPages} />
+            </section>
+          )}
+
+          <section className="sv-statsrow" aria-label="Stats">
+            <ProductPlan />
+            <TrafficStats tab={initialTab} />
+          </section>
+
+          <footer className="sv-foot">
+            <div className="sv-foot-big" aria-hidden="true">
+              Xu<i>Yi</i>
             </div>
-
-            <aside className="pf-side sv-hud">
-              <ProductPlan />
-
-              <section className="pf-collections" aria-label="Inventory">
-                <h2 className="pf-label">Inventory</h2>
-                <ul className="pf-icon-row">
-                  {collections.map((item) => (
-                    <li key={item.name}>
-                      <a href={item.link} target="_blank" rel="noreferrer" aria-label={item.name}>
-                        <img className="pf-tile" src={item.logo} alt="" />
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-
-              <TrafficStats tab={initialTab} />
-            </aside>
-          </div>
-
-          <footer className="pf-foot">
-            <div className="pf-foot-row">
+            <div className="sv-foot-row">
               <div>
-                <p className="pf-foot-links">
+                <p className="sv-foot-links">
                   <Link href={localePath('/links', locale)}>{t('linksTitle')}</Link>
                   <Link href={localePath('/diary', locale)}>{t('diaryTitle')}</Link>
                 </p>
                 <p>
-                  {t('collabContact')}
-                  {' '}
+                  {t('collabContact')}{' '}
                   <a href={`mailto:${profile.email}`}>{profile.email}</a>
                 </p>
               </div>

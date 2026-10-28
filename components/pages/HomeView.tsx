@@ -3,6 +3,7 @@ import { getAppCloudflareEnv } from '@/lib/cloudflare'
 import { HomeClient } from '@/components/HomeClient'
 import type { HomeTab } from '@/components/home/PortfolioHome'
 import { getSiteUrl } from '@/lib/site-config'
+import { getSiteHeaderData, type SiteNavLink } from '@/lib/site'
 import { LOCALE_META, localePath, t, type Locale } from '@/lib/i18n'
 import '@/app/portfolio-home.css'
 import '@/app/home-v2.css'
@@ -24,9 +25,11 @@ export async function HomeView({
 
   let posts: Awaited<ReturnType<typeof getPosts>> = []
   let totalCount = 0
+  let navLinks: SiteNavLink[] = []
   try {
     const env = await getAppCloudflareEnv()
     if (env?.DB) {
+      navLinks = (await getSiteHeaderData(env.DB).catch(() => null))?.navLinks ?? []
       ;[posts, totalCount] =
         lang === 'zh'
           ? await Promise.all([
@@ -80,7 +83,7 @@ export async function HomeView({
         initialTheme="kami"
         posts={posts}
         categories={[]}
-        navLinks={[]}
+        navLinks={navLinks}
         currentPage={currentPage}
         totalPages={totalPages}
         categorySlugMap={{}}

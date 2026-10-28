@@ -29,6 +29,7 @@ export function HomeClient({
   posts,
   currentPage,
   totalPages,
+  navLinks,
   initialTab = 'work',
 }: HomeProps) {
   return (
@@ -37,6 +38,7 @@ export function HomeClient({
       currentPage={currentPage}
       totalPages={totalPages}
       initialTab={initialTab}
+      navLinks={navLinks}
     />
   )
 }
