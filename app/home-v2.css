@@ -565,11 +565,11 @@ body:has(.sv-root) {
 }
 
 .sv-root .pf-plan-grid i.is-done {
-  background: var(--sv-ink);
+  background: var(--sv-accent);
 }
 
 .sv-root .pf-plan-grid i.is-next {
-  box-shadow: inset 0 0 0 1.5px var(--sv-ink);
+  box-shadow: inset 0 0 0 1.5px var(--sv-accent);
   background: transparent;
 }
 
@@ -579,6 +579,9 @@ body:has(.sv-root) {
 
 .sv-statsrow > .pf-stats {
   margin: 0;
+  padding: 0;
+  gap: 10px;
+  background: transparent;
 }
 
 /* ---------- footer ---------- */
@@ -764,6 +767,36 @@ body:has(.sv-root) {
   .sv-root .pf-shots img,
   .sv-root .pf-shots video {
     filter: brightness(0.92);
+  }
+
+  .sv-root .pf-stats-ranges {
+    background: rgb(255 255 255 / 0.06);
+  }
+
+  /* 统计卡片里的文字原来写死成深色，深色模式下要跟着变亮 */
+  .sv-root .pf-stats-kpi-label,
+  .sv-root .pf-stats-kpi-hero,
+  .sv-root .pf-stats-readout-value {
+    color: var(--sv-ink);
+  }
+
+  .sv-root .pf-stats-kpi-delta {
+    color: var(--sv-accent);
+  }
+
+  .sv-root .pf-stats-kpi-delta.is-down,
+  .sv-root .pf-stats-readout-date,
+  .sv-root .pf-stats-ytick,
+  .sv-root .pf-stats-xaxis {
+    color: var(--pf-muted);
+  }
+
+  .sv-root .pf-stats-readout {
+    border-color: rgb(255 255 255 / 0.12);
+  }
+
+  .sv-root .pf-stats-ranges button {
+    color: var(--pf-muted);
   }
 
   .sv-root .pf-search-btn:hover,

@@ -150,6 +150,7 @@ export function TrafficStats({ tab }: { tab: 'work' | 'blog' }) {
   const ytickRefs = useRef<(HTMLSpanElement | null)[]>([])
 
   const reducedRef = useRef(false)
+  const darkRef = useRef(false)
   const viewRef = useRef<ReturnType<typeof buildView>>(null)
 
   const anim = useRef({
@@ -256,6 +257,13 @@ export function TrafficStats({ tab }: { tab: 'work' | 'blog' }) {
   useEffect(() => {
     const reducedQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
     reducedRef.current = reducedQuery.matches
+    // 深色模式下换一套底色和强调蓝（图表是画在 canvas 上的，CSS 管不到）
+    const darkQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    darkRef.current = darkQuery.matches
+    const onDark = (event: MediaQueryListEvent) => {
+      darkRef.current = event.matches
+    }
+    darkQuery.addEventListener('change', onDark)
 
     const a = anim.current
     const onPointer = (event: PointerEvent) => {
@@ -297,8 +305,9 @@ export function TrafficStats({ tab }: { tab: 'work' | 'blog' }) {
       }
 
       const reduced = reducedRef.current
-      const restColor = 'oklch(0.9 0.02 264)'
-      const accent = '37, 99, 235'
+      const dark = darkRef.current
+      const restColor = dark ? 'oklch(0.32 0.03 264)' : 'oklch(0.9 0.02 264)'
+      const accent = dark ? '126, 166, 255' : '37, 99, 235'
 
       for (let c = 0; c < cols; c++) {
         const f = cols > 1 ? c / (cols - 1) : 0
@@ -407,6 +416,7 @@ export function TrafficStats({ tab }: { tab: 'work' | 'blog' }) {
     return () => {
       cancelAnimationFrame(raf)
       window.removeEventListener('pointermove', onPointer)
+      darkQuery.removeEventListener('change', onDark)
     }
   }, [])
 
