@@ -547,3 +547,48 @@ body:has(.site-shell) {
     left: calc(50% + 33rem);
   }
 }
+
+/* ---------- English pages: English typography ---------- */
+/* 全站为中文调的字体和字间距会把英文撑松；英文页单独换成英文衬线正文、字间距归零。 */
+.site-shell:lang(en) {
+  --font-serif: "Newsreader", "Iowan Old Style", Georgia, "Songti SC", "Source Han Serif SC", "Noto Serif SC", serif;
+  --body-font: var(--font-serif);
+  letter-spacing: 0;
+}
+
+.site-shell:lang(en) :is(.rich-content, .novel-prose, .kami-lead, .kami-post-title, .kami-note, .article-copyright-notice) {
+  letter-spacing: 0;
+}
+
+.site-shell:lang(en) .rich-content {
+  font-size: 1.1875rem;
+  line-height: 1.7;
+  font-optical-sizing: auto;
+  hyphens: manual;
+}
+
+.site-shell:lang(en) :is(.rich-content, .novel-prose) :is(h2, h3) {
+  letter-spacing: -0.015em;
+}
+
+.site-shell:lang(en) .kami-article-title {
+  letter-spacing: -0.025em;
+}
+
+@media (max-width: 639px) {
+  .site-shell:lang(en) .rich-content {
+    font-size: 1.125rem;
+  }
+}
+
+/* ---------- small-screen fixes ---------- */
+.site-shell .site-header .sv-lang {
+  white-space: nowrap;
+  flex: none;
+}
+
+@media (max-width: 639px) {
+  .site-shell .kami-article-meta > :last-child::before {
+    display: none;
+  }
+}

@@ -53,6 +53,8 @@ const zh = {
   // 通用
   home: '首页',
   backHome: '返回首页',
+  notFoundTitle: '页面不存在',
+  notFoundLead: '这个地址没有对应的内容，可能是链接写错了，或者文章已被移动。',
   search: '搜索',
   searchArticles: '搜索文章',
   searchPlaceholder: '搜索文章...',
@@ -155,6 +157,8 @@ type Messages = Record<MessageKey, string>
 const en: Messages = {
   home: 'Home',
   backHome: 'Back to home',
+  notFoundTitle: 'Page not found',
+  notFoundLead: "There's nothing at this address. The link may be mistyped, or the article may have moved.",
   search: 'Search',
   searchArticles: 'Search articles',
   searchPlaceholder: 'Search articles...',

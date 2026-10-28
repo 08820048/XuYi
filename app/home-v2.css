@@ -39,6 +39,7 @@ body:has(.sv-root) {
 
 /* ---------- language switch ---------- */
 .sv-lang {
+  white-space: nowrap;
   display: inline-flex;
   align-items: center;
   padding: 2px 10px;

@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import '@/app/inner-v2.css'
 import { SiteHeader } from './SiteHeader'
 import { SiteFooter } from './SiteFooter'
+import { ShellRoot } from './ShellRoot'
 import type { Theme } from '@/lib/appearance'
 import type { SiteNavLink } from '@/lib/site'
 
@@ -22,7 +23,7 @@ export function SiteShell({
   mainAriaLabel,
 }: SiteShellProps) {
   return (
-    <div className="site-shell">
+    <ShellRoot>
       <SiteHeader navLinks={navLinks} />
       <div className="site-shell-body">
         <main id={mainId} className={mainClassName} aria-label={mainAriaLabel}>
@@ -30,6 +31,6 @@ export function SiteShell({
         </main>
         <SiteFooter navLinks={navLinks} />
       </div>
-    </div>
+    </ShellRoot>
   )
 }
