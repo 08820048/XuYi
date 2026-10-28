@@ -140,6 +140,8 @@ export function SiteIsland({ navLinks }: { navLinks?: SiteNavLink[] }) {
   const compactRef = useRef<HTMLButtonElement>(null)
   const fullRef = useRef<HTMLDivElement>(null)
   const closeTimer = useRef<number | undefined>(undefined)
+  /** 关掉搜索条后的一小段时间里不因为“鼠标不在岛上”而收起岛（搜索条消失时鼠标刚好落在它原来的位置）。 */
+  const holdOpenUntil = useRef(0)
 
   const measure = useCallback(() => {
     const root = rootRef.current
@@ -184,7 +186,13 @@ export function SiteIsland({ navLinks }: { navLinks?: SiteNavLink[] }) {
     setSearchOpen(true)
   }, [])
 
-  const closeSearch = useCallback(() => setSearchOpen(false), [])
+  /** 只关搜索条，岛保持展开（要收起岛时由鼠标移开 / 点外面 / 换页来关）。 */
+  const closeSearch = useCallback(() => {
+    holdOpenUntil.current = Date.now() + 1800
+    window.clearTimeout(closeTimer.current)
+    setSearchOpen(false)
+    setOpen(true)
+  }, [])
 
   // ⌘K / Ctrl+K 和页面里的“搜索”按钮都走这里
   useEffect(() => {
@@ -227,7 +235,7 @@ export function SiteIsland({ navLinks }: { navLinks?: SiteNavLink[] }) {
   const cancelClose = () => window.clearTimeout(closeTimer.current)
   const scheduleClose = () => {
     cancelClose()
-    closeTimer.current = window.setTimeout(() => setOpen(false), 220)
+    closeTimer.current = window.setTimeout(() => setOpen(false), Math.max(220, holdOpenUntil.current - Date.now()))
   }
 
   return (
@@ -242,25 +250,26 @@ export function SiteIsland({ navLinks }: { navLinks?: SiteNavLink[] }) {
         </defs>
       </svg>
 
-      <div ref={stackRef} className={`island-stack${expanded ? ' is-open' : ''}${searchOpen ? ' is-searching' : ''}`}>
+      <div
+        ref={stackRef}
+        className={`island-stack${expanded ? ' is-open' : ''}${searchOpen ? ' is-searching' : ''}`}
+        // 鼠标在岛、搜索条或结果面板上都算“在里面”，这样只关搜索条时岛不会跟着收起
+        onPointerEnter={(event) => {
+          if (event.pointerType === 'mouse') {
+            cancelClose()
+            setOpen(true)
+          }
+        }}
+        onPointerLeave={(event) => {
+          if (event.pointerType === 'mouse') scheduleClose()
+        }}
+      >
         <div className="island-goo" aria-hidden="true">
           <div className="island-shape" />
           <div className="island-bar-shape" />
         </div>
 
-        <div
-          ref={rootRef}
-          className={`island${expanded ? ' is-open' : ''}`}
-          onPointerEnter={(event) => {
-            if (event.pointerType === 'mouse') {
-              cancelClose()
-              setOpen(true)
-            }
-          }}
-          onPointerLeave={(event) => {
-            if (event.pointerType === 'mouse') scheduleClose()
-          }}
-        >
+        <div ref={rootRef} className={`island${expanded ? ' is-open' : ''}`}>
           <button
             ref={compactRef}
             type="button"
