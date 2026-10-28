@@ -3,8 +3,16 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-react'
+import 'overlayscrollbars/overlayscrollbars.css'
 import { useT } from '@/lib/i18n-client'
 import { formatLocaleDate, localePath } from '@/lib/i18n'
+
+/** 结果面板的滚动条：悬停/滚动时才出现的细圆角滑块（OverlayScrollbars），样式见 island.css 的 os-theme-island。 */
+const SCROLL_OPTIONS = {
+  scrollbars: { theme: 'os-theme-island', autoHide: 'leave' as const, autoHideDelay: 500, clickScroll: true },
+  overflow: { x: 'hidden' as const },
+}
 
 interface SearchResult {
   slug: string
@@ -27,6 +35,7 @@ export function IslandSearch({ open, onClose }: { open: boolean; onClose: () => 
   const [results, setResults] = useState<SearchResult[]>([])
   const [loading, setLoading] = useState(false)
   const [selected, setSelected] = useState(0)
+  const itemRefs = useRef<Array<HTMLAnchorElement | null>>([])
 
   useEffect(() => {
     if (open) {
@@ -66,6 +75,11 @@ export function IslandSearch({ open, onClose }: { open: boolean; onClose: () => 
       window.clearTimeout(timer)
     }
   }, [open, query, locale])
+
+  // 用方向键选择时，让选中的那条始终在可见范围内
+  useEffect(() => {
+    itemRefs.current[selected]?.scrollIntoView({ block: 'nearest' })
+  }, [selected])
 
   function go(slug: string) {
     router.push(localePath(`/${slug}`, locale))
@@ -122,24 +136,29 @@ export function IslandSearch({ open, onClose }: { open: boolean; onClose: () => 
       <div className={`island-results${showResults ? ' is-visible' : ''}`} aria-live="polite">
         {results.length > 0 ? (
           <>
-            <ul>
-              {results.map((result, index) => (
-                <li key={result.slug}>
-                  <Link
-                    href={localePath(`/${result.slug}`, locale)}
-                    className={index === selected ? 'is-selected' : undefined}
-                    onMouseEnter={() => setSelected(index)}
-                    onClick={onClose}
-                  >
-                    <span className="island-result-top">
-                      <strong>{result.title}</strong>
-                      <time>{formatLocaleDate(result.published_at, locale, { year: 'numeric', month: 'short', day: 'numeric' })}</time>
-                    </span>
-                    {result.description && <span className="island-result-desc">{result.description}</span>}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <OverlayScrollbarsComponent element="div" className="island-results-scroll" options={SCROLL_OPTIONS} defer>
+              <ul>
+                {results.map((result, index) => (
+                  <li key={result.slug}>
+                    <Link
+                      ref={(node) => {
+                        itemRefs.current[index] = node
+                      }}
+                      href={localePath(`/${result.slug}`, locale)}
+                      className={index === selected ? 'is-selected' : undefined}
+                      onMouseEnter={() => setSelected(index)}
+                      onClick={onClose}
+                    >
+                      <span className="island-result-top">
+                        <strong>{result.title}</strong>
+                        <time>{formatLocaleDate(result.published_at, locale, { year: 'numeric', month: 'short', day: 'numeric' })}</time>
+                      </span>
+                      {result.description && <span className="island-result-desc">{result.description}</span>}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </OverlayScrollbarsComponent>
             <div className="island-results-hint">
               <span><kbd>↑↓</kbd> {t('searchShortcutSelect')}</span>
               <span><kbd>↵</kbd> {t('searchShortcutOpen')}</span>

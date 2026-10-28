@@ -246,6 +246,12 @@
     --isl-line: rgb(255 255 255 / 0.1);
     --isl-accent: 126 166 255;
   }
+
+  .island-stack .os-theme-island {
+    --os-handle-bg: rgb(255 255 255 / 0.22);
+    --os-handle-bg-hover: rgb(255 255 255 / 0.4);
+    --os-handle-bg-active: rgb(255 255 255 / 0.52);
+  }
 }
 
 @media (max-width: 560px) {
@@ -433,8 +439,7 @@
   top: calc(100% + 52px + 14px);
   width: var(--bar-w);
   margin-left: calc(var(--bar-w) / -2);
-  max-height: min(62vh, 520px);
-  overflow: auto;
+  overflow: hidden;
   border-radius: 24px;
   background: var(--isl-card);
   color: var(--isl-card-fg);
@@ -450,6 +455,29 @@
   opacity: 1;
   transform: none;
   pointer-events: auto;
+}
+
+.island-results-scroll {
+  max-height: min(52vh, 420px);
+}
+
+/* OverlayScrollbars 主题：细、圆角、不占位，悬停才出现 */
+.os-theme-island {
+  --os-size: 12px;
+  --os-padding-perpendicular: 3px;
+  --os-padding-axis: 6px;
+  --os-track-border-radius: 999px;
+  --os-track-bg: transparent;
+  --os-track-bg-hover: transparent;
+  --os-track-bg-active: transparent;
+  --os-handle-border-radius: 999px;
+  --os-handle-bg: rgb(23 23 23 / 0.18);
+  --os-handle-bg-hover: rgb(23 23 23 / 0.34);
+  --os-handle-bg-active: rgb(23 23 23 / 0.46);
+  --os-handle-min-size: 36px;
+  --os-handle-perpendicular-size: 100%;
+  --os-handle-perpendicular-size-hover: 100%;
+  --os-handle-perpendicular-size-active: 100%;
 }
 
 .island-results ul {
