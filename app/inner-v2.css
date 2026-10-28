@@ -15,7 +15,12 @@ body:has(.site-shell) {
   --sv-paper: #f6f4ef;
   --sv-card: #fcfbf8;
   --sv-accent: #4f6558;
-  --sv-line: rgba(29, 28, 26, 0.12);
+  --sv-rgb: 29 28 26;
+  --sv-accent-rgb: 79 101 88;
+  --sv-line: rgb(var(--sv-rgb) / 0.12);
+  --sv-raise: #fff;
+  --sv-code-bg: #23221f;
+  --sv-header-bg: rgb(246 244 239 / 0.88);
   --sv-display: "Newsreader", "Iowan Old Style", "Songti SC", "Source Han Serif SC", "Noto Serif SC", Georgia, serif;
   --sv-ui: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
 
@@ -34,25 +39,31 @@ body:has(.site-shell) {
   --background: transparent;
   --editor-accent: var(--sv-accent);
   --editor-link: var(--sv-accent);
-  --article-quote-border: rgba(79, 101, 88, 0.5);
+  --article-quote-border: rgb(var(--sv-accent-rgb) / 0.5);
   --editor-line: var(--sv-line);
   --editor-soft: #eeece6;
   --editor-code-bg: var(--sv-card);
   --editor-selection: #dfe7e1;
-  --interaction-hover: rgba(29, 28, 26, 0.04);
+  --interaction-hover: rgb(var(--sv-rgb) / 0.04);
+  --article-heading: var(--sv-ink);
+  --article-body: var(--kami-dark-warm);
+  --article-quote: var(--kami-olive);
+  --editor-ink: var(--sv-ink);
+  --editor-muted: var(--kami-stone);
+  --foreground: var(--sv-ink);
   --interaction-active: #eeece6;
   --kami-page-width: 50rem;
   background: transparent;
 }
 
 .site-shell ::selection {
-  background: #dfe7e1;
+  background: var(--editor-selection);
   color: var(--sv-ink);
 }
 
 /* ---------- header ---------- */
 .site-shell .site-header {
-  background: rgba(246, 244, 239, 0.88);
+  background: var(--sv-header-bg);
   backdrop-filter: saturate(1.4) blur(12px);
   -webkit-backdrop-filter: saturate(1.4) blur(12px);
   border-bottom: 1px solid var(--sv-line);
@@ -91,13 +102,13 @@ body:has(.site-shell) {
 
 .site-shell .site-nav-link:is(:hover, :focus-visible),
 .site-shell .site-nav-action:is(:hover, :focus-visible) {
-  background: rgba(29, 28, 26, 0.05);
+  background: rgb(var(--sv-rgb) / 0.05);
   color: var(--sv-ink);
 }
 
 .site-shell .site-nav-link.is-active {
   color: var(--sv-ink);
-  background: rgba(29, 28, 26, 0.06);
+  background: rgb(var(--sv-rgb) / 0.06);
 }
 
 .site-shell .site-mobile-menu {
@@ -228,7 +239,7 @@ body:has(.site-shell) {
 }
 
 .site-shell .kami-input:focus {
-  background: #fff;
+  background: var(--sv-raise);
   border-color: var(--sv-ink);
   box-shadow: none;
   outline: none;
@@ -339,7 +350,7 @@ body:has(.site-shell) {
 .site-shell :is(.novel-prose, .rich-content) a {
   text-decoration-thickness: 1px;
   text-underline-offset: 0.2em;
-  text-decoration-color: rgba(79, 101, 88, 0.45);
+  text-decoration-color: rgb(var(--sv-accent-rgb) / 0.45);
   transition: text-decoration-color 0.2s, color 0.2s;
 }
 
@@ -350,7 +361,7 @@ body:has(.site-shell) {
 
 .site-shell :is(.novel-prose, .rich-content) blockquote:not(.github-alert) {
   border: 0;
-  border-left: 2px solid rgba(79, 101, 88, 0.5);
+  border-left: 2px solid rgb(var(--sv-accent-rgb) / 0.5);
   border-radius: 0;
   background: transparent;
   box-shadow: none;
@@ -364,13 +375,13 @@ body:has(.site-shell) {
 
 .site-shell :is(.novel-prose, .rich-content) code {
   border-radius: 4px;
-  background: rgba(29, 28, 26, 0.06);
+  background: rgb(var(--sv-rgb) / 0.06);
 }
 
 .site-shell :is(.novel-prose, .rich-content) pre {
   border: 0;
   border-radius: 10px;
-  background: #23221f;
+  background: var(--sv-code-bg);
   box-shadow: none;
 }
 
@@ -385,7 +396,7 @@ body:has(.site-shell) {
 }
 
 .site-shell :is(.novel-prose, .rich-content) table th {
-  background: rgba(29, 28, 26, 0.04);
+  background: rgb(var(--sv-rgb) / 0.04);
   color: var(--sv-ink);
   font-weight: 600;
 }
@@ -417,8 +428,8 @@ body:has(.site-shell) {
 }
 
 .site-shell .kami-card:hover {
-  border-color: rgba(29, 28, 26, 0.24);
-  box-shadow: 0 10px 30px rgba(29, 28, 26, 0.06);
+  border-color: rgb(var(--sv-rgb) / 0.24);
+  box-shadow: 0 10px 30px rgb(var(--sv-rgb) / 0.06);
 }
 
 .site-shell .kami-card-avatar {
@@ -590,5 +601,82 @@ body:has(.site-shell) {
 @media (max-width: 639px) {
   .site-shell .kami-article-meta > :last-child::before {
     display: none;
+  }
+}
+
+/* ---------- dark mode (follows the system; no manual toggle) ---------- */
+@media (prefers-color-scheme: dark) {
+  html:has(.site-shell),
+  body:has(.site-shell) {
+    background-color: #151412;
+    color-scheme: dark;
+  }
+
+  /* 弹窗、提示条等挂在 body 下，不在 .site-shell 里，所以在 html 上也放一份基础色（后台页面没有 .site-shell，不受影响） */
+  html:has(.site-shell),
+  html:has(.sv-root) {
+    --kami-ivory: #1c1b19;
+    --kami-warm-sand: rgb(236 232 223 / 0.12);
+    --kami-ink: #9bb8a8;
+    --kami-near-black: #ece8df;
+    --kami-dark-warm: #d6d2c8;
+    --kami-olive: #b4afa3;
+    --kami-stone: #8f8a7e;
+    --kami-tag: #26302a;
+    --kami-tag-quiet: #24231f;
+    --editor-ink: #ece8df;
+    --editor-muted: #8f8a7e;
+    --editor-line: rgb(236 232 223 / 0.12);
+    --editor-soft: #24231f;
+    --editor-panel: #1c1b19;
+    --editor-accent: #9bb8a8;
+    --editor-link: #9bb8a8;
+    --stone-gray: #8f8a7e;
+    --border-warm: rgb(236 232 223 / 0.12);
+    --foreground: #ece8df;
+    --interaction-hover: rgb(236 232 223 / 0.05);
+    --interaction-active: #24231f;
+    --surface-tray: #1c1b19;
+    --surface-raised: #1c1b19;
+  }
+
+  .site-shell {
+    --sv-ink: #ece8df;
+    --sv-paper: #151412;
+    --sv-card: #1c1b19;
+    --sv-accent: #9bb8a8;
+    --sv-rgb: 236 232 223;
+    --sv-accent-rgb: 155 184 168;
+    --sv-raise: #24231f;
+    --sv-code-bg: #0f0e0d;
+    --sv-header-bg: rgb(21 20 18 / 0.85);
+
+    --kami-ink-light: #b3cbbd;
+    --kami-dark-warm: #d6d2c8;
+    --kami-olive: #b4afa3;
+    --kami-stone: #8f8a7e;
+    --kami-tag: #26302a;
+    --kami-tag-quiet: #24231f;
+    --editor-soft: #24231f;
+    --editor-selection: #2f3d35;
+    --interaction-active: #24231f;
+  }
+
+  .site-shell :is(.novel-prose, .rich-content) pre.shiki,
+  .site-shell :is(.novel-prose, .rich-content) pre.shiki span {
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg) !important;
+    font-style: var(--shiki-dark-font-style) !important;
+    font-weight: var(--shiki-dark-font-weight) !important;
+    text-decoration: var(--shiki-dark-text-decoration) !important;
+  }
+
+  .site-shell :is(.novel-prose, .rich-content) pre.shiki {
+    border-color: var(--sv-line);
+  }
+
+  /* 图片在深色背景上略降亮度，避免白底截图刺眼 */
+  .site-shell .rich-content img:not([src$=".svg"]) {
+    filter: brightness(0.92);
   }
 }

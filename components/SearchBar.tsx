@@ -126,7 +126,7 @@ export function SearchBar() {
           onClick={(e) => { if (e.target === e.currentTarget) setIsOpen(false) }}
         >
           {/* 遮罩 */}
-          <div className="absolute inset-0 bg-[color-mix(in_srgb,var(--kami-near-black)_18%,transparent)]" onClick={() => setIsOpen(false)} />
+          <div className="absolute inset-0 bg-[color-mix(in_srgb,#141413_18%,transparent)] dark:bg-black/55" onClick={() => setIsOpen(false)} />
 
           {/* 搜索面板 */}
           <div className="relative mx-auto mt-[12vh] sm:mt-[18vh] w-[92vw] max-w-[560px]">
