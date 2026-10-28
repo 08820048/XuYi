@@ -268,6 +268,7 @@ export function SiteIsland({ navLinks }: { navLinks?: SiteNavLink[] }) {
           <div className="island-shape" />
           <div className="island-bar-shape" />
         </div>
+        <div className="island-ears" aria-hidden="true" />
 
         <div ref={rootRef} className={`island${expanded ? ' is-open' : ''}`}>
           <button
