@@ -133,6 +133,7 @@ export function SiteIsland({ navLinks }: { navLinks?: SiteNavLink[] }) {
   const pathname = usePathname() || '/'
   const [open, setOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
+  const [gooOn, setGooOn] = useState(false)
   const [ready, setReady] = useState(false)
   const stackRef = useRef<HTMLDivElement>(null)
   const searchBtnRef = useRef<HTMLButtonElement>(null)
@@ -170,6 +171,16 @@ export function SiteIsland({ navLinks }: { navLinks?: SiteNavLink[] }) {
   }, [pathname])
 
   const expanded = open || searchOpen
+
+  // 粘液滤镜会把所有角都磨圆，所以只在搜索条出现（和缩回去的动画）期间启用，平时用清晰的刘海轮廓
+  useEffect(() => {
+    if (searchOpen) {
+      setGooOn(true)
+      return
+    }
+    const timer = window.setTimeout(() => setGooOn(false), 950)
+    return () => window.clearTimeout(timer)
+  }, [searchOpen])
 
   /** 打开搜索：先量出搜索图标相对搜索条的位置，让搜索条从图标那里“长”出来。 */
   const openSearch = useCallback(() => {
@@ -252,7 +263,7 @@ export function SiteIsland({ navLinks }: { navLinks?: SiteNavLink[] }) {
 
       <div
         ref={stackRef}
-        className={`island-stack${expanded ? ' is-open' : ''}${searchOpen ? ' is-searching' : ''}`}
+        className={`island-stack${expanded ? ' is-open' : ''}${searchOpen ? ' is-searching' : ''}${gooOn ? ' is-goo' : ''}`}
         // 鼠标在岛、搜索条或结果面板上都算“在里面”，这样只关搜索条时岛不会跟着收起
         onPointerEnter={(event) => {
           if (event.pointerType === 'mouse') {

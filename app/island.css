@@ -42,7 +42,7 @@
   height: 34px;
   width: var(--island-closed-w, 176px);
   max-width: calc(100vw - 28px);
-  border-radius: 0 0 14px 14px;
+  border-radius: 0 0 10px 10px;
   color: var(--island-fg);
   overflow: hidden;
   pointer-events: auto;
@@ -59,7 +59,7 @@
 .island.is-open {
   width: min(700px, calc(100vw - 28px));
   height: var(--island-open-h, 76px);
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 22px 22px;
 }
 
 /* ---------- collapsed ---------- */
@@ -296,6 +296,15 @@
   top: -40px;
   bottom: -170px;
   pointer-events: none;
+  filter: drop-shadow(0 2px 5px rgb(0 0 0 / 0.14));
+  transition: filter 0.4s;
+}
+
+.island-stack.is-open .island-goo {
+  filter: drop-shadow(0 8px 16px rgb(0 0 0 / 0.28));
+}
+
+.island-stack.is-goo .island-goo {
   filter: url(#island-goo) drop-shadow(0 8px 16px rgb(0 0 0 / 0.28));
 }
 
@@ -306,13 +315,13 @@
   /* 向上多出 30px 藏在屏幕外面，滤镜模糊时顶边才是平的、和屏幕顶边连成一体 */
   top: 10px;
   bottom: 170px;
-  border-radius: 0 0 14px 14px;
+  border-radius: 0 0 10px 10px;
   background: var(--island-bg);
   transition: border-radius 0.7s var(--island-spring);
 }
 
 .island-stack.is-open .island-shape {
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 22px 22px;
 }
 
 /* 刘海顶部两个向外张开的凹角（“耳朵”）：反向的四分之一圆。
