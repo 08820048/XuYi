@@ -3,10 +3,12 @@
 import Link from 'next/link'
 import { Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { SearchEntry } from './SearchEntry'
+import { Search } from 'lucide-react'
+import { IslandSearch } from './IslandSearch'
 import { LanguageSwitch } from './LanguageSwitch'
 import { useLocale } from '@/lib/i18n-client'
 import { localePath, localizeNavLabel, t, type Locale } from '@/lib/i18n'
+import { ISLAND_SEARCH_EVENT } from '@/lib/island-search'
 import { profile } from '@/lib/portfolio'
 import { splitSiteNavLinks, type SiteNavLink } from '@/lib/site'
 import '@/app/island.css'
@@ -42,7 +44,7 @@ function IslandContext({ locale, pathname }: { locale: Locale; pathname: string 
 }
 
 function useIslandItems(navLinks: SiteNavLink[] | undefined, locale: Locale, pathname: string, tab: string | null) {
-  const { headerLinks, footerLinks } = splitSiteNavLinks(navLinks)
+  const { headerLinks } = splitSiteNavLinks(navLinks)
   const path = stripLocale(pathname)
   const onHome = path === '/'
 
@@ -65,9 +67,8 @@ function useIslandItems(navLinks: SiteNavLink[] | undefined, locale: Locale, pat
     },
   ]
 
-  // 友联、日记原本放在页脚，这里一并放进岛里；“简历”继续只留在页脚
-  const extra = [...headerLinks, ...footerLinks.filter((link) => navPathOf(link) !== null && link.label.trim() !== '简历')]
-  const rest: IslandItem[] = extra.map((link) => {
+  // 友联、日记、简历只放在页脚，岛里只放站点设置里的导航项
+  const rest: IslandItem[] = headerLinks.map((link) => {
     const external = link.url.startsWith('http') || link.url.startsWith('//')
     const href = external ? link.url : localePath(link.url, locale)
     const target = stripLocale(link.url.split('?')[0].split('#')[0]) || '/'
@@ -82,10 +83,6 @@ function useIslandItems(navLinks: SiteNavLink[] | undefined, locale: Locale, pat
   })
 
   return [...core, ...rest]
-}
-
-function navPathOf(link: SiteNavLink) {
-  return link.url || null
 }
 
 function IslandNavLinks({
@@ -135,7 +132,10 @@ export function SiteIsland({ navLinks }: { navLinks?: SiteNavLink[] }) {
   const locale = useLocale()
   const pathname = usePathname() || '/'
   const [open, setOpen] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
   const [ready, setReady] = useState(false)
+  const stackRef = useRef<HTMLDivElement>(null)
+  const searchBtnRef = useRef<HTMLButtonElement>(null)
   const rootRef = useRef<HTMLDivElement>(null)
   const compactRef = useRef<HTMLButtonElement>(null)
   const fullRef = useRef<HTMLDivElement>(null)
@@ -164,15 +164,57 @@ export function SiteIsland({ navLinks }: { navLinks?: SiteNavLink[] }) {
   // 换页后自动收起
   useEffect(() => {
     setOpen(false)
+    setSearchOpen(false)
   }, [pathname])
 
+  const expanded = open || searchOpen
+
+  /** 打开搜索：先量出搜索图标相对搜索条的位置，让搜索条从图标那里“长”出来。 */
+  const openSearch = useCallback(() => {
+    const stack = stackRef.current
+    const icon = searchBtnRef.current
+    if (stack && icon) {
+      const s = stack.getBoundingClientRect()
+      const i = icon.getBoundingClientRect()
+      const barCenterY = s.bottom - 8 + 26
+      stack.style.setProperty('--sdx', `${i.left + i.width / 2 - (s.left + s.width / 2)}px`)
+      stack.style.setProperty('--sdy', `${i.top + i.height / 2 - barCenterY}px`)
+    }
+    setOpen(true)
+    setSearchOpen(true)
+  }, [])
+
+  const closeSearch = useCallback(() => setSearchOpen(false), [])
+
+  // ⌘K / Ctrl+K 和页面里的“搜索”按钮都走这里
   useEffect(() => {
-    if (!open) return
+    const onOpen = () => openSearch()
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setOpen(false)
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault()
+        openSearch()
+      }
+    }
+    window.addEventListener(ISLAND_SEARCH_EVENT, onOpen)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      window.removeEventListener(ISLAND_SEARCH_EVENT, onOpen)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [openSearch])
+
+  useEffect(() => {
+    if (!expanded) return
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return
+      if (searchOpen) setSearchOpen(false)
+      else setOpen(false)
     }
     const onPointer = (event: PointerEvent) => {
-      if (rootRef.current && !rootRef.current.contains(event.target as Node)) setOpen(false)
+      if (stackRef.current && !stackRef.current.contains(event.target as Node)) {
+        setSearchOpen(false)
+        setOpen(false)
+      }
     }
     document.addEventListener('keydown', onKey)
     document.addEventListener('pointerdown', onPointer)
@@ -180,7 +222,7 @@ export function SiteIsland({ navLinks }: { navLinks?: SiteNavLink[] }) {
       document.removeEventListener('keydown', onKey)
       document.removeEventListener('pointerdown', onPointer)
     }
-  }, [open])
+  }, [expanded, searchOpen])
 
   const cancelClose = () => window.clearTimeout(closeTimer.current)
   const scheduleClose = () => {
@@ -190,64 +232,93 @@ export function SiteIsland({ navLinks }: { navLinks?: SiteNavLink[] }) {
 
   return (
     <div className="island-root" data-ready={ready ? 'true' : 'false'}>
-      <div
-        ref={rootRef}
-        className={`island${open ? ' is-open' : ''}`}
-        onPointerEnter={(event) => {
-          if (event.pointerType === 'mouse') {
-            cancelClose()
-            setOpen(true)
-          }
-        }}
-        onPointerLeave={(event) => {
-          if (event.pointerType === 'mouse') scheduleClose()
-        }}
-      >
-        <button
-          ref={compactRef}
-          type="button"
-          className="island-compact"
-          aria-expanded={open}
-          aria-label={t(locale, open ? 'closeMenu' : 'openMenu')}
-          onClick={() => setOpen((value) => !value)}
+      {/* 粘液滤镜：模糊后再拉高对比度，相邻的形状会像液体一样连在一起 */}
+      <svg className="island-defs" width="0" height="0" aria-hidden="true" focusable="false">
+        <defs>
+          <filter id="island-goo" x="-20%" y="-20%" width="140%" height="140%" colorInterpolationFilters="sRGB">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="blur" />
+            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -9" />
+          </filter>
+        </defs>
+      </svg>
+
+      <div ref={stackRef} className={`island-stack${expanded ? ' is-open' : ''}${searchOpen ? ' is-searching' : ''}`}>
+        <div className="island-goo" aria-hidden="true">
+          <div className="island-shape" />
+          <div className="island-bar-shape" />
+        </div>
+
+        <div
+          ref={rootRef}
+          className={`island${expanded ? ' is-open' : ''}`}
+          onPointerEnter={(event) => {
+            if (event.pointerType === 'mouse') {
+              cancelClose()
+              setOpen(true)
+            }
+          }}
+          onPointerLeave={(event) => {
+            if (event.pointerType === 'mouse') scheduleClose()
+          }}
         >
-          <img className="island-avatar" src={profile.avatar} alt="" width={24} height={24} />
-          <span className="island-name">XuYi</span>
-          <span className="island-ctx">
-            <Suspense fallback={contextLabel(locale, pathname, null)}>
-              <IslandContext locale={locale} pathname={pathname} />
-            </Suspense>
-          </span>
-        </button>
-
-        <div ref={fullRef} className="island-full" inert={!open ? true : undefined}>
-          <Link
-            href={localePath('/', locale)}
-            className="island-brand"
-            aria-label={t(locale, 'backHome')}
-            onClick={() => setOpen(false)}
+          <button
+            ref={compactRef}
+            type="button"
+            className="island-compact"
+            aria-expanded={expanded}
+            aria-label={t(locale, expanded ? 'closeMenu' : 'openMenu')}
+            onClick={() => setOpen((value) => !value)}
           >
-            <img className="island-avatar" src={profile.avatar} alt="" width={30} height={30} />
-            <span className="island-wordmark">
-              Xu<i>Yi</i>
+            <img className="island-avatar" src={profile.avatar} alt="" width={24} height={24} />
+            <span className="island-name">XuYi</span>
+            <span className="island-ctx">
+              <Suspense fallback={contextLabel(locale, pathname, null)}>
+                <IslandContext locale={locale} pathname={pathname} />
+              </Suspense>
             </span>
-          </Link>
+          </button>
 
-          <nav className="island-nav" aria-label="Main">
-            <Suspense
-              fallback={
-                <IslandNavLinks navLinks={navLinks} locale={locale} pathname={pathname} tab={null} onNavigate={() => setOpen(false)} />
-              }
+          <div ref={fullRef} className="island-full" inert={!expanded ? true : undefined}>
+            <Link
+              href={localePath('/', locale)}
+              className="island-brand"
+              aria-label={t(locale, 'backHome')}
+              onClick={() => setOpen(false)}
             >
-              <IslandNavWithTab navLinks={navLinks} locale={locale} pathname={pathname} onNavigate={() => setOpen(false)} />
-            </Suspense>
-          </nav>
+              <img className="island-avatar" src={profile.avatar} alt="" width={30} height={30} />
+              <span className="island-wordmark">
+                Xu<i>Yi</i>
+              </span>
+            </Link>
 
-          <div className="island-actions">
-            <SearchEntry />
-            <LanguageSwitch />
+            <nav className="island-nav" aria-label="Main">
+              <Suspense
+                fallback={
+                  <IslandNavLinks navLinks={navLinks} locale={locale} pathname={pathname} tab={null} onNavigate={() => setOpen(false)} />
+                }
+              >
+                <IslandNavWithTab navLinks={navLinks} locale={locale} pathname={pathname} onNavigate={() => setOpen(false)} />
+              </Suspense>
+            </nav>
+
+            <div className="island-actions">
+              <button
+                ref={searchBtnRef}
+                type="button"
+                className="island-icon-btn"
+                aria-label={t(locale, 'search')}
+                title={`${t(locale, 'search')} (⌘K)`}
+                aria-expanded={searchOpen}
+                onClick={() => (searchOpen ? closeSearch() : openSearch())}
+              >
+                <Search width={18} height={18} aria-hidden="true" />
+              </button>
+              <LanguageSwitch />
+            </div>
           </div>
         </div>
+
+        <IslandSearch open={searchOpen} onClose={closeSearch} />
       </div>
     </div>
   )

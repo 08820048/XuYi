@@ -14,21 +14,30 @@
   pointer-events: none;
 }
 
-.island {
+.island-stack {
   --island-bg: #0c0b0a;
   --island-fg: #f1ece2;
   --island-hover: rgb(255 255 255 / 0.12);
   --island-spring: cubic-bezier(0.34, 1.45, 0.5, 1);
+  --bar-w: min(560px, calc(100vw - 28px));
+  --isl-card: #ffffff;
+  --isl-card-fg: #171717;
+  --isl-muted: #6b7280;
+  --isl-line: rgb(23 23 23 / 0.08);
+  --isl-accent: 37 99 235;
+  position: relative;
+  pointer-events: none;
+}
+
+.island {
   position: relative;
   height: 38px;
   width: var(--island-closed-w, 176px);
   max-width: calc(100vw - 28px);
   border-radius: 22px;
-  background: var(--island-bg);
   color: var(--island-fg);
   overflow: hidden;
   pointer-events: auto;
-  box-shadow: 0 10px 34px rgb(0 0 0 / 0.26), 0 0 0 1px rgb(255 255 255 / 0.06) inset;
   transition:
     width 0.7s var(--island-spring),
     height 0.7s var(--island-spring),
@@ -182,7 +191,7 @@
 }
 
 /* 复用的搜索按钮和语言切换，换成岛里的配色 */
-.island .site-nav-action {
+.island-icon-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -197,7 +206,12 @@
   transition: background-color 0.2s, opacity 0.2s;
 }
 
-.island .site-nav-action:hover {
+.island-icon-btn[aria-expanded="true"] {
+  opacity: 1;
+  background: var(--island-hover);
+}
+
+.island-icon-btn:hover {
   opacity: 1;
   background: var(--island-hover);
 }
@@ -224,9 +238,13 @@
 
 /* 深色模式下页面本身就是近黑色，岛换成略亮的暖灰并加一圈细边 */
 @media (prefers-color-scheme: dark) {
-  .island {
+  .island-stack {
     --island-bg: #262421;
-    box-shadow: 0 12px 38px rgb(0 0 0 / 0.5), 0 0 0 1px rgb(255 255 255 / 0.1);
+    --isl-card: #1f1e1c;
+    --isl-card-fg: #ece8df;
+    --isl-muted: #8f8a7e;
+    --isl-line: rgb(255 255 255 / 0.1);
+    --isl-accent: 126 166 255;
   }
 }
 
@@ -250,6 +268,279 @@
   .island,
   .island-compact,
   .island-full {
+    transition: none !important;
+  }
+}
+
+/* ---------- slime layer: the island and the search bar are drawn here, then blurred + contrasted ---------- */
+.island-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.island-goo {
+  position: absolute;
+  left: -70px;
+  right: -70px;
+  top: -40px;
+  bottom: -170px;
+  pointer-events: none;
+  filter: url(#island-goo) drop-shadow(0 10px 22px rgb(0 0 0 / 0.22));
+}
+
+.island-shape {
+  position: absolute;
+  left: 70px;
+  right: 70px;
+  top: 40px;
+  bottom: 170px;
+  border-radius: 22px;
+  background: var(--island-bg);
+  transition: border-radius 0.7s var(--island-spring);
+}
+
+.island-stack.is-open .island-shape {
+  border-radius: 30px;
+}
+
+.island-bar-shape {
+  position: absolute;
+  left: 50%;
+  top: calc(100% - 170px - 8px);
+  width: var(--bar-w);
+  height: 52px;
+  margin-left: calc(var(--bar-w) / -2);
+  border-radius: 26px;
+  background: var(--island-bg);
+  opacity: 0;
+  transform: translate(var(--sdx, 0px), var(--sdy, 0px)) scale(0.08);
+  transition: transform 0.75s var(--island-spring), opacity 0.15s 0.1s;
+}
+
+.island-stack.is-searching .island-bar-shape {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0s;
+}
+
+.island-root[data-ready="false"] .island-shape,
+.island-root[data-ready="false"] .island-bar-shape {
+  transition: none;
+}
+
+/* ---------- search bar (content sits above the blob) ---------- */
+.island-searchbar {
+  position: absolute;
+  left: 50%;
+  top: calc(100% - 8px);
+  width: var(--bar-w);
+  height: 52px;
+  margin-left: calc(var(--bar-w) / -2);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 12px 0 20px;
+  color: var(--island-fg);
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.3s;
+}
+
+.island-stack.is-searching .island-searchbar {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+  transition-delay: 0.3s;
+}
+
+.island-searchbar-icon {
+  flex: none;
+  opacity: 0.7;
+}
+
+.island-searchbar input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 16px;
+}
+
+.island-searchbar input:focus-visible {
+  outline: none;
+}
+
+.island-searchbar input::placeholder {
+  color: rgb(255 255 255 / 0.42);
+}
+
+.island-searchbar kbd,
+.island-results-hint kbd {
+  padding: 1px 6px;
+  border-radius: 6px;
+  border: 1px solid rgb(255 255 255 / 0.2);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  opacity: 0.7;
+}
+
+.island-searchbar-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: inherit;
+  opacity: 0.6;
+  cursor: pointer;
+  transition: background-color 0.2s, opacity 0.2s;
+}
+
+.island-searchbar-close:hover {
+  opacity: 1;
+  background: var(--island-hover);
+}
+
+.island-spinner {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgb(255 255 255 / 0.25);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: island-spin 0.7s linear infinite;
+}
+
+@keyframes island-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- results panel ---------- */
+.island-results {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 52px + 14px);
+  width: var(--bar-w);
+  margin-left: calc(var(--bar-w) / -2);
+  max-height: min(62vh, 520px);
+  overflow: auto;
+  border-radius: 24px;
+  background: var(--isl-card);
+  color: var(--isl-card-fg);
+  box-shadow: 0 24px 60px rgb(0 0 0 / 0.16), 0 0 0 1px var(--isl-line);
+  opacity: 0;
+  transform: translateY(-10px) scale(0.98);
+  transform-origin: top center;
+  pointer-events: none;
+  transition: opacity 0.25s, transform 0.45s var(--island-spring);
+}
+
+.island-results.is-visible {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.island-results ul {
+  margin: 0;
+  padding: 8px;
+  list-style: none;
+}
+
+.island-results li a {
+  display: block;
+  padding: 12px 14px;
+  border-radius: 16px;
+  color: inherit;
+  text-decoration: none;
+  transition: background-color 0.15s;
+}
+
+.island-results li a.is-selected {
+  background: rgb(var(--isl-accent) / 0.08);
+}
+
+.island-result-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.island-result-top strong {
+  min-width: 0;
+  overflow: hidden;
+  font-family: var(--sv-display, "Newsreader", Georgia, serif);
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.island-result-top time {
+  flex: none;
+  color: var(--isl-muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.island-result-desc {
+  display: block;
+  margin-top: 3px;
+  overflow: hidden;
+  color: var(--isl-muted);
+  font-size: 13px;
+  line-height: 1.5;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.island-results-hint {
+  display: flex;
+  gap: 16px;
+  padding: 10px 18px;
+  border-top: 1px solid var(--isl-line);
+  color: var(--isl-muted);
+  font-size: 11px;
+}
+
+.island-results-hint kbd {
+  border-color: var(--isl-line);
+  margin-right: 4px;
+}
+
+.island-results-empty {
+  padding: 28px 20px;
+  text-align: center;
+  color: var(--isl-muted);
+  font-size: 13px;
+}
+
+.island-results-empty p {
+  margin: 0 0 4px;
+  color: var(--isl-card-fg);
+  font-family: var(--sv-display, "Newsreader", Georgia, serif);
+  font-size: 18px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .island-shape,
+  .island-bar-shape,
+  .island-searchbar,
+  .island-results {
     transition: none !important;
   }
 }

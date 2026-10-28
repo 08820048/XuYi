@@ -2,18 +2,18 @@
 
 html:has(.sv-root),
 body:has(.sv-root) {
-  background-color: var(--hb, #f6f4ef);
+  background-color: var(--hb, #ffffff);
   background-image: none;
-  color: var(--hi, #1d1c1a);
+  color: var(--hi, #171717);
   transition: background-color 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), color 0.5s;
 }
 
 .sv-root {
-  --sv-ink: var(--hi, #1d1c1a);
-  --sv-paper: #f6f4ef;
-  --sv-card: rgb(255 255 255 / 0.55);
-  --sv-accent: #4f6558;
-  --sv-rgb: 29 28 26;
+  --sv-ink: var(--hi, #171717);
+  --sv-paper: #ffffff;
+  --sv-card: #fafafb;
+  --sv-accent: #2563eb;
+  --sv-rgb: 23 23 23;
   --sv-line: rgb(var(--sv-rgb) / 0.16);
   --sv-raise: #fff;
   --sv-serif: "Newsreader", "Iowan Old Style", "Songti SC", "Source Han Serif SC", "Noto Serif SC", Georgia, serif;
@@ -131,14 +131,14 @@ body:has(.sv-root) {
 .sv-root .pf-btn-dark,
 .sv-root a.pf-btn-dark {
   background: var(--sv-ink);
-  color: var(--hb, #f6f4ef);
+  color: var(--hb, #ffffff);
   border-color: var(--sv-ink);
 }
 
 .sv-root .pf-btn-dark:hover,
 .sv-root a.pf-btn-dark:hover {
   background: var(--sv-ink);
-  color: var(--hb, #f6f4ef);
+  color: var(--hb, #ffffff);
   opacity: 0.82;
 }
 
@@ -169,7 +169,7 @@ body:has(.sv-root) {
 .sv-root a.pf-btn-visit:hover {
   background: var(--sv-ink);
   border-color: var(--sv-ink);
-  color: var(--hb, #f6f4ef);
+  color: var(--hb, #ffffff);
 }
 
 .sv-root .pf-sub-form input {
@@ -463,7 +463,7 @@ body:has(.sv-root) {
 
 .sv-post:hover,
 .sv-post:focus-visible {
-  color: var(--hb, #f6f4ef);
+  color: var(--hb, #ffffff);
 }
 
 .sv-post:hover::before,
@@ -513,7 +513,7 @@ body:has(.sv-root) {
 
 .sv-root .pf-pager a[aria-current="page"] {
   background: var(--sv-ink);
-  color: var(--hb, #f6f4ef);
+  color: var(--hb, #ffffff);
 }
 
 .sv-root .pf-search-btn {
@@ -741,7 +741,7 @@ body:has(.sv-root) {
     --sv-ink: #ece8df;
     --sv-paper: #151412;
     --sv-card: rgb(255 255 255 / 0.04);
-    --sv-accent: #9bb8a8;
+    --sv-accent: #7ea6ff;
     --sv-rgb: 236 232 223;
     --sv-raise: #24231f;
     --pf-shadow-hover: 0 10px 30px rgb(0 0 0 / 0.4);

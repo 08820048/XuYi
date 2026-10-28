@@ -6,17 +6,17 @@
 
 html:has(.site-shell),
 body:has(.site-shell) {
-  background-color: #f6f4ef;
+  background-color: #ffffff;
   background-image: none;
 }
 
 .site-shell {
-  --sv-ink: #1d1c1a;
-  --sv-paper: #f6f4ef;
-  --sv-card: #fcfbf8;
-  --sv-accent: #4f6558;
-  --sv-rgb: 29 28 26;
-  --sv-accent-rgb: 79 101 88;
+  --sv-ink: #171717;
+  --sv-paper: #ffffff;
+  --sv-card: #fafafb;
+  --sv-accent: #2563eb;
+  --sv-rgb: 23 23 23;
+  --sv-accent-rgb: 37 99 235;
   --sv-line: rgb(var(--sv-rgb) / 0.12);
   --sv-raise: #fff;
   --sv-code-bg: #23221f;
@@ -28,21 +28,21 @@ body:has(.site-shell) {
   --kami-ivory: var(--sv-card);
   --kami-warm-sand: var(--sv-line);
   --kami-ink: var(--sv-accent);
-  --kami-ink-light: #6a8173;
+  --kami-ink-light: #5b8def;
   --kami-near-black: var(--sv-ink);
-  --kami-dark-warm: #33312c;
-  --kami-olive: #5a574f;
-  --kami-stone: #8a867c;
-  --kami-tag: #e6ebe7;
-  --kami-tag-quiet: #eeece6;
+  --kami-dark-warm: #2a2a2e;
+  --kami-olive: #52525b;
+  --kami-stone: #6b7280;
+  --kami-tag: #e8effd;
+  --kami-tag-quiet: #f1f1f3;
   --background: transparent;
   --editor-accent: var(--sv-accent);
   --editor-link: var(--sv-accent);
   --article-quote-border: rgb(var(--sv-accent-rgb) / 0.5);
   --editor-line: var(--sv-line);
-  --editor-soft: #eeece6;
+  --editor-soft: #f1f1f3;
   --editor-code-bg: var(--sv-card);
-  --editor-selection: #dfe7e1;
+  --editor-selection: #dbe7fe;
   --interaction-hover: rgb(var(--sv-rgb) / 0.04);
   --article-heading: var(--sv-ink);
   --article-body: var(--kami-dark-warm);
@@ -50,7 +50,7 @@ body:has(.site-shell) {
   --editor-ink: var(--sv-ink);
   --editor-muted: var(--kami-stone);
   --foreground: var(--sv-ink);
-  --interaction-active: #eeece6;
+  --interaction-active: #f1f1f3;
   --kami-page-width: 50rem;
   background: transparent;
 }
@@ -539,20 +539,20 @@ body:has(.site-shell) {
   html:has(.sv-root) {
     --kami-ivory: #1c1b19;
     --kami-warm-sand: rgb(236 232 223 / 0.12);
-    --kami-ink: #9bb8a8;
+    --kami-ink: #7ea6ff;
     --kami-near-black: #ece8df;
     --kami-dark-warm: #d6d2c8;
     --kami-olive: #b4afa3;
     --kami-stone: #8f8a7e;
-    --kami-tag: #26302a;
+    --kami-tag: #1f2a44;
     --kami-tag-quiet: #24231f;
     --editor-ink: #ece8df;
     --editor-muted: #8f8a7e;
     --editor-line: rgb(236 232 223 / 0.12);
     --editor-soft: #24231f;
     --editor-panel: #1c1b19;
-    --editor-accent: #9bb8a8;
-    --editor-link: #9bb8a8;
+    --editor-accent: #7ea6ff;
+    --editor-link: #7ea6ff;
     --stone-gray: #8f8a7e;
     --border-warm: rgb(236 232 223 / 0.12);
     --foreground: #ece8df;
@@ -566,20 +566,20 @@ body:has(.site-shell) {
     --sv-ink: #ece8df;
     --sv-paper: #151412;
     --sv-card: #1c1b19;
-    --sv-accent: #9bb8a8;
+    --sv-accent: #7ea6ff;
     --sv-rgb: 236 232 223;
-    --sv-accent-rgb: 155 184 168;
+    --sv-accent-rgb: 126 166 255;
     --sv-raise: #24231f;
     --sv-code-bg: #0f0e0d;
 
-    --kami-ink-light: #b3cbbd;
+    --kami-ink-light: #a9c2ff;
     --kami-dark-warm: #d6d2c8;
     --kami-olive: #b4afa3;
     --kami-stone: #8f8a7e;
-    --kami-tag: #26302a;
+    --kami-tag: #1f2a44;
     --kami-tag-quiet: #24231f;
     --editor-soft: #24231f;
-    --editor-selection: #2f3d35;
+    --editor-selection: #25365e;
     --interaction-active: #24231f;
   }
 

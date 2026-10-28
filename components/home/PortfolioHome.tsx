@@ -1,12 +1,12 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { createPortal } from 'react-dom'
 import Link from 'next/link'
 import { LangSync } from '@/components/LangSync'
 import { SiteIsland } from '@/components/SiteIsland'
 import { localePath, t as translate, type Locale } from '@/lib/i18n'
 import { useLocale } from '@/lib/i18n-client'
+import { openIslandSearch } from '@/lib/island-search'
 import type { PostWithTags } from '@/lib/db'
 import type { SiteNavLink } from '@/lib/site'
 import { isSponsorActive } from '@/lib/sponsor'
@@ -79,107 +79,16 @@ function formatDate(ts: number) {
 
 function BlogSearch() {
   const locale = useLocale()
-  const t = (key: Parameters<typeof translate>[1]) => translate(locale, key)
-  const [open, setOpen] = useState(false)
-  const [query, setQuery] = useState('')
-  const [results, setResults] = useState<{ slug: string; title: string; published_at: number }[]>([])
-  const [loading, setLoading] = useState(false)
-  const buttonRef = useRef<HTMLButtonElement>(null)
-  const panelRef = useRef<HTMLDivElement>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
-
-  useEffect(() => {
-    if (!open) return
-    const focusTimer = window.setTimeout(() => inputRef.current?.focus(), 30)
-    const onPointer = (event: MouseEvent) => {
-      const target = event.target as Node
-      if (panelRef.current?.contains(target) || buttonRef.current?.contains(target)) return
-      setOpen(false)
-    }
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setOpen(false)
-    }
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    document.addEventListener('mousedown', onPointer)
-    document.addEventListener('keydown', onKey)
-    return () => {
-      document.body.style.overflow = previousOverflow
-      window.clearTimeout(focusTimer)
-      document.removeEventListener('mousedown', onPointer)
-      document.removeEventListener('keydown', onKey)
-    }
-  }, [open])
-
-  useEffect(() => {
-    const trimmed = query.trim()
-    if (!open || !trimmed) {
-      setResults([])
-      setLoading(false)
-      return
-    }
-    const timer = window.setTimeout(async () => {
-      setLoading(true)
-      try {
-        const res = await fetch(`/api/search?q=${encodeURIComponent(trimmed)}${locale === 'en' ? '&lang=en' : ''}`)
-        const data = (await res.json()) as { results?: { slug: string; title: string; published_at: number }[] }
-        setResults(data.results ?? [])
-      } catch {
-        setResults([])
-      } finally {
-        setLoading(false)
-      }
-    }, 250)
-    return () => window.clearTimeout(timer)
-  }, [open, query, locale])
-
   return (
-    <div className="pf-search">
-      <button
-        ref={buttonRef}
-        type="button"
-        className="pf-search-btn"
-        aria-label={t('searchArticles')}
-        aria-expanded={open}
-        aria-haspopup="dialog"
-        onClick={() => setOpen((value) => !value)}
-      >
-        <SearchIcon />
-      </button>
-      {open &&
-        createPortal(
-          <div className="pf-search-backdrop">
-            <div
-              ref={panelRef}
-              className="pf-search-panel"
-              role="dialog"
-              aria-modal="true"
-              aria-label={t('searchArticles')}
-            >
-              <input
-                ref={inputRef}
-                value={query}
-                placeholder={t('searchArticles')}
-                aria-label={t('searchArticles')}
-                onChange={(event) => setQuery(event.target.value)}
-              />
-              {query.trim() && (
-                <div className="pf-search-results" aria-live="polite">
-                  {loading && results.length === 0 && <p>{t('searching')}</p>}
-                  {!loading && results.length === 0 && <p>{t('noResults')}</p>}
-                  {results.map((result) => (
-                    <Link key={result.slug} href={localePath(`/${result.slug}`, locale)} className="pf-search-hit" onClick={() => setOpen(false)}>
-                      <span>{result.title}</span>
-                      <time dateTime={new Date(result.published_at * 1000).toISOString()}>{formatDate(result.published_at)}</time>
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>,
-          document.body,
-        )}
-    </div>
+    <button
+      type="button"
+      className="pf-search-btn"
+      aria-label={translate(locale, 'searchArticles')}
+      title={`${translate(locale, 'searchArticles')} (⌘K)`}
+      onClick={openIslandSearch}
+    >
+      <SearchIcon />
+    </button>
   )
 }
 
