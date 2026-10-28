@@ -577,6 +577,16 @@ body:has(.sv-root) {
   max-width: 420px;
 }
 
+.sv-statsrow .pf-stats-kpi,
+.sv-statsrow .pf-stats-chart {
+  /* 去掉卡片的描边、阴影和圆角底色，让统计直接长在页面上 */
+  padding-left: 0;
+  padding-right: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
 .sv-statsrow > .pf-stats {
   margin: 0;
   padding: 0;
@@ -801,8 +811,6 @@ body:has(.sv-root) {
 
   .sv-root .pf-search-btn:hover,
   .sv-root .pf-search-btn[aria-expanded="true"],
-  .sv-root .pf-stats-kpi,
-  .sv-root .pf-stats-chart,
   .sv-root .pf-stats-readout,
   .sv-root .pf-stats-pill {
     background: var(--sv-raise);
