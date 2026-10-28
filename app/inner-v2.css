@@ -231,6 +231,12 @@ body:has(.site-shell) {
   line-height: 1.25;
   letter-spacing: -0.015em;
   color: var(--sv-ink);
+  /* kami 里的 balance 会把两行标题均分成两半，右边空一大截；改成尽量排满、只避免最后一行落单 */
+  text-wrap: pretty;
+}
+
+.site-shell :is(.kami-display, .kami-diary-title, .article-display-title, .public-page-title) {
+  text-wrap: pretty;
 }
 
 .site-shell .kami-article-meta {
