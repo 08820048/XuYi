@@ -1,5 +1,6 @@
 import { getAppCloudflareEnv } from '@/lib/cloudflare'
 import { getFriendLinks } from '@/lib/db'
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
 import { FriendLinksManager } from './FriendLinksManager'
 
 export const metadata = { title: '友联管理' }
@@ -18,12 +19,7 @@ export default async function FriendLinksPage() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-xl font-bold text-[var(--editor-ink)]">友联管理</h1>
-        <p className="mt-0.5 text-sm text-[var(--editor-muted)]">
-          共 {links.length} 个友联
-        </p>
-      </div>
+      <AdminPageHeader title="友联" description={`共 ${links.length} 个友联`} />
       <FriendLinksManager initialLinks={links} />
     </div>
   )

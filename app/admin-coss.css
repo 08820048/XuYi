@@ -1,0 +1,128 @@
+/*
+ * 管理后台主题：coss ui（https://coss.com/ui）的默认中性配色。
+ * 变量只作用在带 .coss-admin 的页面（html:has(.coss-admin)），这样弹窗、提示条这些挂在 body 下的浮层也能取到，
+ * 同时不影响前台。目前后台只做浅色，深色以后再加。
+ */
+
+@theme inline {
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+}
+
+html:has(.coss-admin) {
+  color-scheme: light;
+  --background: var(--color-white);
+  --foreground: var(--color-neutral-800);
+  --card: var(--color-white);
+  --card-foreground: var(--color-neutral-800);
+  --popover: var(--color-white);
+  --popover-foreground: var(--color-neutral-800);
+  --primary: var(--color-neutral-800);
+  --primary-foreground: var(--color-neutral-50);
+  --secondary: --alpha(var(--color-black) / 4%);
+  --secondary-foreground: var(--color-neutral-800);
+  --muted: --alpha(var(--color-black) / 4%);
+  --muted-foreground: color-mix(in srgb, var(--color-neutral-500) 90%, var(--color-black));
+  --accent: --alpha(var(--color-black) / 4%);
+  --accent-foreground: var(--color-neutral-800);
+  --destructive: var(--color-red-500);
+  --destructive-foreground: var(--color-red-700);
+  --border: --alpha(var(--color-black) / 8%);
+  --input: --alpha(var(--color-black) / 10%);
+  --ring: var(--color-neutral-400);
+  --info: var(--color-blue-500);
+  --info-foreground: var(--color-blue-700);
+  --success: var(--color-emerald-500);
+  --success-foreground: var(--color-emerald-700);
+  --warning: var(--color-amber-500);
+  --warning-foreground: var(--color-amber-700);
+  --sidebar: var(--color-neutral-50);
+  --sidebar-foreground: color-mix(in srgb, var(--color-neutral-800) 64%, var(--sidebar));
+  --sidebar-accent: --alpha(var(--color-black) / 4%);
+  --sidebar-accent-foreground: var(--color-neutral-800);
+  --sidebar-border: --alpha(var(--color-black) / 6%);
+  background-color: var(--background);
+
+  /* 旧组件用的变量，在后台里统一指向 coss 的配色，这样还没改写的部分也不会显得突兀 */
+  --editor-app-bg: var(--background);
+  --editor-panel: var(--card);
+  --editor-soft: var(--muted);
+  --editor-line: var(--border);
+  --editor-ink: var(--foreground);
+  --editor-muted: var(--muted-foreground);
+  --editor-accent: var(--primary);
+  --editor-accent-ink: var(--primary-foreground);
+  --editor-link: var(--primary);
+  --stone-gray: var(--muted-foreground);
+  --border-warm: var(--border);
+  --coral: var(--primary);
+  --interaction-hover: var(--accent);
+  --interaction-active: var(--accent);
+  --interaction-border: var(--border);
+  --surface-tray: var(--card);
+  --surface-raised: var(--card);
+}
+
+html:has(.coss-admin) body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  letter-spacing: normal;
+  -webkit-font-smoothing: antialiased;
+}
+
+.coss-admin {
+  --admin-sidebar-w: 15rem;
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  letter-spacing: normal;
+}
+
+.coss-admin * {
+  border-color: var(--border);
+}
+
+/* ---------- 还没改写成 coss 组件的旧表单控件：统一成相近的外观 ---------- */
+.coss-admin main :is(input:not([data-slot]):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]), select:not([data-slot]), textarea:not([data-slot])) {
+  border: 1px solid var(--input);
+  border-radius: 0.5rem;
+  background: var(--background);
+  color: var(--foreground);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+  transition: box-shadow 0.15s, border-color 0.15s;
+}
+
+.coss-admin main :is(input:not([data-slot]), select:not([data-slot]), textarea:not([data-slot])):focus-visible {
+  outline: none;
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px --alpha(var(--ring) / 24%);
+}
+
+.coss-admin main :is(input[type="checkbox"], input[type="radio"]) {
+  accent-color: var(--primary);
+}

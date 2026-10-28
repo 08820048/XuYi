@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { useToast } from '@/components/Toast'
-import { Modal } from '@/components/Modal'
+import { useToast } from '@/components/admin/toast'
+import { Modal } from '@/components/admin/Modal'
 import {
   AI_IMAGE_PROVIDER_CATEGORIES,
   AI_IMAGE_PROVIDER_MAP,

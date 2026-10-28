@@ -1,9 +1,9 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import { Dropdown } from '@/components/Dropdown'
-import { useToast } from '@/components/Toast'
-import { Modal } from '@/components/Modal'
+import { Dropdown } from '@/components/admin/Dropdown'
+import { useToast } from '@/components/admin/toast'
+import { Modal } from '@/components/admin/Modal'
 import {
   AI_IMAGE_ASPECT_RATIO_OPTIONS,
   AI_IMAGE_RESOLUTION_OPTIONS,

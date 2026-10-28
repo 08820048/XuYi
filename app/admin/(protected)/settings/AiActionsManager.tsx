@@ -1,9 +1,9 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { Dropdown } from '@/components/Dropdown'
-import { useToast } from '@/components/Toast'
-import { Modal } from '@/components/Modal'
+import { Dropdown } from '@/components/admin/Dropdown'
+import { useToast } from '@/components/admin/toast'
+import { Modal } from '@/components/admin/Modal'
 
 interface AiAction {
   id: number

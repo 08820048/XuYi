@@ -1,10 +1,12 @@
 'use client'
 
-import { useEffect, useRef, useState, useTransition } from 'react'
+import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { Languages, Loader2 } from 'lucide-react'
-import { Modal } from '@/components/Modal'
-import { useToast } from '@/components/Toast'
+import { Modal } from '@/components/admin/Modal'
+import { useToast } from '@/components/admin/toast'
+import { Button } from '@/components/ui/button'
+import { Menu, MenuItem, MenuPopup, MenuSeparator, MenuTrigger } from '@/components/ui/menu'
 
 export interface TranslationInfo {
   /** 英文版状态；null 表示还没有英文版 */
@@ -37,30 +39,18 @@ export function TranslationControl({
 }) {
   const router = useRouter()
   const toast = useToast()
-  const [menuOpen, setMenuOpen] = useState(false)
   const [busy, setBusy] = useState(false)
   const [refreshing, startRefresh] = useTransition()
   const [confirmDelete, setConfirmDelete] = useState(false)
-  const rootRef = useRef<HTMLDivElement>(null)
 
   const base = `/api/admin/posts/${encodeURIComponent(slug)}/translations/en`
   const status = info?.status ?? null
   const editHref = `/editor?edit=${encodeURIComponent(slug)}&lang=en`
   const viewHref = `/en/${encodeURIComponent(slug)}${status === 'draft' ? '?preview=1' : ''}`
 
-  useEffect(() => {
-    if (!menuOpen) return
-    const onDown = (event: MouseEvent) => {
-      if (rootRef.current && !rootRef.current.contains(event.target as Node)) setMenuOpen(false)
-    }
-    document.addEventListener('mousedown', onDown)
-    return () => document.removeEventListener('mousedown', onDown)
-  }, [menuOpen])
-
   if (locked) return null
 
   async function setPublished(next: 'published' | 'draft') {
-    setMenuOpen(false)
     setBusy(true)
     try {
       await api(base, 'PATCH', { status: next })
@@ -89,69 +79,48 @@ export function TranslationControl({
   }
 
   let label = '无'
-  let tone = 'border-[var(--editor-line)] text-[var(--stone-gray)] hover:text-[var(--editor-ink)]'
+  let tone = 'text-muted-foreground'
   if (refreshing) {
     label = '更新中…'
   } else if (status === 'published') {
     label = info?.stale ? '已发布 · 中文有更新' : '已发布'
-    tone = info?.stale ? 'border-amber-400 text-amber-600' : 'border-emerald-400 text-emerald-600'
+    tone = info?.stale ? 'text-warning-foreground' : 'text-success-foreground'
   } else if (status === 'draft') {
     label = info?.stale ? '草稿 · 中文有更新' : '草稿'
-    tone = 'border-amber-400 text-amber-600'
+    tone = 'text-warning-foreground'
   }
 
-  const item = 'block w-full px-3 py-1.5 text-left text-xs text-[var(--editor-ink)] hover:bg-[var(--editor-soft)]'
-
   return (
-    <div ref={rootRef} className="relative inline-block">
-      <button
-        type="button"
-        onClick={() => setMenuOpen((open) => !open)}
-        disabled={busy || refreshing}
-        title="英文版"
-        className={`inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[11px] leading-none transition-colors disabled:opacity-60 ${tone}`}
-      >
-        {refreshing ? <Loader2 className="h-3 w-3 animate-spin" /> : <Languages className="h-3 w-3" />}
-        <span>EN · {label}</span>
-      </button>
-
-      {menuOpen && (
-        <div className="absolute left-0 top-full z-20 mt-1 min-w-[11rem] overflow-hidden rounded-lg border border-[var(--editor-line)] bg-[var(--editor-panel)] py-1 shadow-lg">
+    <>
+      <Menu>
+        <MenuTrigger
+          render={<Button variant="outline" size="xs" disabled={busy || refreshing} aria-label="英文版" className={tone} />}
+        >
+          {refreshing ? <Loader2 className="animate-spin" aria-hidden="true" /> : <Languages aria-hidden="true" />}
+          EN · {label}
+        </MenuTrigger>
+        <MenuPopup align="start">
           {status === null ? (
-            <a className={item} href={editHref}>
-              写英文版（以中文内容为起点）
-            </a>
+            <MenuItem render={<a href={editHref} />}>写英文版（以中文内容为起点）</MenuItem>
           ) : (
             <>
-              <a className={item} href={editHref}>
-                编辑英文版
-              </a>
-              <a className={item} href={viewHref} target="_blank" rel="noreferrer">
+              <MenuItem render={<a href={editHref} />}>编辑英文版</MenuItem>
+              <MenuItem render={<a href={viewHref} target="_blank" rel="noreferrer" />}>
                 {status === 'draft' ? '预览英文版' : '查看英文版'}
-              </a>
+              </MenuItem>
               {status === 'draft' ? (
-                <button type="button" className={item} onClick={() => setPublished('published')}>
-                  发布英文版
-                </button>
+                <MenuItem onClick={() => setPublished('published')}>发布英文版</MenuItem>
               ) : (
-                <button type="button" className={item} onClick={() => setPublished('draft')}>
-                  下线为草稿
-                </button>
+                <MenuItem onClick={() => setPublished('draft')}>下线为草稿</MenuItem>
               )}
-              <button
-                type="button"
-                className={`${item} text-rose-600`}
-                onClick={() => {
-                  setMenuOpen(false)
-                  setConfirmDelete(true)
-                }}
-              >
+              <MenuSeparator />
+              <MenuItem variant="destructive" onClick={() => setConfirmDelete(true)}>
                 删除英文版
-              </button>
+              </MenuItem>
             </>
           )}
-        </div>
-      )}
+        </MenuPopup>
+      </Menu>
 
       <Modal
         isOpen={confirmDelete}
@@ -162,6 +131,6 @@ export function TranslationControl({
         confirmText="删除"
         type="danger"
       />
-    </div>
+    </>
   )
 }

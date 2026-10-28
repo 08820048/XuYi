@@ -2,6 +2,12 @@ import { getPosts, searchPosts, getCategories, getPostTranslationSummaries, getC
 import { getTranslationFreshness } from '@/lib/translation-hash'
 import { getAppCloudflareEnv } from '@/lib/cloudflare'
 import Link from 'next/link'
+import { FileText } from 'lucide-react'
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
+import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { PostRow } from './PostRow'
 import type { TranslationInfo } from './TranslationControl'
 import { FilterBar } from './FilterBar'
@@ -96,6 +102,11 @@ export default async function AdminPostsPage({
 
   return (
     <div>
+      <AdminPageHeader
+        title="文章"
+        description="管理已发布的文章、草稿和英文版。"
+      />
+
       <FilterBar
         currentStatus={status}
         currentCategory={category}
@@ -106,60 +117,38 @@ export default async function AdminPostsPage({
       />
 
       {posts.length === 0 ? (
-        <div className="bg-[var(--editor-panel)] rounded-xl border border-[var(--editor-line)] p-20 text-center">
-          <div className="max-w-xs mx-auto">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[var(--editor-soft)] flex items-center justify-center">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--stone-gray)]">
-                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="12" y1="18" x2="12" y2="12"></line>
-                <line x1="9" y1="15" x2="15" y2="15"></line>
-              </svg>
-            </div>
-            <p className="text-[var(--editor-muted)] mb-2">
-              {q ? '未找到匹配的文章' : '还没有任何文章'}
-            </p>
-            <p className="text-xs text-[var(--stone-gray)] mb-4">
-              {q ? '试试其他关键词' : '开始创作，分享你的思考'}
-            </p>
-            {!q && (
-              <Link
-                href="/editor"
-                className="inline-flex items-center gap-1.5 text-sm text-[var(--editor-accent)] hover:underline underline-offset-2 font-medium"
-              >
-                写第一篇文章 →
-              </Link>
-            )}
-          </div>
-        </div>
+        <Empty className="rounded-2xl border border-dashed py-16">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <FileText aria-hidden="true" />
+            </EmptyMedia>
+            <EmptyTitle>{q ? '未找到匹配的文章' : '还没有任何文章'}</EmptyTitle>
+            <EmptyDescription>{q ? '试试其他关键词。' : '开始创作，分享你的思考。'}</EmptyDescription>
+          </EmptyHeader>
+          {!q && (
+            <EmptyContent>
+              <Button render={<Link href="/editor" />}>写第一篇文章</Button>
+            </EmptyContent>
+          )}
+        </Empty>
       ) : (
-        <div className="bg-[var(--editor-panel)] rounded-xl border border-[var(--editor-line)] overflow-hidden">
-          {/* 表头 */}
-          <div className="hidden md:grid grid-cols-[50px_1fr_120px_90px_200px] gap-3 px-5 py-3.5 border-b border-[var(--editor-line)] bg-[var(--editor-soft)]">
-            <span className="text-xs font-semibold text-[var(--editor-muted)] uppercase tracking-wide text-center">
-              状态
-            </span>
-            <span className="text-xs font-semibold text-[var(--editor-muted)] uppercase tracking-wide">
-              标题
-            </span>
-            <span className="text-xs font-semibold text-[var(--editor-muted)] uppercase tracking-wide">
-              分类
-            </span>
-            <span className="text-xs font-semibold text-[var(--editor-muted)] uppercase tracking-wide text-center">
-              阅读
-            </span>
-            <span className="text-xs font-semibold text-[var(--editor-muted)] uppercase tracking-wide text-right">
-              操作
-            </span>
-          </div>
-
-          {/* 文章列表 */}
-          <div className="divide-y divide-[var(--editor-line)]">
-            {posts.map((post) => (
-              <PostRow key={post.slug} post={post} categories={dbCategories} translation={translationInfo.get(post.id) ?? null} />
-            ))}
-          </div>
-        </div>
+        <Card>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>标题</TableHead>
+                <TableHead className="hidden w-40 md:table-cell">分类</TableHead>
+                <TableHead className="hidden w-24 text-right sm:table-cell">阅读</TableHead>
+                <TableHead className="w-28 text-right">操作</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {posts.map((post) => (
+                <PostRow key={post.slug} post={post} categories={dbCategories} translation={translationInfo.get(post.id) ?? null} />
+              ))}
+            </TableBody>
+          </Table>
+        </Card>
       )}
     </div>
   )

@@ -2,6 +2,7 @@
 @import "katex/dist/katex.min.css";
 @import "./kami.css";
 @import "./shell.css";
+@import "./admin-coss.css";
 
 :root {
   --background: #ffffff;

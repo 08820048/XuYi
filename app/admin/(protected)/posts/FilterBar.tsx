@@ -1,8 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Dropdown } from '@/components/Dropdown'
+import { Search, X } from 'lucide-react'
+import { Dropdown } from '@/components/admin/Dropdown'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
 interface FilterBarProps {
   currentStatus?: string
@@ -21,14 +25,7 @@ interface FilterBarProps {
   resultCount: number
 }
 
-export function FilterBar({
-  currentStatus,
-  currentCategory,
-  categories,
-  initialQuery = '',
-  counts,
-  resultCount,
-}: FilterBarProps) {
+export function FilterBar({ currentStatus, currentCategory, categories, initialQuery = '', counts, resultCount }: FilterBarProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [query, setQuery] = useState(initialQuery)
@@ -37,46 +34,30 @@ export function FilterBar({
     setQuery(initialQuery)
   }, [initialQuery])
 
-  const updateFilter = (key: string, value: string) => {
-    const params = new URLSearchParams(searchParams.toString())
-    if (value === 'all') {
-      params.delete(key)
-    } else {
-      params.set(key, value)
-    }
+  function push(params: URLSearchParams) {
     const qs = params.toString()
     router.push(`/admin/posts${qs ? `?${qs}` : ''}`)
   }
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
-    const trimmed = query.trim()
+  function updateFilter(key: string, value: string) {
     const params = new URLSearchParams(searchParams.toString())
-    if (trimmed) {
-      params.set('q', trimmed)
-    } else {
-      params.delete('q')
-    }
-    const qs = params.toString()
-    router.push(`/admin/posts${qs ? `?${qs}` : ''}`)
+    if (value === 'all') params.delete(key)
+    else params.set(key, value)
+    push(params)
   }
 
-  const handleClear = () => {
-    setQuery('')
+  function setSearch(value: string) {
     const params = new URLSearchParams(searchParams.toString())
-    params.delete('q')
-    const qs = params.toString()
-    router.push(`/admin/posts${qs ? `?${qs}` : ''}`)
+    if (value) params.set('q', value)
+    else params.delete('q')
+    push(params)
   }
 
   const activeStatus = currentStatus || 'all'
   const activeCategory = currentCategory || 'all'
   const hasActiveFilters = Boolean(query.trim() || activeStatus !== 'all' || activeCategory !== 'all')
 
-  const categoryOptions = [
-    { value: 'all', label: '全部分类' },
-    ...categories.map((cat) => ({ value: cat, label: cat })),
-  ]
+  const categoryOptions = [{ value: 'all', label: '全部分类' }, ...categories.map((cat) => ({ value: cat, label: cat }))]
 
   const statusItems = [
     { value: 'all', label: '全部', count: counts.all },
@@ -89,100 +70,85 @@ export function FilterBar({
   ] as const
 
   return (
-    <div className="mb-5 rounded-xl border border-[var(--editor-line)] bg-[var(--editor-panel)] p-4 sm:p-5">
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
-          <form onSubmit={handleSearch} className="flex-1">
-            <div className="relative">
-              <input
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="搜索标题、摘要或正文…"
-                className="w-full rounded-lg border border-[var(--editor-line)] bg-[var(--background)] px-3 py-2 pl-9 pr-9 text-sm text-[var(--editor-ink)] placeholder:text-[var(--editor-muted)] transition-all focus:border-[var(--editor-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--editor-accent)]/20"
-              />
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--stone-gray)]"
-              >
-                <circle cx="11" cy="11" r="8"></circle>
-                <path d="m21 21-4.35-4.35"></path>
-              </svg>
-              {query && (
-                <button
-                  type="button"
-                  onClick={handleClear}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--stone-gray)] transition-colors hover:text-[var(--editor-ink)]"
-                  title="清除搜索"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                  </svg>
-                </button>
-              )}
-            </div>
-          </form>
+    <div className="mb-4 flex flex-col gap-3">
+      <div className="flex flex-col gap-2 sm:flex-row">
+        <form
+          className="relative flex-1"
+          onSubmit={(event) => {
+            event.preventDefault()
+            setSearch(query.trim())
+          }}
+        >
+          <Search className="pointer-events-none absolute top-1/2 left-3 z-10 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+          <Input
+            type="search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="搜索标题、摘要或正文…"
+            aria-label="搜索文章"
+            className="[&_input]:ps-8"
+          />
+          {query && (
+            <button
+              type="button"
+              onClick={() => {
+                setQuery('')
+                setSearch('')
+              }}
+              className="absolute top-1/2 right-2 z-10 -translate-y-1/2 rounded-sm p-1 text-muted-foreground transition-colors hover:text-foreground"
+              aria-label="清除搜索"
+            >
+              <X className="size-3.5" aria-hidden="true" />
+            </button>
+          )}
+        </form>
 
-          <div className="flex items-center gap-3">
-            <div className="min-w-[160px]">
-              <Dropdown
-                options={categoryOptions}
-                value={activeCategory}
-                onChange={(value) => updateFilter('category', value)}
-                placeholder="全部分类"
-                className="w-full"
-              />
-            </div>
-
-            {hasActiveFilters ? (
-              <button
-                type="button"
-                onClick={() => {
-                  setQuery('')
-                  router.push('/admin/posts')
-                }}
-                className="shrink-0 rounded-lg border border-[var(--editor-line)] px-3 py-2 text-sm text-[var(--editor-muted)] transition hover:bg-[var(--editor-soft)] hover:text-[var(--editor-ink)]"
-              >
-                清空筛选
-              </button>
-            ) : null}
+        <div className="flex items-center gap-2">
+          <div className="w-44">
+            <Dropdown
+              options={categoryOptions}
+              value={activeCategory}
+              onChange={(value) => updateFilter('category', value)}
+              placeholder="全部分类"
+              className="w-full"
+            />
           </div>
+          {hasActiveFilters && (
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setQuery('')
+                router.push('/admin/posts')
+              }}
+            >
+              清空筛选
+            </Button>
+          )}
         </div>
+      </div>
 
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex flex-wrap gap-2">
-            {statusItems.map((item) => (
-              <button
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-wrap gap-1.5">
+          {statusItems.map((item) => {
+            const active = activeStatus === item.value
+            return (
+              <Button
                 key={item.value}
+                size="sm"
+                variant={active ? 'secondary' : 'ghost'}
+                aria-pressed={active}
+                className={active ? 'font-semibold' : 'text-muted-foreground'}
                 onClick={() => updateFilter('status', item.value)}
-                className={`inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm transition-colors ${
-                  activeStatus === item.value
-                    ? 'bg-[var(--editor-accent)] text-white font-medium'
-                    : 'bg-[var(--editor-panel)] text-[var(--editor-muted)] hover:bg-[var(--editor-soft)] hover:text-[var(--editor-ink)]'
-                }`}
               >
-                <span>{item.label}</span>
-                <span className={`rounded-full px-1.5 py-0.5 text-xs tabular-nums ${
-                  activeStatus === item.value ? 'bg-white/15 text-white' : 'bg-[var(--background)] text-[var(--editor-muted)]'
-                }`}>
+                {item.label}
+                <Badge variant={active ? 'default' : 'outline'} size="sm" className="tabular-nums">
                   {item.count}
-                </span>
-              </button>
-            ))}
-          </div>
-
-          <div className="text-xs text-[var(--stone-gray)]">
-            当前结果 {resultCount} 篇
-          </div>
+                </Badge>
+              </Button>
+            )
+          })}
         </div>
+        <span className="text-muted-foreground text-xs">当前结果 {resultCount} 篇</span>
       </div>
     </div>
   )

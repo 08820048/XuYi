@@ -1,6 +1,7 @@
 import { getAppCloudflareEnv } from '@/lib/cloudflare'
 import { getSetting, getCategories, getFriendLinks } from '@/lib/db'
 import { detectRuntimeCapabilities } from '@/lib/runtime-capabilities'
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
 import { SettingsManager } from './SettingsManager'
 
 export const metadata = { title: '站点设置' }
@@ -34,13 +35,8 @@ export default async function SettingsPage() {
   } catch {}
 
   return (
-    <div className="space-y-6">
-      <h1
-        className="text-2xl font-medium text-[var(--editor-ink)]"
-        style={{ fontFamily: 'Georgia, serif' }}
-      >
-        站点设置
-      </h1>
+    <div>
+      <AdminPageHeader title="设置" description="站点导航、关于我、AI 与运行环境。" />
       <SettingsManager
         initialNavLinks={navLinks}
         initialCustomJs={customJs}

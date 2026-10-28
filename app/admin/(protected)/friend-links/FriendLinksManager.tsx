@@ -2,8 +2,17 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Modal } from '@/components/Modal'
-import { useToast } from '@/components/Toast'
+import { Modal } from '@/components/admin/Modal'
+import { useToast } from '@/components/admin/toast'
+import { Check, Pencil, Plus, Trash2 } from 'lucide-react'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card'
+import { Field, FieldLabel } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
+import { Switch } from '@/components/ui/switch'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import type { FriendLinkRow } from '@/lib/db'
 
 interface EditableFriendLink {
@@ -154,131 +163,141 @@ export function FriendLinksManager({ initialLinks }: { initialLinks: FriendLinkR
     update: (field: keyof typeof emptyDraft, value: string | number) => void,
   ) => (
     <div className="grid gap-3 lg:grid-cols-[1fr_1.4fr_1.2fr_0.7fr_auto]">
-      <label className="space-y-1">
-        <span className="block text-xs text-[var(--editor-muted)]">名称</span>
-        <input
-          value={values.name}
-          onChange={(event) => update('name', event.target.value)}
-          placeholder="如：某某博客"
-          className="h-10 w-full rounded-lg border border-[var(--editor-line)] bg-[var(--background)] px-3 text-sm text-[var(--editor-ink)] outline-none transition focus:border-[var(--editor-ink)]"
-        />
-      </label>
-      <label className="space-y-1">
-        <span className="block text-xs text-[var(--editor-muted)]">链接</span>
-        <input
-          value={values.url}
-          onChange={(event) => update('url', event.target.value)}
-          placeholder="https://example.com"
-          className="h-10 w-full rounded-lg border border-[var(--editor-line)] bg-[var(--background)] px-3 text-sm text-[var(--editor-ink)] outline-none transition focus:border-[var(--editor-ink)]"
-        />
-      </label>
-      <label className="space-y-1">
-        <span className="block text-xs text-[var(--editor-muted)]">头像</span>
-        <input
+      <Field>
+        <FieldLabel>名称</FieldLabel>
+        <Input value={values.name} onChange={(event) => update('name', event.target.value)} placeholder="如：某某博客" />
+      </Field>
+      <Field>
+        <FieldLabel>链接</FieldLabel>
+        <Input value={values.url} onChange={(event) => update('url', event.target.value)} placeholder="https://example.com" />
+      </Field>
+      <Field>
+        <FieldLabel>头像</FieldLabel>
+        <Input
           value={values.avatar_url}
           onChange={(event) => update('avatar_url', event.target.value)}
           placeholder="https://example.com/avatar.png"
-          className="h-10 w-full rounded-lg border border-[var(--editor-line)] bg-[var(--background)] px-3 text-sm text-[var(--editor-ink)] outline-none transition focus:border-[var(--editor-ink)]"
         />
-      </label>
-      <label className="space-y-1">
-        <span className="block text-xs text-[var(--editor-muted)]">排序</span>
-        <input
-          type="number"
-          value={values.sort_order}
-          onChange={(event) => update('sort_order', Number(event.target.value))}
-          className="h-10 w-full rounded-lg border border-[var(--editor-line)] bg-[var(--background)] px-3 text-sm text-[var(--editor-ink)] outline-none transition focus:border-[var(--editor-ink)]"
-        />
-      </label>
-      <label className="flex h-10 items-center gap-2 self-end text-xs text-[var(--editor-muted)]">
-        <input
-          type="checkbox"
-          checked={values.is_visible === 1}
-          onChange={(event) => update('is_visible', event.target.checked ? 1 : 0)}
-          className="accent-[var(--editor-accent)]"
-        />
-        显示
-      </label>
-      <label className="space-y-1 lg:col-span-5">
-        <span className="block text-xs text-[var(--editor-muted)]">描述</span>
-        <input
-          value={values.description}
-          onChange={(event) => update('description', event.target.value)}
-          placeholder="一句话介绍这个站点"
-          className="h-10 w-full rounded-lg border border-[var(--editor-line)] bg-[var(--background)] px-3 text-sm text-[var(--editor-ink)] outline-none transition focus:border-[var(--editor-ink)]"
-        />
-      </label>
+      </Field>
+      <Field>
+        <FieldLabel>排序</FieldLabel>
+        <Input type="number" value={values.sort_order} onChange={(event) => update('sort_order', Number(event.target.value))} />
+      </Field>
+      <Field className="self-end">
+        <FieldLabel className="flex h-8.5 items-center gap-2 sm:h-7.5">
+          <Switch checked={values.is_visible === 1} onCheckedChange={(checked) => update('is_visible', checked ? 1 : 0)} />
+          显示
+        </FieldLabel>
+      </Field>
+      <Field className="lg:col-span-5">
+        <FieldLabel>描述</FieldLabel>
+        <Input value={values.description} onChange={(event) => update('description', event.target.value)} placeholder="一句话介绍这个站点" />
+      </Field>
     </div>
   )
 
   return (
     <div className="space-y-6">
-      <form onSubmit={submitNew} className="rounded-xl border border-[var(--editor-line)] bg-[var(--editor-panel)] p-5">
-        <h2 className="mb-3 text-sm font-semibold text-[var(--editor-ink)]">添加友联</h2>
-        {renderFields(draft, updateDraft)}
-        <div className="mt-4 flex items-center gap-3">
-          <button
-            type="submit"
-            disabled={loading || !draft.name.trim() || !draft.url.trim()}
-            className="rounded-lg bg-[var(--editor-ink)] px-4 py-2 text-sm font-medium text-white transition hover:brightness-110 disabled:opacity-50"
-          >
-            {loading ? '添加中...' : '添加'}
-          </button>
-          {error && <p className="text-xs text-rose-500">{error}</p>}
-        </div>
-      </form>
-
-      <div className="overflow-hidden rounded-xl border border-[var(--editor-line)] bg-[var(--editor-panel)]">
-        <div className="grid grid-cols-[1fr_auto_auto] gap-4 border-b border-[var(--editor-line)] bg-[var(--editor-soft)] px-5 py-3">
-          <span className="text-xs font-semibold uppercase tracking-wide text-[var(--editor-muted)]">站点</span>
-          <span className="text-xs font-semibold uppercase tracking-wide text-[var(--editor-muted)]">状态</span>
-          <span className="text-right text-xs font-semibold uppercase tracking-wide text-[var(--editor-muted)]">操作</span>
-        </div>
-        <div className="divide-y divide-[var(--editor-line)]">
-          {links.map((link) => (
-            <div key={link.id} className="px-5 py-4">
-              {editingId === link.id ? (
-                <div className="space-y-3">
-                  {renderFields(editing, updateEditing)}
-                  <div className="flex gap-2">
-                    <button type="button" onClick={submitEdit} className="text-xs text-emerald-600 hover:underline">保存</button>
-                    <button type="button" onClick={() => setEditingId(null)} className="text-xs text-[var(--editor-muted)] hover:underline">取消</button>
-                  </div>
-                </div>
-              ) : (
-                <div className="grid grid-cols-[1fr_auto_auto] items-center gap-4">
-                  <div className="flex min-w-0 items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[var(--editor-line)] bg-[var(--editor-soft)] text-sm font-semibold text-[var(--editor-muted)]">
-                      {link.avatar_url ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={link.avatar_url} alt="" className="h-full w-full object-cover" />
-                      ) : (
-                        link.name.slice(0, 1).toUpperCase()
-                      )}
-                    </div>
-                    <div className="min-w-0">
-                      <a href={link.url} target="_blank" rel="noopener noreferrer" className="truncate text-sm font-medium text-[var(--editor-ink)] hover:text-[var(--editor-accent)]">
-                        {link.name}
-                      </a>
-                      <p className="truncate text-xs text-[var(--editor-muted)]">{link.description || link.url}</p>
-                    </div>
-                  </div>
-                  <span className={`rounded-full px-2.5 py-1 text-xs ${link.is_visible ? 'bg-emerald-50 text-emerald-600' : 'bg-[var(--editor-soft)] text-[var(--editor-muted)]'}`}>
-                    {link.is_visible ? '显示' : '隐藏'}
-                  </span>
-                  <div className="flex justify-end gap-2">
-                    <button type="button" onClick={() => startEditing(link)} className="text-xs text-[var(--editor-accent)] hover:underline">编辑</button>
-                    <button type="button" onClick={() => setDeleteModal(link)} className="text-xs text-rose-500 hover:underline">删除</button>
-                  </div>
-                </div>
-              )}
+      <Card>
+        <CardHeader>
+          <CardTitle>添加友联</CardTitle>
+          <CardDescription>友联会显示在前台的“友联”页面。</CardDescription>
+        </CardHeader>
+        <CardPanel>
+          <form onSubmit={submitNew}>
+            {renderFields(draft, updateDraft)}
+            <div className="mt-4 flex items-center gap-3">
+              <Button type="submit" loading={loading} disabled={!draft.name.trim() || !draft.url.trim()}>
+                <Plus aria-hidden="true" />
+                添加
+              </Button>
+              {error && <p className="text-destructive-foreground text-xs">{error}</p>}
             </div>
-          ))}
-          {links.length === 0 && (
-            <div className="px-5 py-8 text-center text-sm text-[var(--editor-muted)]">暂无友联</div>
-          )}
-        </div>
-      </div>
+          </form>
+        </CardPanel>
+      </Card>
+
+      <Card>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>站点</TableHead>
+              <TableHead className="w-20">状态</TableHead>
+              <TableHead className="w-24 text-right">操作</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {links.map((link) =>
+              editingId === link.id ? (
+                <TableRow key={link.id}>
+                  <TableCell colSpan={3} className="whitespace-normal">
+                    <div className="space-y-3 py-1">
+                      {renderFields(editing, updateEditing)}
+                      <div className="flex gap-2">
+                        <Button size="sm" onClick={submitEdit}>
+                          <Check aria-hidden="true" />
+                          保存
+                        </Button>
+                        <Button size="sm" variant="ghost" onClick={() => setEditingId(null)}>
+                          取消
+                        </Button>
+                      </div>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                <TableRow key={link.id}>
+                  <TableCell className="max-w-0">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <Avatar className="size-9 rounded-lg">
+                        {link.avatar_url && <AvatarImage src={link.avatar_url} alt="" className="rounded-lg" />}
+                        <AvatarFallback className="rounded-lg">{link.name.slice(0, 1).toUpperCase()}</AvatarFallback>
+                      </Avatar>
+                      <div className="min-w-0">
+                        <a
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block truncate font-medium transition-colors hover:text-muted-foreground"
+                        >
+                          {link.name}
+                        </a>
+                        <p className="truncate text-muted-foreground text-xs">{link.description || link.url}</p>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={link.is_visible ? 'success' : 'secondary'}>{link.is_visible ? '显示' : '隐藏'}</Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex justify-end gap-1">
+                      <Button size="icon-sm" variant="ghost" aria-label="编辑" onClick={() => startEditing(link)}>
+                        <Pencil aria-hidden="true" />
+                      </Button>
+                      <Button
+                        size="icon-sm"
+                        variant="ghost"
+                        aria-label="删除"
+                        className="text-destructive-foreground"
+                        onClick={() => setDeleteModal(link)}
+                      >
+                        <Trash2 aria-hidden="true" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ),
+            )}
+            {links.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={3} className="py-10 text-center text-muted-foreground">
+                  暂无友联
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </Card>
 
       <Modal
         isOpen={!!deleteModal}

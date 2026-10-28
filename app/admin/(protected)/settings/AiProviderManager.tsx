@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { useToast } from '@/components/Toast'
-import { Modal } from '@/components/Modal'
+import { useToast } from '@/components/admin/toast'
+import { Modal } from '@/components/admin/Modal'
 import { AI_PROVIDER_CATEGORIES, AI_PROVIDER_MAP, AI_PROVIDER_PRESETS } from '@/lib/ai-provider-presets'
 import { clampMaxTokens, clampTemperature, normalizeBaseUrl } from '@/lib/ai-provider-profiles'
 import {

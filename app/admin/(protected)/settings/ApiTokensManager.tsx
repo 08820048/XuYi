@@ -1,7 +1,14 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useToast } from '@/components/Toast'
+import { Copy, Trash2 } from 'lucide-react'
+import { useToast } from '@/components/admin/toast'
+import { Modal } from '@/components/admin/Modal'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
 interface Token {
   id: number
@@ -25,6 +32,7 @@ export function ApiTokensManager() {
   const [newName, setNewName] = useState('')
   const [creating, setCreating] = useState(false)
   const [newToken, setNewToken] = useState<string | null>(null)
+  const [deleting, setDeleting] = useState<{ id: number; name: string } | null>(null)
   const toast = useToast()
 
   const loadTokens = async () => {
@@ -61,8 +69,7 @@ export function ApiTokensManager() {
     }
   }
 
-  const deleteToken = async (id: number, name: string) => {
-    if (!confirm(`确定删除 Token "${name}"？`)) return
+  const deleteToken = async (id: number) => {
     try {
       const res = await fetch('/api/admin/tokens', {
         method: 'DELETE',
@@ -72,8 +79,10 @@ export function ApiTokensManager() {
       if (!res.ok) throw new Error('删除失败')
       toast.success('Token 已删除')
       loadTokens()
+      return true
     } catch {
       toast.error('删除失败')
+      return false
     }
   }
 
@@ -97,93 +106,94 @@ export function ApiTokensManager() {
   }
 
   return (
-    <div className="space-y-6">
-      <p className="text-sm text-[var(--editor-muted)]">
-        API Token 用于 Obsidian 插件、Chrome 插件、Claude Skill 等外部工具发布文章。
-      </p>
+    <div className="space-y-5">
+      <p className="text-muted-foreground text-sm">API Token 用于 Obsidian 插件、Chrome 插件、Claude Skill 等外部工具发布文章。</p>
 
       {/* 新 Token 提示（只显示一次） */}
       {newToken && (
-        <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 space-y-2">
-          <p className="text-sm font-medium text-amber-800">
-            Token 已创建！请立即复制保存，此后不再显示完整 Token。
-          </p>
-          <div className="flex items-center gap-2">
-            <code className="flex-1 text-sm bg-[var(--background)] border border-amber-200 rounded px-3 py-2 break-all font-mono text-[var(--editor-ink)]">
-              {newToken}
-            </code>
-            <button
-              onClick={() => copyToken(newToken)}
-              className="shrink-0 px-3 py-2 text-sm bg-[var(--editor-accent)] text-white rounded-lg hover:brightness-105"
-            >
-              复制
-            </button>
-          </div>
-          <button
-            onClick={() => setNewToken(null)}
-            className="text-xs text-amber-600 hover:underline"
-          >
-            我已保存，关闭此提示
-          </button>
-        </div>
+        <Alert variant="warning">
+          <AlertTitle>Token 已创建！请立即复制保存，此后不再显示完整 Token。</AlertTitle>
+          <AlertDescription>
+            <div className="mt-2 flex w-full items-center gap-2">
+              <code className="flex-1 break-all rounded-md border bg-background px-3 py-2 font-mono text-foreground text-sm">{newToken}</code>
+              <Button size="sm" onClick={() => copyToken(newToken)}>
+                <Copy aria-hidden="true" />
+                复制
+              </Button>
+            </div>
+            <Button variant="link" size="xs" className="mt-1 px-0" onClick={() => setNewToken(null)}>
+              我已保存，关闭此提示
+            </Button>
+          </AlertDescription>
+        </Alert>
       )}
 
       {/* 创建新 Token */}
       <div className="flex gap-2">
-        <input
-          type="text"
+        <Input
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && createToken()}
           placeholder="Token 用途，如 Obsidian插件"
-          className="flex-1 px-3 py-2 text-sm border border-[var(--editor-line)] rounded-lg bg-[var(--background)] text-[var(--editor-ink)] placeholder:text-[var(--editor-muted)]
-                     focus:outline-none focus:border-[var(--editor-accent)]"
+          aria-label="Token 用途"
         />
-        <button
-          onClick={createToken}
-          disabled={creating || !newName.trim()}
-          className="px-4 py-2 text-sm bg-[var(--editor-accent)] text-white rounded-lg font-medium
-                     hover:brightness-105 disabled:opacity-50"
-        >
-          {creating ? '创建中...' : '生成 Token'}
-        </button>
+        <Button onClick={createToken} loading={creating} disabled={!newName.trim()}>
+          生成 Token
+        </Button>
       </div>
 
       {/* Token 列表 */}
       {tokens.length === 0 ? (
-        <p className="text-sm text-[var(--stone-gray)] text-center py-8">
-          暂无 API Token
-        </p>
+        <p className="py-8 text-center text-muted-foreground text-sm">暂无 API Token</p>
       ) : (
-        <div className="space-y-2">
-          {tokens.map((t) => (
-            <div
-              key={t.id}
-              className="flex items-center justify-between px-4 py-3 bg-[var(--editor-panel)] border border-[var(--editor-line)] rounded-lg"
-            >
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-[var(--editor-ink)]">
-                    {t.name}
-                  </span>
-                  <code className="text-xs text-[var(--stone-gray)] font-mono">
-                    {t.token_preview}
-                  </code>
-                </div>
-                <div className="text-xs text-[var(--stone-gray)] mt-0.5">
-                  创建于 {formatDate(t.created_at)} · 最后使用 {formatDate(t.last_used_at)}
-                </div>
-              </div>
-              <button
-                onClick={() => deleteToken(t.id, t.name)}
-                className="text-xs text-rose-500 hover:text-rose-700 shrink-0 ml-4"
-              >
-                删除
-              </button>
-            </div>
-          ))}
-        </div>
+        <Card>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>名称</TableHead>
+                <TableHead>创建于</TableHead>
+                <TableHead>最后使用</TableHead>
+                <TableHead className="w-16 text-right">操作</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {tokens.map((t) => (
+                <TableRow key={t.id}>
+                  <TableCell>
+                    <div className="font-medium">{t.name}</div>
+                    <code className="font-mono text-muted-foreground text-xs">{t.token_preview}</code>
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">{formatDate(t.created_at)}</TableCell>
+                  <TableCell className="text-muted-foreground">{formatDate(t.last_used_at)}</TableCell>
+                  <TableCell>
+                    <div className="flex justify-end">
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        aria-label="删除"
+                        className="text-destructive-foreground"
+                        onClick={() => setDeleting({ id: t.id, name: t.name })}
+                      >
+                        <Trash2 aria-hidden="true" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Card>
       )}
+
+      <Modal
+        isOpen={!!deleting}
+        onClose={() => setDeleting(null)}
+        onConfirm={() => (deleting ? deleteToken(deleting.id) : undefined)}
+        title="删除 Token"
+        description={`确定删除 Token “${deleting?.name}”？使用它的外部工具将立即失效。`}
+        confirmText="删除"
+        type="danger"
+      />
     </div>
   )
 }

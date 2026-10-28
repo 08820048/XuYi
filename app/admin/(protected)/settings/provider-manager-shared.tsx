@@ -1,7 +1,7 @@
 'use client'
 
 import type { ReactNode } from 'react'
-import { Dropdown } from '@/components/Dropdown'
+import { Dropdown } from '@/components/admin/Dropdown'
 
 export interface BaseProviderProfile {
   id: number

@@ -2,8 +2,14 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useToast } from '@/components/Toast'
-import { Modal } from '@/components/Modal'
+import { useToast } from '@/components/admin/toast'
+import { Modal } from '@/components/admin/Modal'
+import { Check, Pencil, Plus, Trash2, X } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card'
+import { Field, FieldLabel } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
 interface Category {
   name: string
@@ -125,91 +131,100 @@ export function CategoryManager({ initialCategories }: { initialCategories: Cate
   return (
     <div className="space-y-6">
       {/* 添加分类 */}
-      <form onSubmit={handleAdd} className="bg-[var(--editor-panel)] rounded-xl border border-[var(--editor-line)] p-5">
-        <h2 className="text-sm font-semibold text-[var(--editor-ink)] mb-3">添加分类</h2>
-        <div className="flex gap-3 items-end">
-          <div className="flex-1">
-            <label className="text-xs text-[var(--editor-muted)] mb-1 block">名称</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => handleNameChange(e.target.value)}
-              placeholder="如：AI工具"
-              className="w-full rounded-lg border border-[var(--editor-line)] bg-[var(--background)] px-3 py-2 text-sm text-[var(--editor-ink)] outline-none focus:border-[var(--editor-ink)] transition"
-            />
-          </div>
-          <div className="flex-1">
-            <label className="text-xs text-[var(--editor-muted)] mb-1 block">Slug</label>
-            <input
-              type="text"
-              value={slug}
-              onChange={(e) => setSlug(e.target.value)}
-              placeholder="如：ai-tools"
-              className="w-full rounded-lg border border-[var(--editor-line)] bg-[var(--background)] px-3 py-2 text-sm text-[var(--editor-ink)] outline-none focus:border-[var(--editor-ink)] transition"
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={loading || !name.trim() || !slug.trim()}
-            className="px-4 py-2 text-sm rounded-lg bg-[var(--editor-ink)] text-white font-medium hover:brightness-110 transition disabled:opacity-50"
-          >
-            {loading ? '添加中…' : '添加'}
-          </button>
-        </div>
-        {error && <p className="text-xs text-rose-500 mt-2">{error}</p>}
-      </form>
+      <Card>
+        <CardHeader>
+          <CardTitle>添加分类</CardTitle>
+          <CardDescription>Slug 会根据名称自动生成，也可以手动改。</CardDescription>
+        </CardHeader>
+        <CardPanel>
+          <form onSubmit={handleAdd} className="flex flex-col gap-3 sm:flex-row sm:items-end">
+            <Field className="flex-1">
+              <FieldLabel>名称</FieldLabel>
+              <Input value={name} onChange={(e) => handleNameChange(e.target.value)} placeholder="如：AI工具" />
+            </Field>
+            <Field className="flex-1">
+              <FieldLabel>Slug</FieldLabel>
+              <Input value={slug} onChange={(e) => setSlug(e.target.value)} placeholder="如：ai-tools" className="font-mono" />
+            </Field>
+            <Button type="submit" loading={loading} disabled={!name.trim() || !slug.trim()}>
+              <Plus aria-hidden="true" />
+              添加
+            </Button>
+          </form>
+          {error && <p className="mt-2 text-destructive-foreground text-xs">{error}</p>}
+        </CardPanel>
+      </Card>
 
       {/* 分类列表 */}
-      <div className="bg-[var(--editor-panel)] rounded-xl border border-[var(--editor-line)] overflow-hidden">
-        <div className="grid grid-cols-[1fr_auto_auto_auto] gap-4 px-5 py-3 border-b border-[var(--editor-line)] bg-[var(--editor-soft)]">
-          <span className="text-xs font-semibold text-[var(--editor-muted)] uppercase tracking-wide">名称</span>
-          <span className="text-xs font-semibold text-[var(--editor-muted)] uppercase tracking-wide">Slug</span>
-          <span className="text-xs font-semibold text-[var(--editor-muted)] uppercase tracking-wide text-right">文章数</span>
-          <span className="text-xs font-semibold text-[var(--editor-muted)] uppercase tracking-wide text-right">操作</span>
-        </div>
-        <div className="divide-y divide-[var(--editor-line)]">
-          {categories.map((cat) => (
-            <div key={cat.slug} className="grid grid-cols-[1fr_auto_auto_auto] gap-4 items-center px-5 py-3.5">
-              {editingSlug === cat.slug ? (
-                <>
-                  <input
-                    type="text"
-                    value={editName}
-                    onChange={(e) => setEditName(e.target.value)}
-                    className="text-sm rounded border border-[var(--editor-line)] bg-[var(--background)] px-2 py-1 text-[var(--editor-ink)] outline-none focus:border-[var(--editor-ink)]"
-                  />
-                  <input
-                    type="text"
-                    value={editSlugVal}
-                    onChange={(e) => setEditSlugVal(e.target.value)}
-                    className="text-xs font-mono rounded border border-[var(--editor-line)] bg-[var(--background)] px-2 py-1 text-[var(--editor-ink)] outline-none focus:border-[var(--editor-ink)]"
-                  />
-                  <span className="text-xs text-[var(--editor-muted)] text-right tabular-nums">{cat.post_count}</span>
-                  <div className="flex gap-2">
-                    <button type="button" onClick={handleUpdate} className="text-xs text-emerald-600 hover:underline">保存</button>
-                    <button type="button" onClick={() => setEditingSlug(null)} className="text-xs text-[var(--editor-muted)] hover:underline">取消</button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <span className="text-sm font-medium text-[var(--editor-ink)]">{cat.name}</span>
-                  <span className="text-xs text-[var(--editor-muted)] font-mono">{cat.slug}</span>
-                  <span className="text-xs text-[var(--editor-muted)] text-right tabular-nums">{cat.post_count}</span>
-                  <div className="flex gap-2">
-                    <button type="button" onClick={() => startEditing(cat)} className="text-xs text-[var(--editor-accent)] hover:underline">编辑</button>
-                    <button type="button" onClick={() => handleDelete(cat.slug, cat.name)} className="text-xs text-rose-500 hover:underline">删除</button>
-                  </div>
-                </>
-              )}
-            </div>
-          ))}
-          {categories.length === 0 && (
-            <div className="px-5 py-8 text-center text-sm text-[var(--editor-muted)]">暂无分类</div>
-          )}
-        </div>
-      </div>
+      <Card>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>名称</TableHead>
+              <TableHead>Slug</TableHead>
+              <TableHead className="text-right">文章数</TableHead>
+              <TableHead className="w-28 text-right">操作</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {categories.map((cat) => (
+              <TableRow key={cat.slug}>
+                {editingSlug === cat.slug ? (
+                  <>
+                    <TableCell>
+                      <Input size="sm" value={editName} onChange={(e) => setEditName(e.target.value)} aria-label="分类名称" />
+                    </TableCell>
+                    <TableCell>
+                      <Input size="sm" value={editSlugVal} onChange={(e) => setEditSlugVal(e.target.value)} className="font-mono" aria-label="Slug" />
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums">{cat.post_count}</TableCell>
+                    <TableCell>
+                      <div className="flex justify-end gap-1">
+                        <Button size="icon-sm" variant="ghost" aria-label="保存" onClick={handleUpdate}>
+                          <Check aria-hidden="true" />
+                        </Button>
+                        <Button size="icon-sm" variant="ghost" aria-label="取消" onClick={() => setEditingSlug(null)}>
+                          <X aria-hidden="true" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </>
+                ) : (
+                  <>
+                    <TableCell className="font-medium">{cat.name}</TableCell>
+                    <TableCell className="font-mono text-muted-foreground text-xs">{cat.slug}</TableCell>
+                    <TableCell className="text-right tabular-nums">{cat.post_count}</TableCell>
+                    <TableCell>
+                      <div className="flex justify-end gap-1">
+                        <Button size="icon-sm" variant="ghost" aria-label="编辑" onClick={() => startEditing(cat)}>
+                          <Pencil aria-hidden="true" />
+                        </Button>
+                        <Button
+                          size="icon-sm"
+                          variant="ghost"
+                          aria-label="删除"
+                          className="text-destructive-foreground"
+                          onClick={() => handleDelete(cat.slug, cat.name)}
+                        >
+                          <Trash2 aria-hidden="true" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </>
+                )}
+              </TableRow>
+            ))}
+            {categories.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={4} className="py-10 text-center text-muted-foreground">
+                  暂无分类
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </Card>
 
-      {/* Delete confirmation modal */}
       <Modal
         isOpen={!!deleteModal}
         onClose={() => setDeleteModal(null)}

@@ -1,7 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { Tabs } from '@/components/Tabs'
+import { AdminTabs } from '@/components/admin/AdminTabs'
+import { useToast } from '@/components/admin/toast'
+import { Card, CardDescription, CardHeader, CardPanel, CardTitle } from '@/components/ui/card'
+import { Switch } from '@/components/ui/switch'
 import type { RuntimeCapabilities } from '@/lib/runtime-capabilities'
 import type { BodyFont } from '@/lib/appearance'
 import { NavLinksEditor } from './NavLinksEditor'
@@ -61,7 +64,7 @@ export function SettingsManager({
   initialRuntimeCapabilities,
 }: Props) {
   const [saving, setSaving] = useState(false)
-  const [msg, setMsg] = useState('')
+  const toast = useToast()
 
   const persistSetting = async (key: string, value: string) => {
     const res = await fetch('/api/admin/settings', {
@@ -74,13 +77,11 @@ export function SettingsManager({
 
   const save = async (key: string, value: string) => {
     setSaving(true)
-    setMsg('')
     try {
       await persistSetting(key, value)
-      setMsg('已保存')
-      setTimeout(() => setMsg(''), 2000)
+      toast.success('已保存')
     } catch (e) {
-      setMsg(e instanceof Error ? e.message : '保存失败')
+      toast.error(e instanceof Error ? e.message : '保存失败')
     } finally {
       setSaving(false)
     }
@@ -88,16 +89,14 @@ export function SettingsManager({
 
   const saveFontSettings = async (font: BodyFont) => {
     setSaving(true)
-    setMsg('')
     try {
       await Promise.all([
         persistSetting('default_theme', 'refined'),
         persistSetting('body_font', font),
       ])
-      setMsg('已保存')
-      setTimeout(() => setMsg(''), 2000)
+      toast.success('已保存')
     } catch (e) {
-      setMsg(e instanceof Error ? e.message : '保存失败')
+      toast.error(e instanceof Error ? e.message : '保存失败')
     } finally {
       setSaving(false)
     }
@@ -109,11 +108,6 @@ export function SettingsManager({
       label: '导航设置',
       content: (
         <div className="space-y-4">
-          {msg && (
-            <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-800">
-              {msg}
-            </div>
-          )}
           <NavLinksEditor
             initialValue={initialNavLinks}
             onSave={(val) => save('nav_links', val)}
@@ -137,26 +131,20 @@ export function SettingsManager({
       label: '日记设置',
       content: (
         <div className="space-y-4">
-          {msg && (
-            <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-800">
-              {msg}
-            </div>
-          )}
-          <div className="rounded-lg border border-[var(--editor-line)] bg-[var(--background)] p-4">
-            <label className="flex items-center justify-between gap-4">
-              <span>
-                <span className="block text-sm font-medium text-[var(--editor-ink)]">页脚显示日记</span>
-                <span className="mt-1 block text-xs text-[var(--editor-muted)]">关闭后页脚不显示“日记”，已发布日记页面仍可通过链接访问。</span>
-              </span>
-              <input
-                type="checkbox"
+          <Card>
+            <CardHeader>
+              <CardTitle>页脚显示日记</CardTitle>
+              <CardDescription>关闭后页脚不显示“日记”，已发布日记页面仍可通过链接访问。</CardDescription>
+            </CardHeader>
+            <CardPanel>
+              <Switch
+                aria-label="页脚显示日记"
                 defaultChecked={initialDiaryNavEnabled === 'true'}
-                onChange={(event) => void save('diary_nav_enabled', String(event.target.checked))}
+                onCheckedChange={(checked) => void save('diary_nav_enabled', String(checked))}
                 disabled={saving}
-                className="h-4 w-4"
               />
-            </label>
-          </div>
+            </CardPanel>
+          </Card>
         </div>
       ),
     },
@@ -165,11 +153,6 @@ export function SettingsManager({
       label: '关于我',
       content: (
         <div className="space-y-4">
-          {msg && (
-            <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-800">
-              {msg}
-            </div>
-          )}
           <AboutMarkdownEditor
             initialValue={initialAboutMarkdown}
             onSave={(val) => save('about_markdown', val)}
@@ -183,11 +166,6 @@ export function SettingsManager({
       label: '英文站',
       content: (
         <div className="space-y-4">
-          {msg && (
-            <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-800">
-              {msg}
-            </div>
-          )}
           <TranslationSettings
             initialAboutEn={initialAboutMarkdownEn}
             onSave={save}
@@ -201,11 +179,6 @@ export function SettingsManager({
       label: '自定义代码',
       content: (
         <div className="space-y-4">
-          {msg && (
-            <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-800">
-              {msg}
-            </div>
-          )}
           <p className="text-sm text-[var(--editor-muted)]">
             此代码会注入到所有页面的 &lt;head&gt; 中，适合添加统计代码（如 Google Analytics、百度统计等）。
           </p>
@@ -265,5 +238,5 @@ export function SettingsManager({
     },
   ]
 
-  return <Tabs tabs={tabs} defaultTab="nav" />
+  return <AdminTabs tabs={tabs} defaultTab="nav" />
 }

@@ -1,6 +1,11 @@
 'use client'
 
 import { useState } from 'react'
+import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Card, CardPanel } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Switch } from '@/components/ui/switch'
 
 interface NavLink {
   label: string
@@ -43,51 +48,58 @@ export function NavLinksEditor({ initialValue, onSave, saving }: Props) {
     setLinks((prev) => { const n = [...prev]; [n[idx], n[idx + 1]] = [n[idx + 1], n[idx]]; return n })
   }
 
-  const inputCls = 'h-9 rounded-lg border border-[var(--editor-line)] bg-[var(--background)] px-3 text-sm text-[var(--editor-ink)] placeholder:text-[var(--editor-muted)] outline-none focus:border-[var(--editor-accent)] transition-colors'
-  const btnCls = 'h-9 px-3 rounded-lg text-sm font-medium transition-colors'
-
   return (
     <div className="space-y-3">
-      {links.map((link, idx) => (
-        <div key={idx} className="flex items-center gap-2 flex-wrap">
-          <input
-            className={`${inputCls} w-24`}
-            placeholder="名称"
-            value={link.label}
-            onChange={(e) => update(idx, 'label', e.target.value)}
-          />
-          <input
-            className={`${inputCls} flex-1 min-w-[180px]`}
-            placeholder="URL"
-            value={link.url}
-            onChange={(e) => update(idx, 'url', e.target.value)}
-          />
-          <label className="flex items-center gap-1.5 text-xs text-[var(--editor-muted)] cursor-pointer select-none">
-            <input
-              type="checkbox"
-              checked={link.openInNewTab}
-              onChange={(e) => update(idx, 'openInNewTab', e.target.checked)}
-              className="accent-[var(--editor-accent)]"
-            />
-            新窗口
-          </label>
-          <button onClick={() => moveUp(idx)} disabled={idx === 0} className={`${btnCls} bg-[var(--editor-soft)] text-[var(--editor-muted)] hover:text-[var(--editor-ink)] disabled:opacity-30`}>↑</button>
-          <button onClick={() => moveDown(idx)} disabled={idx === links.length - 1} className={`${btnCls} bg-[var(--editor-soft)] text-[var(--editor-muted)] hover:text-[var(--editor-ink)] disabled:opacity-30`}>↓</button>
-          <button onClick={() => remove(idx)} className={`${btnCls} text-red-500 hover:bg-rose-500/10`}>删除</button>
-        </div>
-      ))}
+      <Card>
+        <CardPanel className="space-y-2 p-4">
+          {links.map((link, idx) => (
+            <div key={idx} className="flex flex-wrap items-center gap-2">
+              <Input
+                className="w-28 sm:w-32"
+                placeholder="名称"
+                aria-label="名称"
+                value={link.label}
+                onChange={(e) => update(idx, 'label', e.target.value)}
+              />
+              <Input
+                className="min-w-[12rem] flex-1"
+                placeholder="URL"
+                aria-label="URL"
+                value={link.url}
+                onChange={(e) => update(idx, 'url', e.target.value)}
+              />
+              <label className="flex cursor-pointer select-none items-center gap-2 text-muted-foreground text-xs">
+                <Switch checked={link.openInNewTab} onCheckedChange={(checked) => update(idx, 'openInNewTab', checked)} />
+                新窗口
+              </label>
+              <Button variant="ghost" size="icon-sm" aria-label="上移" disabled={idx === 0} onClick={() => moveUp(idx)}>
+                <ArrowUp aria-hidden="true" />
+              </Button>
+              <Button variant="ghost" size="icon-sm" aria-label="下移" disabled={idx === links.length - 1} onClick={() => moveDown(idx)}>
+                <ArrowDown aria-hidden="true" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                aria-label="删除"
+                className="text-destructive-foreground"
+                onClick={() => remove(idx)}
+              >
+                <Trash2 aria-hidden="true" />
+              </Button>
+            </div>
+          ))}
+        </CardPanel>
+      </Card>
 
-      <div className="flex items-center gap-3 pt-2">
-        <button onClick={add} className={`${btnCls} bg-[var(--editor-soft)] text-[var(--editor-ink)] hover:bg-[var(--border-warm)]`}>
-          + 添加链接
-        </button>
-        <button
-          onClick={() => onSave(JSON.stringify(links))}
-          disabled={saving}
-          className={`${btnCls} bg-[var(--editor-accent)] text-[var(--editor-accent-ink)] hover:brightness-105 disabled:opacity-60`}
-        >
-          {saving ? '保存中…' : '保存导航'}
-        </button>
+      <div className="flex items-center gap-2">
+        <Button variant="outline" onClick={add}>
+          <Plus aria-hidden="true" />
+          添加链接
+        </Button>
+        <Button onClick={() => onSave(JSON.stringify(links))} loading={saving}>
+          保存导航
+        </Button>
       </div>
     </div>
   )

@@ -3,6 +3,10 @@
 import Link from 'next/link'
 import { Suspense, useState, type FormEvent } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import { Card, CardPanel } from '@/components/ui/card'
+import { Field, FieldError, FieldLabel } from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
 
 function AdminLoginForm() {
   const [password, setPassword] = useState('')
@@ -50,60 +54,44 @@ function AdminLoginForm() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--editor-app-bg)] flex items-center justify-center px-4">
+    <div className="coss-admin flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm">
-        {/* Logo */}
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[#1f6f59] text-white text-xl font-bold mb-4">
-            C
-          </div>
-          <h1 className="text-2xl font-bold text-[var(--editor-ink)]">XuYi</h1>
-          <p className="text-sm text-[var(--editor-muted)] mt-1">管理后台</p>
+        <div className="mb-8 text-center">
+          <h1 className="font-medium text-4xl tracking-tight" style={{ fontFamily: '"Newsreader", Georgia, serif' }}>
+            Xu<i className="text-muted-foreground">Yi</i>
+          </h1>
+          <p className="mt-1 text-muted-foreground text-sm">管理后台</p>
         </div>
 
-        {/* 登录表单 */}
-        <div className="bg-[var(--editor-panel)] rounded-2xl border border-[var(--editor-line)] shadow-[0_8px_28px_rgba(37,32,24,0.08)] p-8">
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-[var(--editor-ink)] mb-2"
-              >
-                管理密码
-              </label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value)
-                  if (error) setError('')
-                }}
-                placeholder="请输入管理密码"
-                autoFocus
-                autoComplete="current-password"
-                className="w-full border border-[var(--editor-line)] rounded-lg px-3.5 py-2.5 text-sm text-[var(--editor-ink)] bg-[var(--editor-app-bg)] outline-none transition focus:border-[#1f6f59] focus:ring-2 focus:ring-[#1f6f59]/10 placeholder:text-[var(--editor-muted)]"
-              />
-            </div>
+        <Card>
+          <CardPanel className="p-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <Field invalid={Boolean(error)}>
+                <FieldLabel>管理密码</FieldLabel>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value)
+                    if (error) setError('')
+                  }}
+                  placeholder="请输入管理密码"
+                  autoFocus
+                  autoComplete="current-password"
+                />
+                {error && <FieldError match>{error}</FieldError>}
+              </Field>
 
-            {error && (
-              <p className="text-sm text-rose-600 bg-rose-50 border border-rose-200 rounded-md px-3 py-2">
-                {error}
-              </p>
-            )}
+              <Button type="submit" className="w-full" loading={loading} disabled={!password}>
+                登录
+              </Button>
+            </form>
+          </CardPanel>
+        </Card>
 
-            <button
-              type="submit"
-              disabled={loading || !password}
-              className="w-full bg-[#1f6f59] text-white rounded-lg py-2.5 text-sm font-semibold hover:brightness-105 transition disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? '登录中…' : '登录'}
-            </button>
-          </form>
-        </div>
-
-        <p className="text-center mt-6 text-xs text-[var(--editor-muted)]">
-          <Link href="/" className="hover:text-[var(--editor-ink)] transition-colors">
+        <p className="mt-6 text-center text-muted-foreground text-xs">
+          <Link href="/" className="transition-colors hover:text-foreground">
             ← 返回博客首页
           </Link>
         </p>

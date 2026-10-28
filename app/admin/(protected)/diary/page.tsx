@@ -1,4 +1,10 @@
 import Link from 'next/link'
+import { BookOpen, PenLine } from 'lucide-react'
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
+import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { getAppCloudflareEnv } from '@/lib/cloudflare'
 import { getDiaryEntries } from '@/lib/db'
 import { DiaryRow } from './DiaryRow'
@@ -18,40 +24,45 @@ export default async function AdminDiaryPage() {
   }
 
   return (
-    <div className="space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-medium text-[var(--editor-ink)]" style={{ fontFamily: 'Georgia, serif' }}>
-            日记
-          </h1>
-          <p className="mt-1 text-sm text-[var(--editor-muted)]">记录日常、图片、视频和临时想法。</p>
-        </div>
-        <Link
-          href="/admin/diary/edit?new=1"
-          className="rounded-lg bg-[var(--editor-accent)] px-4 py-2 text-sm font-semibold text-white transition hover:brightness-105"
-        >
-          写日记
-        </Link>
-      </div>
+    <div>
+      <AdminPageHeader
+        title="日记"
+        description="记录日常、图片、视频和临时想法。"
+        actions={
+          <Button render={<Link href="/admin/diary/edit?new=1" />}>
+            <PenLine aria-hidden="true" />
+            写日记
+          </Button>
+        }
+      />
 
       {entries.length === 0 ? (
-        <div className="rounded-xl border border-[var(--editor-line)] bg-[var(--editor-panel)] p-16 text-center">
-          <p className="text-sm text-[var(--editor-muted)]">还没有日记。</p>
-        </div>
+        <Empty className="rounded-2xl border border-dashed py-16">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <BookOpen aria-hidden="true" />
+            </EmptyMedia>
+            <EmptyTitle>还没有日记</EmptyTitle>
+            <EmptyDescription>写下第一条日记，记录今天的想法。</EmptyDescription>
+          </EmptyHeader>
+        </Empty>
       ) : (
-        <div className="overflow-hidden rounded-xl border border-[var(--editor-line)] bg-[var(--editor-panel)]">
-          <div className="hidden grid-cols-[1fr_90px_120px_180px] gap-3 border-b border-[var(--editor-line)] bg-[var(--editor-soft)] px-5 py-3 text-xs font-semibold uppercase tracking-wide text-[var(--editor-muted)] md:grid">
-            <span>标题</span>
-            <span>状态</span>
-            <span>来源</span>
-            <span className="text-right">操作</span>
-          </div>
-          <div className="divide-y divide-[var(--editor-line)]">
-            {entries.map((entry) => (
-              <DiaryRow key={entry.slug} entry={entry} />
-            ))}
-          </div>
-        </div>
+        <Card>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>标题</TableHead>
+                <TableHead className="w-24">状态</TableHead>
+                <TableHead className="w-28 text-right">操作</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {entries.map((entry) => (
+                <DiaryRow key={entry.slug} entry={entry} />
+              ))}
+            </TableBody>
+          </Table>
+        </Card>
       )}
     </div>
   )

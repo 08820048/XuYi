@@ -2,12 +2,32 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Eye, Link2, Edit, Pin, PinOff, EyeOff, Eye as EyeIcon, Lock, Unlock, Check, FileText, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useToast } from '@/components/Toast'
-import { Modal } from '@/components/Modal'
-import { PasswordModal } from '@/components/PasswordModal'
-import { Dropdown } from '@/components/Dropdown'
+import {
+  ArchiveRestore,
+  Check,
+  ExternalLink,
+  Eye,
+  EyeOff,
+  FileText,
+  Link2,
+  Lock,
+  MoreHorizontal,
+  Pencil,
+  Pin,
+  PinOff,
+  Trash2,
+  Unlock,
+} from 'lucide-react'
+import { useToast } from '@/components/admin/toast'
+import { Modal } from '@/components/admin/Modal'
+import { PasswordModal } from '@/components/admin/PasswordModal'
+import { Dropdown } from '@/components/admin/Dropdown'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Menu, MenuItem, MenuPopup, MenuSeparator, MenuTrigger } from '@/components/ui/menu'
+import { TableCell, TableRow } from '@/components/ui/table'
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@/components/ui/tooltip'
 import type { PostWithTags } from '@/lib/db'
 import { getSiteUrl } from '@/lib/site-config'
 import { TranslationControl, type TranslationInfo } from './TranslationControl'
@@ -20,52 +40,52 @@ interface PostRowProps {
 
 function formatDate(ts: number) {
   const date = new Date(ts * 1000)
-  const now = new Date()
-  const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24))
-
+  const diffDays = Math.floor((Date.now() - date.getTime()) / (1000 * 60 * 60 * 24))
   if (diffDays === 0) return '今天'
   if (diffDays === 1) return '昨天'
-  if (diffDays < 7) return `${diffDays}天前`
-
-  return date.toLocaleDateString('zh-CN', {
-    month: '2-digit',
-    day: '2-digit',
-  })
+  if (diffDays < 7) return `${diffDays} 天前`
+  return date.toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' })
 }
 
-export function PostRow({ post, categories, translation = null }: PostRowProps) {
-  const [showPasswordModal, setShowPasswordModal] = useState(false)
-  const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [showPermanentModal, setShowPermanentModal] = useState(false)
-  const [showPinModal, setShowPinModal] = useState(false)
-  const [showHiddenModal, setShowHiddenModal] = useState(false)
-  const [showStatusModal, setShowStatusModal] = useState(false)
-  const [loading, setLoading] = useState(false)
+type Dialogs = 'password' | 'pin' | 'hidden' | 'status' | 'delete' | 'permanent' | null
 
+export function PostRow({ post, categories, translation = null }: PostRowProps) {
+  const [dialog, setDialog] = useState<Dialogs>(null)
+  const [loading, setLoading] = useState(false)
   const router = useRouter()
   const toast = useToast()
 
-  const siteUrl = getSiteUrl()
-  const baseArticleUrl = `${siteUrl}/${post.slug}`
-  const articleUrl = post.password
-    ? `${baseArticleUrl}?pwd=${post.password}`
-    : baseArticleUrl
-
+  const baseArticleUrl = `${getSiteUrl()}/${post.slug}`
+  const articleUrl = post.password ? `${baseArticleUrl}?pwd=${post.password}` : baseArticleUrl
   const isDeleted = post.status === 'deleted'
+  const categoryOptions = [{ value: '', label: '未分类' }, ...categories.map((cat) => ({ value: cat, label: cat }))]
 
-  // 分类选项
-  const categoryOptions = [
-    { value: '', label: '未分类' },
-    ...categories.map((cat) => ({ value: cat, label: cat })),
-  ]
-
-  // 查看文章
-  const handleView = () => {
-    window.open(articleUrl, '_blank')
+  /** 统一的更新请求：成功提示 + 刷新列表；失败提示并返回 false（弹窗据此保持打开）。 */
+  async function update(body: Record<string, unknown>, ok: string, fail = '操作失败') {
+    setLoading(true)
+    try {
+      const res = await fetch(`/api/admin/posts/${post.slug}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+      if (res.ok) {
+        toast.success(ok)
+        setDialog(null)
+        router.refresh()
+        return true
+      }
+      toast.error(fail)
+      return false
+    } catch {
+      toast.error('网络错误')
+      return false
+    } finally {
+      setLoading(false)
+    }
   }
 
-  // 复制链接
-  const handleCopyLink = async () => {
+  async function copyLink() {
     try {
       await navigator.clipboard.writeText(articleUrl)
       toast.success(post.password ? '已复制带密码的链接' : '已复制链接')
@@ -74,163 +94,10 @@ export function PostRow({ post, categories, translation = null }: PostRowProps) 
     }
   }
 
-  // 更新分类
-  const handleCategoryChange = async (newCategory: string) => {
-    setLoading(true)
-    try {
-      const res = await fetch(`/api/admin/posts/${post.slug}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ category: newCategory || null }),
-      })
-      if (res.ok) {
-        toast.success('分类已更新')
-        router.refresh()
-      } else {
-        toast.error('更新失败')
-      }
-    } catch {
-      toast.error('网络错误')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  // 置顶切换
-  const handlePinToggle = async () => {
-    setLoading(true)
-    const newPinned = post.is_pinned === 1 ? 0 : 1
-    try {
-      const res = await fetch(`/api/admin/posts/${post.slug}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ is_pinned: newPinned }),
-      })
-      if (res.ok) {
-        toast.success(newPinned === 1 ? '已置顶' : '已取消置顶')
-        setShowPinModal(false)
-        router.refresh()
-        return true
-      } else {
-        toast.error('操作失败')
-        return false
-      }
-    } catch {
-      toast.error('网络错误')
-      return false
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  // 隐藏切换
-  const handleHiddenToggle = async () => {
-    setLoading(true)
-    const newHidden = post.is_hidden === 1 ? 0 : 1
-    try {
-      const res = await fetch(`/api/admin/posts/${post.slug}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ is_hidden: newHidden }),
-      })
-      if (res.ok) {
-        toast.success(newHidden === 1 ? '已隐藏' : '已取消隐藏')
-        setShowHiddenModal(false)
-        router.refresh()
-        return true
-      } else {
-        toast.error('操作失败')
-        return false
-      }
-    } catch {
-      toast.error('网络错误')
-      return false
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  // 状态切换
-  const handleStatusToggle = async () => {
-    setLoading(true)
-    const newStatus = post.status === 'published' ? 'draft' : 'published'
-    try {
-      const res = await fetch(`/api/admin/posts/${post.slug}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus }),
-      })
-      if (res.ok) {
-        toast.success(newStatus === 'published' ? '已发布' : '已转为草稿')
-        setShowStatusModal(false)
-        router.refresh()
-        return true
-      } else {
-        toast.error('操作失败')
-        return false
-      }
-    } catch {
-      toast.error('网络错误')
-      return false
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  // 软删除
-  const handleSoftDelete = async () => {
-    setLoading(true)
-    try {
-      const res = await fetch(`/api/admin/posts/${post.slug}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'deleted' }),
-      })
-      if (res.ok) {
-        toast.success('已删除（可恢复）')
-        setShowDeleteModal(false)
-        router.refresh()
-        return true
-      } else {
-        toast.error('删除失败')
-        return false
-      }
-    } catch {
-      toast.error('网络错误')
-      return false
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  // 恢复
-  const handleRestore = async () => {
-    setLoading(true)
-    try {
-      const res = await fetch(`/api/admin/posts/${post.slug}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'draft' }),
-      })
-      if (res.ok) {
-        toast.success('已恢复为草稿')
-        router.refresh()
-      } else {
-        toast.error('恢复失败')
-      }
-    } catch {
-      toast.error('网络错误')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  // 永久删除
-  const handlePermanentDelete = async () => {
+  async function permanentDelete() {
     setLoading(true)
     try {
       const res = await fetch(`/api/admin/posts/${post.slug}`, { method: 'DELETE' })
-
       let data: { success?: boolean; error?: string }
       try {
         data = (await res.json()) as { success?: boolean; error?: string }
@@ -238,18 +105,15 @@ export function PostRow({ post, categories, translation = null }: PostRowProps) 
         toast.error(`删除失败: HTTP ${res.status}`)
         return false
       }
-
       if (res.ok && data.success) {
         toast.success('已永久删除')
-        setShowPermanentModal(false)
+        setDialog(null)
         router.refresh()
         return true
-      } else {
-        toast.error(data.error || `删除失败 (${res.status})`)
-        return false
       }
+      toast.error(data.error || `删除失败 (${res.status})`)
+      return false
     } catch (err) {
-      console.error('Delete error:', err)
       toast.error(`网络错误: ${err instanceof Error ? err.message : '未知'}`)
       return false
     } finally {
@@ -257,361 +121,197 @@ export function PostRow({ post, categories, translation = null }: PostRowProps) 
     }
   }
 
+  const statusBadge =
+    post.status === 'published' ? (
+      <Badge variant="success">已发布</Badge>
+    ) : post.status === 'deleted' ? (
+      <Badge variant="secondary">已删除</Badge>
+    ) : (
+      <Badge variant="warning">草稿</Badge>
+    )
+
+  const flag = (icon: React.ReactNode, label: string) => (
+    <Tooltip>
+      <TooltipTrigger render={<span className="inline-flex text-muted-foreground" aria-label={label} />}>{icon}</TooltipTrigger>
+      <TooltipPopup>{label}</TooltipPopup>
+    </Tooltip>
+  )
+
   return (
     <>
-      {/* 桌面端 */}
-      <div className="hidden md:grid grid-cols-[50px_1fr_120px_90px_200px] gap-3 px-5 py-3 hover:bg-[var(--editor-panel)] transition-colors items-center">
-        {/* 状态列 */}
-        <div className="flex flex-col items-center gap-1.5">
-          {/* 状态圆点 */}
-          <span
-            className={`w-2.5 h-2.5 rounded-full ${
-              post.status === 'published'
-                ? 'bg-emerald-500'
-                : post.status === 'deleted'
-                ? 'bg-gray-400'
-                : 'bg-amber-500'
-            }`}
-            title={post.status === 'published' ? '已发布' : post.status === 'deleted' ? '已删除' : '草稿'}
-          />
-          {/* 图标行 */}
-          <div className="flex items-center gap-1">
-            {post.is_pinned === 1 && (
-              <Pin className="w-3 h-3 text-[var(--editor-accent)]" />
-            )}
-            {post.password && (
-              <Lock className="w-3 h-3 text-[var(--stone-gray)]" />
-            )}
-            {post.is_hidden === 1 && (
-              <EyeOff className="w-3 h-3 text-[var(--stone-gray)]" />
-            )}
-          </div>
-        </div>
-
-        {/* 标题列 */}
-        <div className="min-w-0">
-          <Link
-            href={`/editor?edit=${post.slug}`}
-            className="font-medium text-[var(--editor-ink)] hover:text-[var(--editor-accent)] transition-colors line-clamp-1 block"
-          >
-            {post.title}
-          </Link>
-          {post.description && (
-            <p className="text-xs text-[var(--editor-muted)] line-clamp-1 leading-relaxed mt-0.5">
-              {post.description}
-            </p>
-          )}
-          {!isDeleted && (
-            <div className="mt-1.5">
-              <TranslationControl slug={post.slug} locked={Boolean(post.password)} info={translation} />
+      <TableRow>
+        <TableCell className="max-w-0 whitespace-normal">
+          <div className="min-w-0">
+            <Link
+              href={`/editor?edit=${post.slug}`}
+              className="line-clamp-1 font-medium transition-colors hover:text-muted-foreground"
+            >
+              {post.title}
+            </Link>
+            {post.description && <p className="mt-0.5 line-clamp-1 text-muted-foreground text-xs">{post.description}</p>}
+            <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+              {statusBadge}
+              {post.is_pinned === 1 && flag(<Pin className="size-3.5" aria-hidden="true" />, '已置顶')}
+              {post.password && flag(<Lock className="size-3.5" aria-hidden="true" />, '已加密')}
+              {post.is_hidden === 1 && flag(<EyeOff className="size-3.5" aria-hidden="true" />, '已隐藏')}
+              {!isDeleted && <TranslationControl slug={post.slug} locked={Boolean(post.password)} info={translation} />}
             </div>
-          )}
-        </div>
+          </div>
+        </TableCell>
 
-        {/* 分类列 */}
-        <div className="flex items-center">
+        <TableCell className="hidden w-40 md:table-cell">
           <Dropdown
             options={categoryOptions}
             value={post.category || ''}
-            onChange={handleCategoryChange}
+            onChange={(value) => update({ category: value || null }, '分类已更新', '更新失败')}
             placeholder="未分类"
             className="w-full"
             disabled={loading || isDeleted}
           />
-        </div>
+        </TableCell>
 
-        {/* 阅读/日期列 */}
-        <div className="flex flex-col items-center justify-center text-xs">
-          <span className="text-[var(--editor-ink)] font-medium tabular-nums">
-            {post.view_count.toLocaleString()}
-          </span>
-          <span className="text-[var(--stone-gray)] text-[11px]">
-            {formatDate(post.published_at)}
-          </span>
-        </div>
+        <TableCell className="hidden w-24 text-right sm:table-cell">
+          <div className="tabular-nums">{post.view_count.toLocaleString()}</div>
+          <div className="text-muted-foreground text-xs">{formatDate(post.published_at)}</div>
+        </TableCell>
 
-        {/* 操作列 */}
-        <div className="flex items-center justify-end gap-1">
-          {isDeleted ? (
-            <>
-              <button
-                onClick={handleRestore}
-                disabled={loading}
-                className="p-1.5 rounded hover:bg-[var(--editor-soft)] transition-colors disabled:opacity-50"
-                title="恢复"
-              >
-                <Check className="w-4 h-4 text-emerald-600" />
-              </button>
-              <button
-                onClick={() => setShowPermanentModal(true)}
-                disabled={loading}
-                className="p-1.5 rounded hover:bg-[var(--editor-soft)] transition-colors disabled:opacity-50"
-                title="永久删除"
-              >
-                <Trash2 className="w-4 h-4 text-rose-500" />
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                onClick={handleView}
-                className="p-1.5 rounded hover:bg-[var(--editor-soft)] transition-colors"
-                title="查看文章"
-              >
-                <Eye className="w-4 h-4 text-[var(--stone-gray)]" />
-              </button>
-              <button
-                onClick={handleCopyLink}
-                className="p-1.5 rounded hover:bg-[var(--editor-soft)] transition-colors"
-                title="复制链接"
-              >
-                <Link2 className="w-4 h-4 text-[var(--stone-gray)]" />
-              </button>
-              <Link
-                href={`/editor?edit=${post.slug}`}
-                className="p-1.5 rounded hover:bg-[var(--editor-soft)] transition-colors"
-                title="编辑"
-              >
-                <Edit className="w-4 h-4 text-[var(--stone-gray)]" />
-              </Link>
-              <button
-                onClick={() => setShowPinModal(true)}
-                disabled={loading}
-                className="p-1.5 rounded hover:bg-[var(--editor-soft)] transition-colors disabled:opacity-50"
-                title={post.is_pinned === 1 ? '取消置顶' : '置顶'}
-              >
-                {post.is_pinned === 1 ? (
-                  <PinOff className="w-4 h-4 text-[var(--editor-accent)]" />
-                ) : (
-                  <Pin className="w-4 h-4 text-[var(--stone-gray)]" />
-                )}
-              </button>
-              <button
-                onClick={() => setShowHiddenModal(true)}
-                disabled={loading}
-                className="p-1.5 rounded hover:bg-[var(--editor-soft)] transition-colors disabled:opacity-50"
-                title={post.is_hidden === 1 ? '取消隐藏' : '隐藏'}
-              >
-                {post.is_hidden === 1 ? (
-                  <EyeOff className="w-4 h-4 text-[var(--stone-gray)]" />
-                ) : (
-                  <EyeIcon className="w-4 h-4 text-[var(--stone-gray)]" />
-                )}
-              </button>
-              <button
-                onClick={() => setShowPasswordModal(true)}
-                className="p-1.5 rounded hover:bg-[var(--editor-soft)] transition-colors"
-                title={post.password ? '管理密码' : '设置密码'}
-              >
-                {post.password ? (
-                  <Lock className="w-4 h-4 text-[var(--editor-accent)]" />
-                ) : (
-                  <Unlock className="w-4 h-4 text-[var(--stone-gray)]" />
-                )}
-              </button>
-              <button
-                onClick={() => setShowStatusModal(true)}
-                disabled={loading}
-                className="p-1.5 rounded hover:bg-[var(--editor-soft)] transition-colors disabled:opacity-50"
-                title={post.status === 'published' ? '转为草稿' : '发布'}
-              >
-                {post.status === 'published' ? (
-                  <FileText className="w-4 h-4 text-amber-500" />
-                ) : (
-                  <Check className="w-4 h-4 text-emerald-600" />
-                )}
-              </button>
-              <button
-                onClick={() => setShowDeleteModal(true)}
-                disabled={loading}
-                className="p-1.5 rounded hover:bg-[var(--editor-soft)] transition-colors disabled:opacity-50"
-                title="删除"
-              >
-                <Trash2 className="w-4 h-4 text-rose-500" />
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* 移动端 */}
-      <div className="md:hidden p-4 hover:bg-[var(--editor-panel)] transition-colors">
-        <div className="flex items-start gap-3 mb-2">
-          {/* 状态列 */}
-          <div className="flex flex-col items-center gap-1 flex-shrink-0">
-            <span
-              className={`w-2.5 h-2.5 rounded-full ${
-                post.status === 'published'
-                  ? 'bg-emerald-500'
-                  : post.status === 'deleted'
-                  ? 'bg-gray-400'
-                  : 'bg-amber-500'
-              }`}
-            />
-            <div className="flex flex-col gap-0.5">
-              {post.is_pinned === 1 && <Pin className="w-3 h-3 text-[var(--editor-accent)]" />}
-              {post.password && <Lock className="w-3 h-3 text-[var(--stone-gray)]" />}
-              {post.is_hidden === 1 && <EyeOff className="w-3 h-3 text-[var(--stone-gray)]" />}
-            </div>
+        <TableCell className="w-28">
+          <div className="flex items-center justify-end gap-1">
+            {isDeleted ? (
+              <>
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  aria-label="恢复为草稿"
+                  disabled={loading}
+                  onClick={() => update({ status: 'draft' }, '已恢复为草稿', '恢复失败')}
+                >
+                  <ArchiveRestore aria-hidden="true" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  aria-label="永久删除"
+                  disabled={loading}
+                  className="text-destructive-foreground"
+                  onClick={() => setDialog('permanent')}
+                >
+                  <Trash2 aria-hidden="true" />
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button render={<Link href={`/editor?edit=${post.slug}`} />} variant="ghost" size="icon-sm" aria-label="编辑">
+                  <Pencil aria-hidden="true" />
+                </Button>
+                <Menu>
+                  <MenuTrigger render={<Button variant="ghost" size="icon-sm" aria-label="更多操作" />}>
+                    <MoreHorizontal aria-hidden="true" />
+                  </MenuTrigger>
+                  <MenuPopup align="end">
+                    <MenuItem onClick={() => window.open(articleUrl, '_blank')}>
+                      <ExternalLink aria-hidden="true" />
+                      查看文章
+                    </MenuItem>
+                    <MenuItem onClick={copyLink}>
+                      <Link2 aria-hidden="true" />
+                      复制链接
+                    </MenuItem>
+                    <MenuSeparator />
+                    <MenuItem onClick={() => setDialog('pin')}>
+                      {post.is_pinned === 1 ? <PinOff aria-hidden="true" /> : <Pin aria-hidden="true" />}
+                      {post.is_pinned === 1 ? '取消置顶' : '置顶'}
+                    </MenuItem>
+                    <MenuItem onClick={() => setDialog('hidden')}>
+                      {post.is_hidden === 1 ? <Eye aria-hidden="true" /> : <EyeOff aria-hidden="true" />}
+                      {post.is_hidden === 1 ? '取消隐藏' : '隐藏'}
+                    </MenuItem>
+                    <MenuItem onClick={() => setDialog('password')}>
+                      {post.password ? <Lock aria-hidden="true" /> : <Unlock aria-hidden="true" />}
+                      {post.password ? '管理密码' : '设置密码'}
+                    </MenuItem>
+                    <MenuItem onClick={() => setDialog('status')}>
+                      {post.status === 'published' ? <FileText aria-hidden="true" /> : <Check aria-hidden="true" />}
+                      {post.status === 'published' ? '转为草稿' : '发布'}
+                    </MenuItem>
+                    <MenuSeparator />
+                    <MenuItem variant="destructive" onClick={() => setDialog('delete')}>
+                      <Trash2 aria-hidden="true" />
+                      删除
+                    </MenuItem>
+                  </MenuPopup>
+                </Menu>
+              </>
+            )}
           </div>
+        </TableCell>
+      </TableRow>
 
-          {/* 标题 */}
-          <Link
-            href={`/editor?edit=${post.slug}`}
-            className="font-medium text-[var(--editor-ink)] hover:text-[var(--editor-accent)] transition-colors flex-1 line-clamp-2"
-          >
-            {post.title}
-          </Link>
-        </div>
-
-        {post.description && (
-          <p className="text-xs text-[var(--editor-muted)] line-clamp-2 leading-relaxed mb-3 ml-9">
-            {post.description}
-          </p>
-        )}
-
-        <div className="flex items-center gap-2 text-xs text-[var(--stone-gray)] mb-3 ml-9">
-          <div className="w-24">
-            <Dropdown
-              options={categoryOptions}
-              value={post.category || ''}
-              onChange={handleCategoryChange}
-              placeholder="未分类"
-              className="w-full"
-              disabled={loading || isDeleted}
-            />
-          </div>
-          <span>·</span>
-          <span className="tabular-nums">{post.view_count.toLocaleString()} 次</span>
-          <span>·</span>
-          <span>{formatDate(post.published_at)}</span>
-        </div>
-
-        {!isDeleted && (
-          <div className="mb-3 ml-9">
-            <TranslationControl slug={post.slug} locked={Boolean(post.password)} info={translation} />
-          </div>
-        )}
-
-        <div className="flex items-center gap-2 ml-9 flex-wrap">
-          {isDeleted ? (
-            <>
-              <button
-                onClick={handleRestore}
-                disabled={loading}
-                className="p-1.5 rounded hover:bg-[var(--editor-soft)] transition-colors disabled:opacity-50"
-                title="恢复"
-              >
-                <Check className="w-4 h-4 text-emerald-600" />
-              </button>
-              <button
-                onClick={() => setShowPermanentModal(true)}
-                disabled={loading}
-                className="p-1.5 rounded hover:bg-[var(--editor-soft)] transition-colors disabled:opacity-50"
-                title="永久删除"
-              >
-                <Trash2 className="w-4 h-4 text-rose-500" />
-              </button>
-            </>
-          ) : (
-            <>
-              <button onClick={handleView} className="p-1.5 rounded hover:bg-[var(--editor-soft)] transition-colors">
-                <Eye className="w-4 h-4 text-[var(--stone-gray)]" />
-              </button>
-              <button onClick={handleCopyLink} className="p-1.5 rounded hover:bg-[var(--editor-soft)] transition-colors">
-                <Link2 className="w-4 h-4 text-[var(--stone-gray)]" />
-              </button>
-              <Link href={`/editor?edit=${post.slug}`} className="p-1.5 rounded hover:bg-[var(--editor-soft)] transition-colors">
-                <Edit className="w-4 h-4 text-[var(--stone-gray)]" />
-              </Link>
-              <button onClick={() => setShowPinModal(true)} disabled={loading} className="p-1.5 rounded hover:bg-[var(--editor-soft)] transition-colors disabled:opacity-50">
-                {post.is_pinned === 1 ? <PinOff className="w-4 h-4 text-[var(--editor-accent)]" /> : <Pin className="w-4 h-4 text-[var(--stone-gray)]" />}
-              </button>
-              <button onClick={() => setShowHiddenModal(true)} disabled={loading} className="p-1.5 rounded hover:bg-[var(--editor-soft)] transition-colors disabled:opacity-50">
-                {post.is_hidden === 1 ? <EyeOff className="w-4 h-4 text-[var(--stone-gray)]" /> : <EyeIcon className="w-4 h-4 text-[var(--stone-gray)]" />}
-              </button>
-              <button onClick={() => setShowPasswordModal(true)} className="p-1.5 rounded hover:bg-[var(--editor-soft)] transition-colors">
-                {post.password ? <Lock className="w-4 h-4 text-[var(--editor-accent)]" /> : <Unlock className="w-4 h-4 text-[var(--stone-gray)]" />}
-              </button>
-              <button onClick={() => setShowStatusModal(true)} disabled={loading} className="p-1.5 rounded hover:bg-[var(--editor-soft)] transition-colors disabled:opacity-50">
-                {post.status === 'published' ? <FileText className="w-4 h-4 text-amber-500" /> : <Check className="w-4 h-4 text-emerald-600" />}
-              </button>
-              <button onClick={() => setShowDeleteModal(true)} disabled={loading} className="p-1.5 rounded hover:bg-[var(--editor-soft)] transition-colors disabled:opacity-50">
-                <Trash2 className="w-4 h-4 text-rose-500" />
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* Modals */}
       <PasswordModal
-        isOpen={showPasswordModal}
-        onClose={() => setShowPasswordModal(false)}
+        isOpen={dialog === 'password'}
+        onClose={() => setDialog(null)}
         slug={post.slug}
         currentPassword={post.password}
         articleUrl={baseArticleUrl}
-        onSuccess={() => {
-          window.location.reload()
-        }}
+        onSuccess={() => router.refresh()}
       />
 
       <Modal
-        isOpen={showPinModal}
-        onClose={() => setShowPinModal(false)}
-        onConfirm={handlePinToggle}
+        isOpen={dialog === 'pin'}
+        onClose={() => setDialog(null)}
+        onConfirm={() => update({ is_pinned: post.is_pinned === 1 ? 0 : 1 }, post.is_pinned === 1 ? '已取消置顶' : '已置顶')}
         title={post.is_pinned === 1 ? '取消置顶' : '置顶文章'}
         description={post.is_pinned === 1 ? '确定要取消置顶吗？' : '置顶后文章将显示在列表顶部。'}
-        confirmText="确认"
-        type="info"
+        closeOnConfirm={false}
       />
 
       <Modal
-        isOpen={showHiddenModal}
-        onClose={() => setShowHiddenModal(false)}
-        onConfirm={handleHiddenToggle}
+        isOpen={dialog === 'hidden'}
+        onClose={() => setDialog(null)}
+        onConfirm={() => update({ is_hidden: post.is_hidden === 1 ? 0 : 1 }, post.is_hidden === 1 ? '已取消隐藏' : '已隐藏')}
         title={post.is_hidden === 1 ? '取消隐藏' : '隐藏文章'}
         description={
           post.is_hidden === 1
             ? '取消隐藏后，文章将重新出现在首页、RSS 和搜索结果中。'
             : '隐藏后，文章不会在首页、RSS 和搜索中显示，但可以通过直接链接访问。'
         }
-        confirmText="确认"
-        type="info"
+        closeOnConfirm={false}
       />
 
       <Modal
-        isOpen={showStatusModal}
-        onClose={() => setShowStatusModal(false)}
-        onConfirm={handleStatusToggle}
-        title={post.status === 'published' ? '转为草稿' : '发布文章'}
-        description={
-          post.status === 'published'
-            ? '转为草稿后，文章将不再公开显示。'
-            : '发布后，文章将在首页和 RSS 中显示。'
+        isOpen={dialog === 'status'}
+        onClose={() => setDialog(null)}
+        onConfirm={() =>
+          update(
+            { status: post.status === 'published' ? 'draft' : 'published' },
+            post.status === 'published' ? '已转为草稿' : '已发布',
+          )
         }
-        confirmText="确认"
-        type="info"
+        title={post.status === 'published' ? '转为草稿' : '发布文章'}
+        description={post.status === 'published' ? '转为草稿后，文章将不再公开显示。' : '发布后，文章将在首页和 RSS 中显示。'}
+        closeOnConfirm={false}
       />
 
       <Modal
-        isOpen={showDeleteModal}
-        onClose={() => setShowDeleteModal(false)}
-        onConfirm={handleSoftDelete}
+        isOpen={dialog === 'delete'}
+        onClose={() => setDialog(null)}
+        onConfirm={() => update({ status: 'deleted' }, '已删除（可恢复）', '删除失败')}
         title="删除文章"
         description={`确定要删除「${post.title}」吗？删除后可以在已删除列表中恢复。`}
         confirmText="删除"
-        type="warning"
+        type="danger"
+        closeOnConfirm={false}
       />
 
       <Modal
-        isOpen={showPermanentModal}
-        onClose={() => setShowPermanentModal(false)}
-        onConfirm={handlePermanentDelete}
+        isOpen={dialog === 'permanent'}
+        onClose={() => setDialog(null)}
+        onConfirm={permanentDelete}
         title="永久删除"
         description={`确定要永久删除「${post.title}」吗？此操作不可恢复！`}
         confirmText="永久删除"
         type="danger"
+        closeOnConfirm={false}
       />
     </>
   )
