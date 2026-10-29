@@ -46,16 +46,15 @@ export function SubscribeForm({ minimal = false }: { minimal?: boolean }) {
       aria-label="Email newsletter"
       className={minimal ? 'subscribe-panel subscribe-panel--minimal' : 'subscribe-panel'}
     >
-      {!minimal && (
-        <header className="subscribe-panel-copy">
-          <p className="kami-label">{t('newsletter')}</p>
-          <h3 className="subscribe-panel-title">{t('subscribeTitle')}</h3>
-          <p className="subscribe-panel-lead">
-            {t('subscribeLead')}
-          </p>
-        </header>
-      )}
+      <header className="subscribe-panel-copy">
+        <p className="kami-label">{t('newsletter')}</p>
+        <h3 className="subscribe-panel-title">{t('subscribeTitle')}</h3>
+        <p className="subscribe-panel-lead">
+          {t('subscribeLead')}
+        </p>
+      </header>
 
+      <div className="subscribe-panel-body">
       {successMessage ? (
         <p role="status" className="subscribe-panel-status">
           {successMessage}
@@ -84,7 +83,7 @@ export function SubscribeForm({ minimal = false }: { minimal?: boolean }) {
                 <LoaderCircle className="h-4 w-4 animate-spin" aria-label="Subscribing" />
               ) : (
                 <>
-                  <span>Notify me</span>
+                  <span>{t('subscribe')}</span>
                   <ArrowRight className="h-4 w-4" aria-hidden />
                 </>
               )}
@@ -93,6 +92,7 @@ export function SubscribeForm({ minimal = false }: { minimal?: boolean }) {
           {error && <p role="alert" className="subscribe-panel-error">{error}</p>}
         </>
       )}
+      </div>
     </section>
   )
 }

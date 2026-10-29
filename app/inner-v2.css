@@ -341,9 +341,47 @@ body:has(.site-shell) {
 }
 
 .site-shell .article-copyright-notice {
-  border: 1px solid var(--sv-line);
-  border-radius: 12px;
-  background: var(--sv-card);
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  column-gap: 28px;
+  row-gap: 8px;
+  margin-top: 0;
+  padding: 1.25rem 0 0;
+  border: 0;
+  border-top: 1px solid var(--sv-line);
+  border-radius: 0;
+  background: none;
+  color: color-mix(in srgb, var(--sv-ink) 62%, transparent);
+  font-family: var(--sv-ui);
+  font-size: 0.8125rem;
+  line-height: 1.65;
+}
+
+.site-shell .article-copyright-notice > * {
+  grid-column: 2;
+  margin: 0;
+}
+
+.site-shell .article-copyright-notice .kami-label {
+  grid-column: 1;
+  grid-row: 1 / span 3;
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--sv-ink) 52%, transparent);
+}
+
+.site-shell .article-copyright-notice a {
+  color: var(--sv-ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--sv-line);
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.site-shell .article-copyright-notice a:hover {
+  color: var(--sv-accent);
+  border-bottom-color: var(--sv-accent);
 }
 
 /* ---------- friend links ---------- */
@@ -425,31 +463,74 @@ body:has(.site-shell) {
 
 /* ---------- subscribe ---------- */
 .site-shell .subscribe-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: 24px 56px;
+  align-items: end;
   margin-top: 4rem;
-  padding: 2rem;
-  border: 1px solid var(--sv-line);
-  border-radius: 16px;
-  background: var(--sv-card);
+  padding: 1.5rem 0 2.25rem;
+  border: 0;
+  border-top: 1px solid var(--sv-ink);
+  border-radius: 0;
+  background: none;
+}
+
+.site-shell .subscribe-panel-copy {
+  margin: 0;
+}
+
+.site-shell .subscribe-panel-copy .kami-label {
+  margin-bottom: 14px;
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--sv-ink) 52%, transparent);
 }
 
 .site-shell .subscribe-panel-title {
   font-family: var(--sv-display);
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
   font-weight: 400;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.site-shell .subscribe-panel-lead {
+  max-width: 24em;
+  margin-top: 0.75rem;
+  font-family: var(--sv-ui);
+  font-size: 0.875rem;
+}
+
+.site-shell .subscribe-form {
+  align-items: flex-end;
+  gap: 1rem;
 }
 
 .site-shell .subscribe-field {
-  background: var(--sv-paper) !important;
-  border: 1px solid var(--sv-line) !important;
-  border-radius: 999px !important;
+  min-height: 2.75rem;
+  padding: 0 !important;
+  background: none !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--sv-ink) !important;
+  border-radius: 0 !important;
 }
 
 .site-shell .subscribe-field:focus-within {
-  border-color: var(--sv-ink) !important;
+  border-bottom-color: var(--sv-accent) !important;
   box-shadow: none !important;
 }
 
+.site-shell .subscribe-field input {
+  font-family: var(--sv-ui);
+  font-size: 1rem;
+}
+
 .site-shell .subscribe-submit {
+  min-width: 0;
+  min-height: 2.75rem;
+  padding: 0 1.25rem !important;
   border: 1px solid var(--sv-ink) !important;
   border-radius: 999px !important;
   background: var(--sv-ink) !important;
@@ -457,12 +538,44 @@ body:has(.site-shell) {
   box-shadow: none !important;
   font-weight: 500 !important;
   opacity: 1 !important;
+  transition: gap 0.25s, opacity 0.2s;
+}
+
+.site-shell .subscribe-submit:not(:disabled):hover {
+  gap: 0.7rem;
 }
 
 .site-shell .subscribe-submit:disabled {
-  background: var(--kami-tag-quiet) !important;
-  border-color: transparent !important;
+  background: transparent !important;
+  border-color: var(--sv-line) !important;
   color: var(--kami-stone) !important;
+}
+
+.site-shell .subscribe-panel-status {
+  font-family: var(--sv-display);
+  font-size: 1.25rem;
+  color: var(--sv-ink);
+}
+
+@media (max-width: 760px) {
+  .site-shell .subscribe-panel {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+
+  .site-shell .subscribe-form {
+    align-items: stretch;
+  }
+
+  .site-shell .article-copyright-notice {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .site-shell .article-copyright-notice > *,
+  .site-shell .article-copyright-notice .kami-label {
+    grid-column: 1;
+    grid-row: auto;
+  }
 }
 
 /* ---------- mobile ---------- */
