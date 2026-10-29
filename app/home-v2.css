@@ -959,6 +959,57 @@ a.hp-mono:hover {
   }
 }
 
+/* ---------- pixel numerals: time-line %, journal dates, traffic stats ---------- */
+.sv-root {
+  --sv-pixel: "Silkscreen", var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.sv-root :is(
+  .hp-tl-head b, .hp-date, .hp-date small,
+  .pf-stats-kpi-hero, .pf-stats-kpi-delta, .pf-stats-ytick, .pf-stats-xaxis,
+  .pf-stats-readout-date, .pf-stats-readout-value
+) {
+  font-family: var(--sv-pixel);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+.sv-root .hp-tl-head b {
+  font-size: 10px;
+}
+
+.sv-root .hp-date {
+  font-size: 24px;
+  line-height: 1.15;
+}
+
+.sv-root .hp-date small {
+  margin-top: 6px;
+  font-size: 10px;
+}
+
+.sv-root .pf-stats-kpi-hero {
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+.sv-root .pf-stats-kpi-delta {
+  font-size: 10px;
+}
+
+.sv-root :is(.pf-stats-ytick, .pf-stats-xaxis) {
+  font-size: 8px;
+}
+
+.sv-root .pf-stats-readout-date {
+  font-size: 10px;
+}
+
+.sv-root .pf-stats-readout-value {
+  font-size: 12px;
+}
+
 /* ---------- responsive ---------- */
 @media (max-width: 900px) {
   .sv-statsrow {
@@ -1006,7 +1057,7 @@ a.hp-mono:hover {
   }
 
   .hp-date {
-    font-size: 21px;
+    font-size: 16px;
   }
 
   .sv-intro {
