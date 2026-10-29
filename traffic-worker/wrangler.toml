@@ -17,6 +17,7 @@ PRODUCTS = """[
     { "name": "hoolo", "domain": "hoolo.cc", "zoneId": "8d48405bdf56f98608d2b21bdfcdc926" },
     { "name": "jevsift", "domain": "jevsift.com", "zoneId": "37ffa5b9dd5d834dd9eb355a85ab0fbc" },
     { "name": "ornata", "domain": "ornata.app", "zoneId": "129b42f6740a32ef973081999d405422" },
+    { "name": "runnock", "domain": "runnock.com", "zoneId": "0706d7d82142b7a0651fc4d9615cdbe3" },
     { "name": "toolpop", "domain": "toolpop.win", "zoneId": "e8c25ebb074753b38e36d1899810c520" },
     { "name": "welight", "domain": "welight.fyi", "zoneId": "874d124b040b3b47dcd3c5fb5c90fe32" },
     { "name": "xingchao", "domain": "xingchao.dev", "zoneId": "3210fd53119e1cddef89982c41548a11" },
