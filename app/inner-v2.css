@@ -149,7 +149,7 @@ body:has(.site-shell) {
 
 .site-shell .kami-btn-secondary:hover:not(:disabled) {
   opacity: 1;
-  border-color: var(--sv-ink);
+  border-color: var(--sv-accent);
 }
 
 .site-shell .kami-input {
@@ -160,7 +160,7 @@ body:has(.site-shell) {
 
 .site-shell .kami-input:focus {
   background: var(--sv-raise);
-  border-color: var(--sv-ink);
+  border-color: var(--sv-accent);
   box-shadow: none;
   outline: none;
 }
@@ -454,7 +454,7 @@ body:has(.site-shell) {
 }
 
 .site-shell .cr-cite button:hover {
-  opacity: 0.85;
+  border-color: var(--sv-accent);
 }
 
 .site-shell .article-copyright-notice a {
@@ -650,6 +650,7 @@ body:has(.site-shell) {
 
 .site-shell .subscribe-submit:not(:disabled):hover {
   gap: 0.7rem;
+  border-color: var(--sv-accent) !important;
 }
 
 .site-shell .subscribe-submit:disabled {

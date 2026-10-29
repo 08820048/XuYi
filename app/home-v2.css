@@ -140,8 +140,9 @@ body:has(.sv-root) {
 .sv-root .pf-btn-dark:hover,
 .sv-root a.pf-btn-dark:hover {
   background: var(--sv-ink);
+  border-color: var(--sv-accent);
   color: var(--hb, #ffffff);
-  opacity: 0.82;
+  opacity: 1;
 }
 
 .sv-root .pf-btn-light {
@@ -151,7 +152,7 @@ body:has(.sv-root) {
 }
 
 .sv-root .pf-btn-light:hover {
-  border-color: var(--sv-ink);
+  border-color: var(--sv-accent);
 }
 
 .sv-root .pf-btn-dark.pf-sub-send {
@@ -170,7 +171,7 @@ body:has(.sv-root) {
 
 .sv-root a.pf-btn-visit:hover {
   background: var(--sv-ink);
-  border-color: var(--sv-ink);
+  border-color: var(--sv-accent);
   color: var(--hb, #ffffff);
 }
 
@@ -185,7 +186,7 @@ body:has(.sv-root) {
 .sv-root .pf-sub-form input:focus,
 .sv-root .pf-sub-form input:focus-visible {
   border-radius: 999px;
-  border-color: var(--sv-ink);
+  border-color: var(--sv-accent);
   background: var(--sv-raise);
   outline: none;
 }
