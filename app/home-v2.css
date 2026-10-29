@@ -349,10 +349,17 @@ body:has(.sv-root) {
   animation: hp-pulse 2.2s ease-in-out infinite;
 }
 
+.hp-mark {
+  position: relative;
+  font-size: clamp(96px, 19vw, 248px);
+}
+
 .hp-hero h1 {
+  position: relative;
+  z-index: 1;
   margin-left: -0.04em;
   font-family: var(--sv-serif);
-  font-size: clamp(96px, 19vw, 248px);
+  font-size: 1em;
   font-weight: 400;
   line-height: 0.8;
   letter-spacing: -0.05em;
@@ -360,6 +367,136 @@ body:has(.sv-root) {
 
 .hp-hero h1 em {
   font-style: italic;
+}
+
+.hp-ch {
+  display: inline-block;
+  animation: hp-letter 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.hp-hero h1 > .hp-ch:nth-child(2) {
+  animation-delay: 0.08s;
+}
+
+.hp-hero h1 em .hp-ch:nth-child(1) {
+  animation-delay: 0.16s;
+}
+
+.hp-hero h1 em .hp-ch:nth-child(2) {
+  animation-delay: 0.24s;
+}
+
+/* u and i take the stats blue, with a slow light sweep */
+.hp-ch.is-blue {
+  padding: 0.3em 0.2em 0.1em 0;
+  margin: -0.3em -0.2em -0.1em 0;
+  background-image: linear-gradient(
+    115deg,
+    var(--sv-accent) 0%,
+    color-mix(in srgb, var(--sv-accent) 72%, #ffffff) 45%,
+    var(--sv-accent) 75%
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation:
+    hp-letter 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both,
+    hp-sweep 9s ease-in-out 1.2s infinite alternate;
+}
+
+/* type-specimen guides: cap height, x-height, baseline (Newsreader metrics, in em of the wordmark) */
+.hp-guides {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hp-guide {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 0;
+  border-top: 1px solid rgb(var(--sv-rgb) / 0.14);
+  transform-origin: left;
+  animation: hp-draw 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.hp-guide.is-cap {
+  top: -0.082em;
+  border-top-style: dashed;
+  animation-delay: 0.3s;
+}
+
+.hp-guide.is-x {
+  top: 0.121em;
+  border-top-style: dashed;
+  animation-delay: 0.4s;
+}
+
+.hp-guide.is-base {
+  top: 0.633em;
+  border-top-color: var(--sv-accent);
+  animation-delay: 0.5s;
+}
+
+.hp-guide b {
+  position: absolute;
+  right: 0;
+  bottom: 4px;
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: var(--pf-muted);
+  animation: hp-fade 0.8s ease 1.1s both;
+}
+
+.hp-guide.is-base b {
+  color: var(--sv-accent);
+}
+
+@keyframes hp-letter {
+  from {
+    opacity: 0;
+    transform: translateY(0.1em);
+  }
+}
+
+@keyframes hp-sweep {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+
+@keyframes hp-draw {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes hp-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .hp-guide b {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hp-ch,
+  .hp-ch.is-blue,
+  .hp-guide,
+  .hp-guide b {
+    animation: none !important;
+  }
 }
 
 .hp-spec {

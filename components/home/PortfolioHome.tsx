@@ -306,9 +306,21 @@ export function PortfolioHome({
                     </span>
                     <span>{t('heroRole')}</span>
                   </p>
-                  <h1 aria-label={profile.name}>
-                    Xu<em>Yi</em>
-                  </h1>
+                  <div className="hp-mark">
+                    <h1 aria-label={profile.name}>
+                      <span className="hp-ch" aria-hidden="true">X</span>
+                      <span className="hp-ch is-blue" aria-hidden="true">u</span>
+                      <em>
+                        <span className="hp-ch" aria-hidden="true">Y</span>
+                        <span className="hp-ch is-blue" aria-hidden="true">i</span>
+                      </em>
+                    </h1>
+                    <div className="hp-guides" aria-hidden="true">
+                      <span className="hp-guide is-cap"><b>CAP · 715</b></span>
+                      <span className="hp-guide is-x"><b>X-HT · 512</b></span>
+                      <span className="hp-guide is-base"><b>BASE · 0</b></span>
+                    </div>
+                  </div>
                 </div>
                 <div>
                   <dl className="hp-spec">
