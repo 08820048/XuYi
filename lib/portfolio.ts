@@ -29,6 +29,8 @@ export type Product = {
   cta: string;
   badge?: "OPEN";
   apple?: boolean;
+  /** 官网禁止被 iframe 嵌入（X-Frame-Options / frame-ancestors）时设为 false，首页桌面会改用截图窗口 */
+  embed?: boolean;
   /**
    * 产品展示图（点击可放大），图片或视频混合排列，视频会静音自动循环播放。
    * 要求：
@@ -60,6 +62,7 @@ export const freeProject: Product[] = [
     desc: "为读代码而做的 Mac 编辑器。",
     descEn: "A Mac editor built for reading code.",
     link: "https://folioedit.dev/",
+    embed: false,
     size: "thin",
     cta: "访问 →",
     badge: "OPEN",
@@ -105,6 +108,7 @@ export const projects: Product[] = [
     desc: "把 Mac 刘海变成编码智能体的状态岛。",
     descEn: "Turns the Mac notch into a status island for coding agents.",
     link: "https://runnock.com/#pricing",
+    embed: false,
     size: "big",
     cta: "去购买",
     apple: true,

@@ -73,7 +73,7 @@ export function ProductDesktop() {
 
   // 拖动窗口：只能在“屏幕”范围内拖，标题栏始终留在里面
   function startDrag(event: React.PointerEvent) {
-    if ((event.target as HTMLElement).closest('button')) return
+    if ((event.target as HTMLElement).closest('button, a')) return
     event.currentTarget.setPointerCapture(event.pointerId)
     drag.current = { startX: event.clientX, startY: event.clientY, baseX: offset.x, baseY: offset.y }
   }
@@ -97,6 +97,8 @@ export function ProductDesktop() {
   }
 
   const desc = (product: Product) => (locale === 'en' ? product.descEn : product.desc)
+  const live = !!active && active.embed !== false
+  const host = active ? new URL(active.link).host : ''
   const shots = active?.shots ?? []
   const shot = shots[shotIndex] ?? null
 
@@ -114,7 +116,7 @@ export function ProductDesktop() {
           <div
             key={active.id}
             ref={windowRef}
-            className="dk-window"
+            className={`dk-window${live ? ' is-live' : ''}`}
             role="dialog"
             aria-label={active.name}
             style={{ ['--dx' as string]: `${offset.x}px`, ['--dy' as string]: `${offset.y}px` }}
@@ -123,8 +125,29 @@ export function ProductDesktop() {
               <button type="button" className="dk-close" aria-label={translate(locale, 'closeMenu')} onClick={close} />
               <i aria-hidden="true" />
               <i aria-hidden="true" />
-              <span>{active.name}</span>
+              {live ? (
+                <>
+                  <span className="dk-url">{host}</span>
+                  <a className="dk-ext" href={active.link} target="_blank" rel="noreferrer" aria-label={`${ctaLabel(active, locale)} ${active.name}`}>
+                    <svg width="14" height="14" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M3.5 8.5 8.5 3.5M4 3.5h4.5V8" />
+                    </svg>
+                  </a>
+                </>
+              ) : (
+                <span>{active.name}</span>
+              )}
             </div>
+            {live ? (
+              <iframe
+                className="dk-frame"
+                src={active.link}
+                title={active.name}
+                loading="lazy"
+                referrerPolicy="no-referrer"
+                allow="autoplay; fullscreen"
+              />
+            ) : (
             <div className="dk-body">
               <div className="dk-media">
                 {shot ? (
@@ -168,6 +191,7 @@ export function ProductDesktop() {
                 </a>
               </div>
             </div>
+            )}
           </div>
         )}
 
