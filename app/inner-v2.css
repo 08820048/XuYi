@@ -334,56 +334,71 @@ body:has(.site-shell) {
 }
 
 .site-shell .article-copyright-notice {
-  display: grid;
-  grid-template-columns: 150px minmax(0, 1fr);
-  column-gap: 28px;
-  align-items: start;
-  margin-top: 0;
-  padding: 1.5rem 0 0;
-  border: 0;
-  border-top: 1px solid var(--sv-line);
-  border-radius: 0;
-  background: none;
-  color: color-mix(in srgb, var(--sv-ink) 62%, transparent);
+  position: relative;
+  isolation: isolate;
+  margin-top: 2rem;
+  padding: 1.5rem 1.75rem 1.5rem;
+  border: 1px solid var(--sv-line);
+  border-radius: var(--sv-r-lg, 4px);
+  background:
+    linear-gradient(135deg, rgb(var(--sv-accent-rgb) / 0.045), transparent 55%),
+    var(--sv-card);
+  overflow: hidden;
+  color: color-mix(in srgb, var(--sv-ink) 64%, transparent);
   font-family: var(--sv-ui);
   font-size: 0.8125rem;
-  line-height: 1.65;
+  line-height: 1.7;
 }
 
-/* big outlined © with the year, like a printer's mark */
-.site-shell .cr-mark {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
-  user-select: none;
-}
-
-.site-shell .cr-mark span {
-  font-family: var(--sv-display);
-  display: block;
-  font-size: 6.5rem;
-  line-height: 0.9;
-  color: transparent;
-  background: linear-gradient(160deg, rgb(var(--sv-accent-rgb) / 0.3), rgb(var(--sv-accent-rgb) / 0.04) 80%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-stroke: 1.2px var(--sv-accent);
-}
-
-.site-shell .cr-mark small {
-  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 10.5px;
-  letter-spacing: 0.08em;
-  color: color-mix(in srgb, var(--sv-ink) 52%, transparent);
-}
-
-.site-shell .cr-body > * {
+.site-shell .article-copyright-notice > * {
+  position: relative;
+  z-index: 1;
   margin: 0;
 }
 
-.site-shell .article-copyright-notice .kami-label {
-  margin-bottom: 10px;
+/* four registration ticks at the corners, the same measuring language as the home grid */
+.site-shell .cr-corner {
+  position: absolute;
+  z-index: 1;
+  width: 9px;
+  height: 9px;
+  border: 0 solid var(--sv-accent);
+  pointer-events: none;
+}
+
+.site-shell .cr-corner.is-tl { top: 7px; left: 7px; border-width: 1.5px 0 0 1.5px; }
+.site-shell .cr-corner.is-tr { top: 7px; right: 7px; border-width: 1.5px 1.5px 0 0; }
+.site-shell .cr-corner.is-bl { bottom: 7px; left: 7px; border-width: 0 0 1.5px 1.5px; }
+.site-shell .cr-corner.is-br { bottom: 7px; right: 7px; border-width: 0 1.5px 1.5px 0; }
+
+/* giant outlined © bleeding off the right edge */
+.site-shell .cr-watermark {
+  position: absolute !important;
+  z-index: 0 !important;
+  right: -0.9rem;
+  bottom: -2.6rem;
+  font-family: var(--sv-display);
+  font-size: 11rem;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1px rgb(var(--sv-accent-rgb) / 0.22);
+  user-select: none;
+  pointer-events: none;
+}
+
+.site-shell .cr-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 10px !important;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed var(--sv-line);
+}
+
+.site-shell .article-copyright-notice .kami-label,
+.site-shell .cr-year {
+  margin: 0;
   font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 10.5px;
   letter-spacing: 0.08em;
@@ -391,8 +406,13 @@ body:has(.site-shell) {
   color: color-mix(in srgb, var(--sv-ink) 52%, transparent);
 }
 
+.site-shell .cr-year {
+  color: var(--sv-accent);
+}
+
 .site-shell .cr-text {
-  max-width: 38em;
+  max-width: 36em;
+  color: color-mix(in srgb, var(--sv-ink) 72%, transparent);
 }
 
 /* the citation, as a terminal line you can copy in one click */
@@ -401,10 +421,10 @@ body:has(.site-shell) {
   align-items: center;
   gap: 14px;
   margin-top: 16px !important;
-  padding: 10px 10px 10px 14px;
+  padding: 9px 9px 9px 14px;
   border: 1px solid var(--sv-line);
-  border-radius: 10px;
-  background: var(--sv-card);
+  border-radius: var(--sv-r-lg, 4px);
+  background: var(--sv-paper);
 }
 
 .site-shell .cr-cite code {
@@ -425,19 +445,16 @@ body:has(.site-shell) {
 .site-shell .cr-cite button {
   flex: none;
   padding: 5px 12px;
-  border: 1px solid var(--sv-line);
-  border-radius: 999px;
-  background: var(--sv-paper);
-  color: var(--sv-ink);
+  border: 1px solid var(--sv-ink);
+  background: var(--sv-ink);
+  color: var(--sv-paper);
   font-size: 12px;
   cursor: pointer;
-  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+  transition: opacity 0.2s;
 }
 
 .site-shell .cr-cite button:hover {
-  border-color: var(--sv-ink);
-  background: var(--sv-ink);
-  color: var(--sv-paper);
+  opacity: 0.85;
 }
 
 .site-shell .article-copyright-notice a {
@@ -460,17 +477,12 @@ body:has(.site-shell) {
 
 @media (max-width: 760px) {
   .site-shell .article-copyright-notice {
-    grid-template-columns: minmax(0, 1fr);
-    row-gap: 14px;
+    padding: 1.25rem 1.25rem;
   }
 
-  .site-shell .cr-mark {
-    flex-direction: row;
-    align-items: baseline;
-  }
-
-  .site-shell .cr-mark span {
-    font-size: 3.5rem;
+  .site-shell .cr-watermark {
+    font-size: 8rem;
+    bottom: -1.8rem;
   }
 
   .site-shell .cr-cite {

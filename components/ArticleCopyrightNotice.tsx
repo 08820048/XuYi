@@ -74,32 +74,35 @@ export function ArticleCopyrightNotice({
 
   return (
     <section className="kami-note article-copyright-notice" aria-label={t('copyrightTitle')}>
-      <div className="cr-mark" aria-hidden="true">
-        <span>©</span>
-        <small>{new Date().getFullYear()}</small>
-      </div>
-      <div className="cr-body">
+      <span className="cr-corner is-tl" aria-hidden="true" />
+      <span className="cr-corner is-tr" aria-hidden="true" />
+      <span className="cr-corner is-bl" aria-hidden="true" />
+      <span className="cr-corner is-br" aria-hidden="true" />
+      <span className="cr-watermark" aria-hidden="true">©</span>
+
+      <header className="cr-head">
         <p className="kami-label">{t('copyrightTitle')}</p>
-        <p className="cr-text">{t('copyrightBody')}</p>
-        <div className="cr-cite">
-          <code>
-            <span className="cr-prompt" aria-hidden="true">❯</span>
-            {citationHead}
-            <a href={articleUrl}>{articleUrl}</a>
-          </code>
-          <button type="button" onClick={copyCitation} aria-live="polite">
-            {copied ? `${t('copied')} ✓` : t('copyCitation')}
-          </button>
-        </div>
-        {sourceUrl && (
-          <p className="cr-source">
-            {t('sourceLink')}
-            <a href={sourceUrl} target="_blank" rel="noopener noreferrer">
-              {sourceUrl}
-            </a>
-          </p>
-        )}
+        <span className="cr-year" aria-hidden="true">© {new Date().getFullYear()}</span>
+      </header>
+      <p className="cr-text">{t('copyrightBody')}</p>
+      <div className="cr-cite">
+        <code>
+          <span className="cr-prompt" aria-hidden="true">❯</span>
+          {citationHead}
+          <a href={articleUrl}>{articleUrl}</a>
+        </code>
+        <button type="button" onClick={copyCitation} aria-live="polite">
+          {copied ? `${t('copied')} ✓` : t('copyCitation')}
+        </button>
       </div>
+      {sourceUrl && (
+        <p className="cr-source">
+          {t('sourceLink')}
+          <a href={sourceUrl} target="_blank" rel="noopener noreferrer">
+            {sourceUrl}
+          </a>
+        </p>
+      )}
     </section>
   )
 }
