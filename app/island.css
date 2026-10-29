@@ -109,6 +109,25 @@
   opacity: 0.62;
 }
 
+.island-greeting {
+  font-size: 13px;
+  letter-spacing: 0.01em;
+  animation: island-greet-in 0.5s 0.15s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes island-greet-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .island-greeting {
+    animation: none;
+  }
+}
+
 .island-ctx::before {
   content: "·";
   margin-right: 9px;

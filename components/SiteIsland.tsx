@@ -10,6 +10,7 @@ import { useLocale } from '@/lib/i18n-client'
 import { localePath, localizeNavLabel, t, type Locale } from '@/lib/i18n'
 import { ISLAND_SEARCH_EVENT } from '@/lib/island-search'
 import { profile } from '@/lib/portfolio'
+import { buildGreeting, greetingLocale, type VisitorPlace } from '@/lib/greeting'
 import { splitSiteNavLinks, type SiteNavLink } from '@/lib/site'
 import '@/app/island.css'
 
@@ -141,6 +142,8 @@ export function SiteIsland({ navLinks }: { navLinks?: SiteNavLink[] }) {
   const compactRef = useRef<HTMLButtonElement>(null)
   const fullRef = useRef<HTMLDivElement>(null)
   const closeTimer = useRef<number | undefined>(undefined)
+  /** 每次会话第一次进来时，刘海里短暂显示的欢迎词。 */
+  const [greeting, setGreeting] = useState<string | null>(null)
   /** 关掉搜索条后的一小段时间里不因为“鼠标不在岛上”而收起岛（搜索条消失时鼠标刚好落在它原来的位置）。 */
   const holdOpenUntil = useRef(0)
 
@@ -164,6 +167,44 @@ export function SiteIsland({ navLinks }: { navLinks?: SiteNavLink[] }) {
     }
   }, [measure, locale])
 
+  // 欢迎词：每个会话只在第一次进站时出现一次（先问 /api/geo 要位置，再根据浏览器语言 / 所在国家选中英文）
+  useEffect(() => {
+    let alive = true
+    let hideTimer: number | undefined
+    try {
+      if (sessionStorage.getItem('xy-greeted')) return
+    } catch {
+      return
+    }
+    ;(async () => {
+      let place: VisitorPlace = {}
+      try {
+        const res = await fetch('/api/geo', { cache: 'no-store' })
+        if (res.ok) place = await res.json()
+      } catch {}
+      if (!alive) return
+      const text = buildGreeting(
+        greetingLocale(locale, navigator.language, place),
+        place,
+        new Date().getHours(),
+      )
+      window.setTimeout(() => {
+        if (!alive) return
+        try {
+          sessionStorage.setItem('xy-greeted', '1')
+        } catch {}
+        setGreeting(text)
+        hideTimer = window.setTimeout(() => setGreeting(null), 4600)
+      }, 700)
+    })()
+    return () => {
+      alive = false
+      window.clearTimeout(hideTimer)
+    }
+    // 只在第一次挂载时跑一次
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   // 换页后自动收起
   useEffect(() => {
     setOpen(false)
@@ -171,6 +212,7 @@ export function SiteIsland({ navLinks }: { navLinks?: SiteNavLink[] }) {
   }, [pathname])
 
   const expanded = open || searchOpen
+  const shownGreeting = expanded ? null : greeting
 
   // 粘液滤镜会把所有角都磨圆，所以只在搜索条出现（和缩回去的动画）期间启用，平时用清晰的刘海轮廓
   useEffect(() => {
@@ -299,12 +341,20 @@ export function SiteIsland({ navLinks }: { navLinks?: SiteNavLink[] }) {
             onClick={() => setOpen((value) => !value)}
           >
             <img className="island-avatar" src={profile.avatar} alt="" width={24} height={24} />
-            <span className="island-name">XuYi</span>
-            <span className="island-ctx">
-              <Suspense fallback={contextLabel(locale, pathname, null)}>
-                <IslandContext locale={locale} pathname={pathname} />
-              </Suspense>
-            </span>
+            {shownGreeting ? (
+              <span className="island-greeting" role="status">
+                {shownGreeting}
+              </span>
+            ) : (
+              <>
+                <span className="island-name">XuYi</span>
+                <span className="island-ctx">
+                  <Suspense fallback={contextLabel(locale, pathname, null)}>
+                    <IslandContext locale={locale} pathname={pathname} />
+                  </Suspense>
+                </span>
+              </>
+            )}
           </button>
 
           <div ref={fullRef} className="island-full" inert={!expanded ? true : undefined}>
