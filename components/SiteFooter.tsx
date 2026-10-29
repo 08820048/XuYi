@@ -9,7 +9,6 @@ import { isSponsorActive } from '@/lib/sponsor'
 import { splitSiteNavLinks, type SiteNavLink } from '@/lib/site'
 import { localePath, localizeNavLabel, t } from '@/lib/i18n'
 import { useLocale } from '@/lib/i18n-client'
-import { profile } from '@/lib/portfolio'
 
 export function SiteFooter({ navLinks }: { navLinks?: SiteNavLink[] }) {
   const [open, setOpen] = useState(false)
@@ -22,15 +21,6 @@ export function SiteFooter({ navLinks }: { navLinks?: SiteNavLink[] }) {
   const pathname = usePathname()
   const locale = useLocale()
   const { footerLinks } = splitSiteNavLinks(navLinks)
-  const [year, setYear] = useState<{ label: number; percent: number } | null>(null)
-
-  useEffect(() => {
-    const now = new Date()
-    const start = new Date(now.getFullYear(), 0, 1).getTime()
-    const end = new Date(now.getFullYear() + 1, 0, 1).getTime()
-    setYear({ label: now.getFullYear(), percent: Math.round(((now.getTime() - start) / (end - start)) * 100) })
-  }, [])
-
   useEffect(() => {
     if (open) {
       setTimeout(() => inputRef.current?.focus(), 50)
@@ -71,79 +61,7 @@ export function SiteFooter({ navLinks }: { navLinks?: SiteNavLink[] }) {
     <>
       <footer className="site-footer mt-auto">
         <div className="ef">
-          <div className="ef-grid">
-            <div className="ef-brand">
-              <p className="ef-label">{profile.name} — {t(locale, 'heroRole')}</p>
-              {year && (
-                <p className="ef-year" aria-label={`${year.label} ${year.percent}%`}>
-                  <span>{year.label}</span>
-                  <i><b style={{ width: `${year.percent}%` }} /></i>
-                  <span>{year.percent}%</span>
-                </p>
-              )}
-            </div>
-
-            <nav className="ef-col" aria-label={t(locale, 'footSite')}>
-              <p className="ef-label">{t(locale, 'footSite')}</p>
-              <ul>
-                <li>
-                  <Link href={localePath('/', locale)}>{t(locale, 'tabWork')}</Link>
-                </li>
-                <li>
-                  <Link href={localePath('/?tab=blog', locale)}>{t(locale, 'tabWriting')}</Link>
-                </li>
-                {footerLinks.map((link) => {
-                  const href = localePath(link.url, locale)
-                  const label = localizeNavLabel(link.label, locale)
-                  const active = pathname === href || pathname.startsWith(`${href}/`)
-                  return (
-                    <li key={link.url}>
-                      {link.openInNewTab || link.url.startsWith('http') ? (
-                        <a
-                          href={link.url}
-                          target={link.openInNewTab ? '_blank' : undefined}
-                          rel={link.openInNewTab ? 'noopener noreferrer' : undefined}
-                        >
-                          {label}
-                        </a>
-                      ) : (
-                        <Link href={href} aria-current={active ? 'page' : undefined}>
-                          {label}
-                        </Link>
-                      )}
-                    </li>
-                  )
-                })}
-              </ul>
-            </nav>
-
-            <div className="ef-col">
-              <p className="ef-label">{t(locale, 'footElsewhere')}</p>
-              <ul>
-                <li><a href={profile.xUrl} target="_blank" rel="noopener noreferrer">X <span aria-hidden="true">↗</span></a></li>
-                <li><a href={profile.github} target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a></li>
-                <li><a href={profile.threads} target="_blank" rel="noopener noreferrer">Threads <span aria-hidden="true">↗</span></a></li>
-                <li><a href="/feed.xml">RSS</a></li>
-              </ul>
-            </div>
-
-            <div className="ef-col">
-              <p className="ef-label">{t(locale, 'footContact')}</p>
-              <ul>
-                <li><a href={`mailto:${profile.email}`}>{profile.email}</a></li>
-              </ul>
-              {sponsorActive && (
-                <aside aria-label={t(locale, 'sponsor')} className="ef-sponsor">
-                  <span className="ef-label">{t(locale, 'sponsor')}</span>
-                  <a href="https://bufancv.com" target="_blank" rel="noopener noreferrer">
-                    AI简历 <span aria-hidden="true">↗</span>
-                  </a>
-                </aside>
-              )}
-            </div>
-          </div>
-
-          <div className="ef-base">
+          <nav className="ef-row" aria-label={t(locale, 'footSite')}>
             <span>© 2026</span>
             {isAdmin ? (
               <>
@@ -157,11 +75,44 @@ export function SiteFooter({ navLinks }: { navLinks?: SiteNavLink[] }) {
                 XuYi
               </button>
             )}
-            <span className="ef-set">Set in Newsreader &amp; Geist</span>
-            <a className="ef-top" href="#top" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }) }}>
+            {footerLinks.map((link) => {
+              const href = localePath(link.url, locale)
+              const label = localizeNavLabel(link.label, locale)
+              const active = pathname === href || pathname.startsWith(`${href}/`)
+              return link.openInNewTab || link.url.startsWith('http') ? (
+                <a
+                  key={link.url}
+                  href={link.url}
+                  target={link.openInNewTab ? '_blank' : undefined}
+                  rel={link.openInNewTab ? 'noopener noreferrer' : undefined}
+                >
+                  {label}
+                </a>
+              ) : (
+                <Link key={link.url} href={href} aria-current={active ? 'page' : undefined}>
+                  {label}
+                </Link>
+              )
+            })}
+            {sponsorActive && (
+              <span className="ef-sponsor" aria-label={t(locale, 'sponsor')}>
+                {t(locale, 'sponsor')} ·{' '}
+                <a href="https://bufancv.com" target="_blank" rel="noopener noreferrer">
+                  AI简历
+                </a>
+              </span>
+            )}
+            <a
+              className="ef-top"
+              href="#top"
+              onClick={(e) => {
+                e.preventDefault()
+                window.scrollTo({ top: 0, behavior: 'smooth' })
+              }}
+            >
               {t(locale, 'footTop')} <span aria-hidden="true">↑</span>
             </a>
-          </div>
+          </nav>
         </div>
       </footer>
 
