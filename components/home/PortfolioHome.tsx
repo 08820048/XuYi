@@ -12,7 +12,6 @@ import type { SiteNavLink } from '@/lib/site'
 import { isSponsorActive } from '@/lib/sponsor'
 import { freeProject, productPlan, profile, projects, type Product } from '@/lib/portfolio'
 import { AppleIcon, GitHubIcon, MailIcon, RssIcon, SearchIcon, ThreadsIcon, WhatsAppIcon, XIcon } from './icons'
-import { LightboxProvider, ZoomImage, ZoomVideo } from './Lightbox'
 import { TrafficStats } from './TrafficStats'
 import { PostTypeBadge } from '@/components/PostTypeBadge'
 import { PostUpdateBadge } from '@/components/PostUpdateBadge'
@@ -23,17 +22,6 @@ function ctaLabel(product: Product, locale: Locale) {
   if (locale === 'zh') return product.cta
   if (product.cta.includes('购买')) return translate(locale, 'buy')
   return product.cta.includes('→') ? `${translate(locale, 'visit')} →` : translate(locale, 'visit')
-}
-
-function VisitButton({ product }: { product: Product }) {
-  const locale = useLocale()
-  return (
-    <a className="pf-btn pf-btn-visit" href={product.link} target="_blank" rel="noreferrer">
-      {product.apple && <AppleIcon />}
-      {ctaLabel(product, locale)}
-      <span className="pf-sr"> {product.name}</span>
-    </a>
-  )
 }
 
 function ProductPlan() {
@@ -223,151 +211,73 @@ function InlineSubscribe() {
   )
 }
 
-/** 悬停 / 展开某个产品时，整页换成它的颜色（颜色值写在 lib/portfolio.ts 里，深色模式由 CSS 自动压暗）。 */
-function useProductTint(product: Product | null) {
-  useEffect(() => {
-    const root = document.documentElement
-    if (!product) {
-      root.style.removeProperty('--hb')
-      root.style.removeProperty('--hb-dark')
-      root.style.removeProperty('--hi')
-      return
-    }
-    root.style.setProperty('--hb', product.tint)
-    root.style.setProperty('--hb-dark', `color-mix(in srgb, ${product.tint} 20%, #151412)`)
-    root.style.setProperty('--hi', product.tintInk)
-    return () => {
-      root.style.removeProperty('--hb')
-      root.style.removeProperty('--hb-dark')
-      root.style.removeProperty('--hi')
-    }
-  }, [product])
-}
-
-/** 悬停时跟着鼠标走的产品图标（仅在有鼠标的设备上启用）。 */
-function useFollowIcon(active: Product | null) {
-  const ref = useRef<HTMLDivElement>(null)
-  const imgRef = useRef<HTMLImageElement>(null)
-  const pointer = useRef({ x: -300, y: -300, cx: -300, cy: -300, enabled: false })
-
-  useEffect(() => {
-    const state = pointer.current
-    state.enabled = window.matchMedia('(hover: hover) and (pointer: fine)').matches
-    if (!state.enabled) return
-    const onMove = (event: MouseEvent) => {
-      state.x = event.clientX
-      state.y = event.clientY
-    }
-    window.addEventListener('mousemove', onMove, { passive: true })
-    let frame = 0
-    const tick = () => {
-      state.cx += (state.x - state.cx) * 0.16
-      state.cy += (state.y - state.cy) * 0.16
-      const tilt = Math.max(-14, Math.min(14, (state.x - state.cx) * 0.12))
-      if (ref.current) ref.current.style.transform = `translate3d(${state.cx - 26}px, ${state.cy - 96}px, 0) rotate(${tilt}deg)`
-      frame = requestAnimationFrame(tick)
-    }
-    frame = requestAnimationFrame(tick)
-    return () => {
-      window.removeEventListener('mousemove', onMove)
-      cancelAnimationFrame(frame)
-    }
-  }, [])
-
-  useEffect(() => {
-    const node = ref.current
-    if (!node || !pointer.current.enabled) return
-    if (active && imgRef.current) imgRef.current.src = active.logo
-    node.classList.toggle('is-show', Boolean(active))
-  }, [active])
+/** 单个产品卡片：封面（有截图的才有）+ 图标、名称、一句话简介 + 访问入口。整张卡片就是一个链接。 */
+function ProductCard({ product }: { product: Product }) {
+  const locale = useLocale()
+  const desc = locale === 'en' ? product.descEn : product.desc
+  // 封面只用图片（视频不在首页自动播放），取第一张
+  const cover = product.shots?.find((shot) => !/\.(mp4|webm|mov)$/i.test(shot))
 
   return (
-    <div ref={ref} className="sv-follow" aria-hidden="true">
-      <img ref={imgRef} alt="" width={132} height={132} />
-    </div>
+    <a className={`pr-card${cover ? ' has-cover' : ''}`} href={product.link} target="_blank" rel="noreferrer">
+      {cover && (
+        <span className="pr-cover">
+          <img src={cover} alt="" loading="lazy" width={530} height={336} />
+        </span>
+      )}
+      <span className="pr-body">
+        <span className="pr-head">
+          <img className="pr-icon" src={product.logo} alt="" width={36} height={36} />
+          <h3>{product.name}</h3>
+          {product.badge && <span className="pr-badge">{product.badge}</span>}
+        </span>
+        <span className="pr-desc">{desc}</span>
+        <span className="pr-go">
+          {product.apple && <AppleIcon />}
+          {ctaLabel(product, locale).replace(/\s*→\s*$/, '')}
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M3.5 8.5 8.5 3.5M4 3.5h4.5V8" />
+          </svg>
+        </span>
+      </span>
+    </a>
   )
 }
 
+function hasCover(product: Product) {
+  return Boolean(product.shots?.some((shot) => !/\.(mp4|webm|mov)$/i.test(shot)))
+}
+
 function ProductList() {
-  const locale = useLocale()
-  const t = (key: Parameters<typeof translate>[1]) => translate(locale, key)
   const groups = [
-    { label: 'FREE PROJECT', items: freeProject, start: 1 },
-    { label: 'PROJECTS', items: projects, start: freeProject.length + 1 },
+    { label: 'FREE PROJECT', items: freeProject },
+    { label: 'PROJECTS', items: projects },
   ]
-  const all = [...freeProject, ...projects]
-  const [hoverId, setHoverId] = useState<string | null>(null)
-  const [openId, setOpenId] = useState<string | null>(null)
-  const [seen, setSeen] = useState<Set<string>>(new Set())
-  const hovered = all.find((p) => p.id === hoverId) ?? null
-  const opened = all.find((p) => p.id === openId) ?? null
-
-  useProductTint(hovered ?? opened)
-  const follow = useFollowIcon(hovered)
-
-  function toggle(id: string) {
-    setOpenId((current) => (current === id ? null : id))
-    setSeen((current) => new Set(current).add(id))
-  }
-
   return (
-    <div className="sv-list" onMouseLeave={() => setHoverId(null)}>
-      {groups.map((group) => (
-        <section key={group.label} aria-label={group.label}>
-          <h2 className="pf-label sv-group">{group.label}</h2>
-          {group.items.map((product, i) => {
-            const isOpen = openId === product.id
-            const no = String(group.start + i).padStart(2, '0')
-            const desc = locale === 'en' ? product.descEn : product.desc
-            return (
-              <article key={product.id} className={`sv-row${isOpen ? ' is-open' : ''}${hoverId === product.id ? ' is-hover' : ''}`}>
-                <button
-                  type="button"
-                  className="sv-row-head"
-                  aria-expanded={isOpen}
-                  aria-controls={`prod-${product.id}`}
-                  onClick={() => toggle(product.id)}
-                  onMouseEnter={() => setHoverId(product.id)}
-                  onFocus={() => setHoverId(product.id)}
-                  onBlur={() => setHoverId(null)}
-                >
-                  <span className="sv-n">{no}</span>
-                  <h3>
-                    {product.name}
-                    {product.badge && <span className="sv-badge">{product.badge}</span>}
-                  </h3>
-                  <span className="sv-meta">{desc}</span>
-                  <span className="sv-chevron" aria-hidden="true" />
-                </button>
-                <div id={`prod-${product.id}`} className="sv-row-body" inert={!isOpen ? true : undefined}>
-                  <div className="sv-row-inner">
-                    <div className="sv-row-top">
-                      <img className="pf-tile" src={product.logo} alt="" />
-                      <p className="sv-desc">{desc}</p>
-                      <VisitButton product={product} />
-                    </div>
-                    {seen.has(product.id) && product.shots && product.shots.length > 0 && (
-                      <div className="pf-shots">
-                        {product.shots.map((shot, k) => (
-                          <div className="pf-shot-frame" key={shot}>
-                            {/\.(mp4|webm|mov)$/i.test(shot) ? (
-                              <ZoomVideo src={shot} alt={`${product.name} demo ${k + 1}`} width={530} height={336} />
-                            ) : (
-                              <ZoomImage src={shot} alt={`${product.name} screenshot ${k + 1}`} width={530} height={336} loading="lazy" />
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </article>
-            )
-          })}
-        </section>
-      ))}
-      {follow}
-      <span className="pf-sr">{t('tabWork')}</span>
+    <div className="pr-list">
+      {groups.map((group) => {
+        const featured = group.items.filter(hasCover)
+        const plain = group.items.filter((product) => !hasCover(product))
+        return (
+          <section key={group.label} aria-label={group.label}>
+            <h2 className="pf-label pr-group">{group.label}</h2>
+            {featured.length > 0 && (
+              <div className="pr-grid">
+                {featured.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            )}
+            {plain.length > 0 && (
+              <div className={`pr-grid${featured.length > 0 ? ' pr-grid-after' : ''}`}>
+                {plain.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            )}
+          </section>
+        )
+      })}
     </div>
   )
 }
@@ -454,7 +364,7 @@ export function PortfolioHome({
   const tagline = (locale === 'en' ? profile.blogTaglineEn : profile.blogTagline).trim()
 
   return (
-    <LightboxProvider>
+    <>
       <div className="pf-root sv-root">
         <LangSync locale={locale} />
         <SiteIsland navLinks={navLinks} />
@@ -547,6 +457,6 @@ export function PortfolioHome({
           </footer>
         </div>
       </div>
-    </LightboxProvider>
+    </>
   )
 }

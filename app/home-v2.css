@@ -190,215 +190,163 @@ body:has(.sv-root) {
   outline: none;
 }
 
-/* ---------- product list ---------- */
-.sv-list {
-  position: relative;
-  border-top: 1px solid var(--sv-line);
+/* ---------- products: a quiet grid of cards ---------- */
+.pr-list {
+  display: grid;
+  gap: 40px;
 }
 
-.sv-group {
-  margin: 0;
-  padding: 18px 0 10px;
+.pr-group {
+  margin: 0 0 14px;
   font-size: 11px;
   letter-spacing: 0.14em;
 }
 
-.sv-row {
-  border-bottom: 1px solid var(--sv-line);
-  transition: opacity 0.4s;
-}
-
-.sv-list:has(.sv-row.is-hover) .sv-row:not(.is-hover) {
-  opacity: 0.28;
-}
-
-.sv-row-head {
+.pr-grid {
   display: grid;
-  grid-template-columns: 52px minmax(0, 1fr) minmax(120px, 340px) 28px;
-  align-items: center;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
-  width: 100%;
-  padding: 14px 0;
-  border: 0;
-  background: none;
+}
+
+.pr-grid-after {
+  margin-top: 16px;
+}
+
+.pr-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid var(--sv-line);
+  border-radius: 16px;
+  background: var(--sv-card);
   color: inherit;
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
 }
 
-.sv-n {
-  align-self: center;
-  padding-top: 0;
-  font-family: var(--sv-serif);
-  font-size: 13px;
-  font-style: italic;
-  color: var(--pf-muted);
+.pr-card:hover,
+.pr-card:focus-visible {
+  border-color: rgb(var(--sv-rgb) / 0.32);
+  background: var(--sv-raise);
 }
 
-.sv-row-head h3 {
-  font-family: var(--sv-serif);
-  font-size: clamp(26px, 3vw, 40px);
-  font-weight: 400;
-  line-height: 1.1;
-  letter-spacing: -0.03em;
-  transition: transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.sv-row-head:hover h3,
-.sv-row-head:focus-visible h3,
-.sv-row.is-open h3 {
-  transform: translateX(8px);
-}
-
-.sv-badge {
-  display: inline-block;
-  margin-left: 0.4em;
-  padding: 2px 9px;
-  border: 1px solid currentColor;
-  border-radius: 999px;
-  font-family: var(--font-geist-sans), sans-serif;
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  line-height: 1.5;
-  vertical-align: top;
-  opacity: 0.7;
-  transform: translateY(0.55em);
-}
-
-.sv-meta {
-  font-size: 13px;
-  line-height: 1.5;
-  opacity: 0.55;
-  transform: none;
-  transition: opacity 0.4s, transform 0.4s;
-}
-
-.sv-row-head:hover .sv-meta,
-.sv-row-head:focus-visible .sv-meta {
-  opacity: 0.9;
-  transform: none;
-}
-
-.sv-row.is-open .sv-meta {
-  opacity: 0;
-}
-
-.sv-chevron {
-  position: relative;
-  width: 18px;
-  height: 18px;
-  justify-self: end;
-  opacity: 0.45;
-}
-
-.sv-chevron::before,
-.sv-chevron::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  height: 1.5px;
-  margin-top: -0.75px;
-  background: currentColor;
-  transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.sv-chevron::after {
-  transform: rotate(90deg);
-}
-
-.sv-row.is-open .sv-chevron::after {
-  transform: rotate(0deg);
-}
-
-.sv-row-body {
+.pr-grid > .pr-card.has-cover:only-child {
+  /* 分组里只有一张带封面的卡片时，横向铺满整行：封面在左，介绍在右 */
+  grid-column: 1 / -1;
   display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
 }
 
-.sv-row.is-open .sv-row-body {
-  grid-template-rows: 1fr;
+.pr-grid > .pr-card.has-cover:only-child .pr-body {
+  gap: 10px;
+  padding: 12px 24px;
 }
 
-.sv-row-inner {
-  min-height: 0;
+.pr-grid > .pr-card.has-cover:only-child .pr-head h3 {
+  font-size: 24px;
+}
+
+.pr-grid > .pr-card.has-cover:only-child .pr-desc {
+  font-size: 15px;
+}
+
+.pr-grid > .pr-card.has-cover:only-child .pr-go {
+  margin-top: 6px;
+}
+
+.pr-cover {
+  display: block;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
-  padding-left: 68px;
+  border-radius: 10px;
+  background: rgb(var(--sv-rgb) / 0.04);
+  box-shadow: inset 0 0 0 1px rgb(var(--sv-rgb) / 0.06);
 }
 
-.sv-row-top {
+.pr-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+.pr-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 8px 6px;
+}
+
+.pr-head {
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding: 6px 0 22px;
+  gap: 10px;
 }
 
-.sv-desc {
-  flex: 1;
-  max-width: 34em;
+.pr-icon {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px var(--sv-line);
+}
+
+.pr-head h3 {
+  min-width: 0;
   font-family: var(--sv-serif);
-  font-size: 16px;
+  font-size: 19px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.pr-badge {
+  padding: 1px 7px;
+  border: 1px solid var(--sv-line);
+  border-radius: 999px;
+  color: var(--pf-muted);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  line-height: 1.5;
+}
+
+.pr-desc {
+  color: var(--pf-muted);
+  font-size: 13.5px;
   line-height: 1.55;
 }
 
-.sv-root .pf-tile {
-  width: 44px;
-  height: 44px;
-  border-radius: 11px;
-  border: 1px solid var(--sv-line);
+.pr-go {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 6px;
+  color: var(--pf-ink-soft);
+  font-size: 12.5px;
+  font-weight: 500;
 }
 
-.sv-root .pf-shots {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  padding-bottom: 28px;
+.pr-go svg {
+  width: 12px;
+  height: 12px;
+  flex: none;
+  transition: transform 0.2s;
 }
 
-.sv-root .pf-shot-frame {
-  padding: 0;
-  min-width: 0;
+/* Apple 图标比箭头略大一点 */
+.pr-go svg:first-child:not(:last-child) {
+  width: 13px;
+  height: 13px;
+  margin-right: -1px;
 }
 
-.sv-root .pf-shot-frame::before {
-  display: none;
-}
-
-.sv-root .pf-shots img,
-.sv-root .pf-shots video {
-  width: 100%;
-  height: auto;
-  aspect-ratio: 1;
-  border-radius: 10px;
-  border: 1px solid var(--sv-line);
-  object-fit: cover;
-}
-
-/* icon that follows the pointer */
-.sv-follow {
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 30;
-  width: 84px;
-  height: 84px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s;
-}
-
-.sv-follow.is-show {
-  opacity: 1;
-}
-
-.sv-follow img {
-  width: 100%;
-  height: 100%;
-  border-radius: 20px;
-  box-shadow: 0 20px 50px rgb(0 0 0 / 0.24);
+.pr-card:hover .pr-go svg,
+.pr-card:focus-visible .pr-go svg {
+  transform: translate(2px, -2px);
 }
 
 /* ---------- writing ---------- */
@@ -650,69 +598,32 @@ body:has(.sv-root) {
 }
 
 @media (max-width: 760px) {
+  .pr-grid > .pr-card.has-cover:only-child {
+    display: flex;
+  }
+
+  .pr-grid > .pr-card.has-cover:only-child .pr-body {
+    gap: 6px;
+    padding: 8px 8px 6px;
+  }
+
+  .pr-grid > .pr-card.has-cover:only-child .pr-head h3 {
+    font-size: 19px;
+  }
+
+  .pr-grid > .pr-card.has-cover:only-child .pr-desc {
+    font-size: 13.5px;
+  }
+
+  .pr-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .sv-page {
     padding: 96px 22px 32px;
   }
 
-  .sv-row-head {
-    grid-template-columns: 44px minmax(0, 1fr) 24px;
-    gap: 12px;
-  }
 
-  .sv-n {
-    padding-top: 0.5em;
-  }
-
-  .sv-row-head h3 {
-    font-size: clamp(24px, 7vw, 30px);
-  }
-
-  .sv-meta {
-    grid-column: 2;
-    grid-row: 2;
-    opacity: 0.7;
-    transform: none;
-    padding-bottom: 6px;
-  }
-
-  .sv-row.is-open .sv-meta {
-    opacity: 0;
-    height: 0;
-    padding: 0;
-  }
-
-  .sv-chevron {
-    grid-row: 1;
-    grid-column: 3;
-  }
-
-  .sv-row-inner {
-    padding-left: 56px;
-  }
-
-  .sv-row-top {
-    flex-wrap: wrap;
-  }
-
-  .sv-root .pf-shots {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-  }
-
-  .sv-root .pf-shot-frame {
-    flex: none;
-    width: 220px;
-    scroll-snap-align: start;
-  }
-
-  .sv-list:has(.sv-row.is-hover) .sv-row:not(.is-hover) {
-    opacity: 1;
-  }
-
-  .sv-follow {
-    display: none;
-  }
 
   .sv-teaser {
     padding-top: 70px;
@@ -724,23 +635,9 @@ body:has(.sv-root) {
 }
 
 @media (hover: none) {
-  .sv-meta {
-    opacity: 0.7;
-    transform: none;
-  }
-
-  .sv-follow {
-    display: none;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sv-row-head h3,
-  .sv-row-body,
-  .sv-post::before,
-  .sv-post-title {
-    transition: none;
-  }
 }
 
 /* ---------- dark mode (follows the system; no manual toggle) ---------- */
@@ -776,10 +673,6 @@ body:has(.sv-root) {
     color: #151412;
   }
 
-  .sv-root .pf-shots img,
-  .sv-root .pf-shots video {
-    filter: brightness(0.92);
-  }
 
   .sv-root .pf-stats-ranges {
     background: rgb(255 255 255 / 0.06);
