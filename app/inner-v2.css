@@ -677,6 +677,208 @@ body:has(.site-shell) {
 
 }
 
+/* ---------- article reading details ---------- */
+.ar-bar {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 40;
+  height: 2px;
+  background: transparent;
+  pointer-events: none;
+}
+
+.ar-bar i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--sv-accent);
+}
+
+.ar-bar i::after {
+  content: "";
+  position: absolute;
+  right: -1px;
+  top: 0;
+  width: 2px;
+  height: 8px;
+  background: var(--sv-accent);
+}
+
+.ar-readout {
+  position: fixed;
+  right: 24px;
+  bottom: 22px;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 9px;
+  border: 1px solid var(--sv-line);
+  border-radius: var(--sv-r, 3px);
+  background: var(--sv-paper);
+  color: var(--sv-ink);
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;
+  transition: opacity 0.25s, transform 0.25s, border-color 0.2s;
+}
+
+.ar-readout.is-visible {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.ar-readout:hover {
+  border-color: var(--sv-accent);
+}
+
+.ar-readout span {
+  font-family: "Silkscreen", var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.ar-readout b {
+  font-weight: 400;
+  color: var(--sv-accent);
+}
+
+.site-shell .rich-content pre {
+  position: relative;
+}
+
+.site-shell .code-tools {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 0.5);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.site-shell .rich-content pre.shiki .code-tools {
+  color: color-mix(in srgb, var(--sv-ink) 55%, transparent);
+}
+
+.site-shell .rich-content pre:hover .code-tools,
+.site-shell .rich-content pre:focus-within .code-tools {
+  opacity: 1;
+}
+
+.site-shell .code-tools button {
+  padding: 3px 8px;
+  border: 1px solid currentColor;
+  border-radius: var(--sv-r, 3px);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.site-shell .code-tools button:hover,
+.site-shell .code-tools button[data-done] {
+  color: var(--sv-accent);
+}
+
+@media (hover: none) {
+  .site-shell .code-tools {
+    opacity: 1;
+  }
+}
+
+.site-shell .rich-content .table-scroll {
+  max-width: 100%;
+  margin: 1.25em 0;
+  overflow-x: auto;
+}
+
+.site-shell .rich-content .table-scroll > table {
+  margin: 0;
+}
+
+.site-shell .rich-content img.is-zoomable {
+  cursor: zoom-in;
+}
+
+.site-shell .rich-content :is(h2, h3) {
+  position: relative;
+}
+
+.site-shell .heading-anchor {
+  position: absolute;
+  left: -1.1em;
+  top: 0;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-weight: 400;
+  color: var(--sv-accent);
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.site-shell .rich-content :is(h2, h3):hover .heading-anchor,
+.site-shell .heading-anchor:focus-visible {
+  opacity: 1;
+}
+
+.ar-zoom {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgb(var(--sv-rgb, 23 23 23) / 0.0);
+  background-color: color-mix(in srgb, var(--sv-paper, #fff) 92%, transparent);
+  backdrop-filter: blur(6px);
+  cursor: zoom-out;
+  animation: ar-fade 0.2s ease;
+}
+
+.ar-zoom img {
+  max-width: min(96vw, 1400px);
+  max-height: 92vh;
+  border-radius: var(--sv-r-lg, 4px);
+  box-shadow: 0 0 0 1px var(--sv-line), 0 24px 60px rgb(0 0 0 / 0.18);
+}
+
+@keyframes ar-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .ar-readout {
+    right: 14px;
+    bottom: 14px;
+  }
+
+  .site-shell .heading-anchor {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ar-readout,
+  .ar-zoom {
+    animation: none;
+    transition: none;
+  }
+}
+
 /* ---------- mobile ---------- */
 @media (max-width: 639px) {
   .site-shell .kami-page-main {

@@ -24,6 +24,7 @@ import { TwitterEmbedsEnhancer } from '@/components/TwitterEmbedsEnhancer'
 import { GitHubAlertEnhancer } from '@/components/GitHubAlertEnhancer'
 import { MathRenderEnhancer } from '@/components/MathRenderEnhancer'
 import { CodeHighlightEnhancer } from '@/components/CodeHighlightEnhancer'
+import { ArticleEnhancements, ReadingProgress } from '@/components/ArticleReading'
 import { DiagramRenderEnhancer } from '@/components/DiagramRenderEnhancer'
 import { highlightHtml } from '@/lib/shiki-highlight'
 import { ArticleCopyrightNotice } from '@/components/ArticleCopyrightNotice'
@@ -324,6 +325,8 @@ export async function PostView({
             <MathRenderEnhancer containerId={contentContainerId} html={highlightedHtml} />
             <DiagramRenderEnhancer containerId={contentContainerId} html={highlightedHtml} />
             <TwitterEmbedsEnhancer containerId={contentContainerId} html={highlightedHtml} />
+            <ArticleEnhancements containerId={contentContainerId} html={highlightedHtml} />
+            <ReadingProgress containerId={contentContainerId} />
 
             <SubscribeForm minimal />
 
