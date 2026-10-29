@@ -12,7 +12,7 @@ import type { SiteNavLink } from '@/lib/site'
 import { isSponsorActive } from '@/lib/sponsor'
 import { productPlan, profile } from '@/lib/portfolio'
 import { GitHubIcon, MailIcon, RssIcon, SearchIcon, ThreadsIcon, WhatsAppIcon, XIcon } from './icons'
-import { ProductIndex, TimeLines } from './HomeParts'
+import { HomeBackdrop, ProductIndex, TimeLines } from './HomeParts'
 import { TrafficStats } from './TrafficStats'
 import { PostTypeBadge } from '@/components/PostTypeBadge'
 import { PostUpdateBadge } from '@/components/PostUpdateBadge'
@@ -291,6 +291,7 @@ export function PortfolioHome({
       <div className="pf-root sv-root">
         <LangSync locale={locale} />
         <SiteIsland navLinks={navLinks} />
+        <HomeBackdrop />
 
         <div className="sv-page">
           <TimeLines />

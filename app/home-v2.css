@@ -783,6 +783,89 @@ a.hp-mono:hover {
   }
 }
 
+/* ---------- backdrop: coordinate grid lit by the cursor ---------- */
+.hp-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.hp-bg-grid,
+.hp-bg-spot {
+  position: absolute;
+  inset: 0;
+  background-size: 80px 80px;
+  background-position: 0 0;
+}
+
+.hp-bg-grid {
+  background-image:
+    linear-gradient(to right, rgb(var(--sv-rgb) / 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(var(--sv-rgb) / 0.045) 1px, transparent 1px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgb(0 0 0 / 0.55) 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, rgb(0 0 0 / 0.55) 100%);
+}
+
+.hp-bg-spot {
+  /* 同一张网格，但线更亮、交点多一个小十字，只在光标周围露出来 */
+  --hp-plus: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cpath d='M0 0.5h5M75 0.5h5M0 79.5h5M75 79.5h5M0.5 0v5M0.5 75v5M79.5 0v5M79.5 75v5' stroke='%232563eb' stroke-width='1.4'/%3E%3C/svg%3E");
+  background-image:
+    var(--hp-plus),
+    linear-gradient(to right, rgb(var(--sv-rgb) / 0.2) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(var(--sv-rgb) / 0.2) 1px, transparent 1px);
+  -webkit-mask-image: radial-gradient(240px circle at var(--hp-mx, 74%) var(--hp-my, 22%), #000, transparent 100%);
+  mask-image: radial-gradient(240px circle at var(--hp-mx, 74%) var(--hp-my, 22%), #000, transparent 100%);
+}
+
+.hp-bg-glow {
+  position: absolute;
+  top: -18vmax;
+  right: -14vmax;
+  width: 62vmax;
+  height: 62vmax;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(37 99 235 / 0.1), transparent);
+  animation: hp-drift 26s ease-in-out infinite alternate;
+}
+
+.hp-bg-coords {
+  position: absolute;
+  right: 20px;
+  bottom: 14px;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.7;
+}
+
+@keyframes hp-drift {
+  to {
+    transform: translate(-9vmax, 7vmax) scale(1.12);
+  }
+}
+
+.sv-page {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 760px) {
+  .hp-bg-grid,
+  .hp-bg-spot {
+    background-size: 56px 56px;
+  }
+
+  .hp-bg-spot {
+    background-size: 56px 56px, 56px 56px, 9px 1px, 1px 9px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hp-bg-glow {
+    animation: none;
+  }
+}
+
 /* ---------- responsive ---------- */
 @media (max-width: 900px) {
   .sv-statsrow {
@@ -851,6 +934,14 @@ a.hp-mono:hover {
     background-color: var(--hb-dark, #151412);
     color: #ece8df;
     color-scheme: dark;
+  }
+
+  .hp-bg-spot {
+    --hp-plus: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cpath d='M0 0.5h5M75 0.5h5M0 79.5h5M75 79.5h5M0.5 0v5M0.5 75v5M79.5 0v5M79.5 75v5' stroke='%237ea6ff' stroke-width='1.4'/%3E%3C/svg%3E");
+  }
+
+  .hp-bg-glow {
+    background: radial-gradient(closest-side, rgb(126 166 255 / 0.13), transparent);
   }
 
   .sv-root {

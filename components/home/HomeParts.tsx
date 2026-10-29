@@ -177,3 +177,42 @@ export function ProductIndex() {
     </section>
   )
 }
+
+/**
+ * 首页背景：一张淡淡的坐标网格（和 100 格索引同一种语言），鼠标靠近时网格和交叉点被“点亮”，
+ * 右下角用等宽字显示光标坐标；右上角一团很淡的强调色光慢慢漂移。纯装饰，不拦截鼠标。
+ */
+export function HomeBackdrop() {
+  const [coords, setCoords] = useState<string | null>(null)
+
+  useEffect(() => {
+    const root = document.documentElement
+    if (!window.matchMedia('(pointer: fine)').matches) return
+    let frame = 0
+    const onMove = (event: PointerEvent) => {
+      if (frame) return
+      frame = requestAnimationFrame(() => {
+        frame = 0
+        root.style.setProperty('--hp-mx', `${event.clientX}px`)
+        root.style.setProperty('--hp-my', `${event.clientY}px`)
+        setCoords(`X ${String(Math.round(event.clientX)).padStart(4, '0')} · Y ${String(Math.round(event.clientY)).padStart(4, '0')}`)
+      })
+    }
+    window.addEventListener('pointermove', onMove, { passive: true })
+    return () => {
+      window.removeEventListener('pointermove', onMove)
+      if (frame) cancelAnimationFrame(frame)
+      root.style.removeProperty('--hp-mx')
+      root.style.removeProperty('--hp-my')
+    }
+  }, [])
+
+  return (
+    <div className="hp-bg" aria-hidden="true">
+      <div className="hp-bg-glow" />
+      <div className="hp-bg-grid" />
+      <div className="hp-bg-spot" />
+      {coords && <span className="hp-bg-coords hp-mono">{coords}</span>}
+    </div>
+  )
+}
