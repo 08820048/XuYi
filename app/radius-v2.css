@@ -1,0 +1,43 @@
+/*
+ * XuYi shape language: tiny-radius rectangles.
+ * Every public-facing card, button, field and tag shares these three radii; circles stay circles
+ * (status dots, avatars), the island keeps its own notch geometry, the admin has its own theme.
+ */
+:is(.sv-root, .site-shell, .site-footer) {
+  --sv-r-xs: 2px;
+  --sv-r: 3px;
+  --sv-r-lg: 4px;
+}
+
+/* buttons, fields, tags, small controls → --sv-r */
+:is(.sv-root, .site-shell) :is(
+  .pf-btn, .pf-btn-dark, .pf-btn-light, .pf-btn-visit,
+  .kami-btn-primary, .kami-btn-secondary, .kami-input, .kami-tag,
+  .kami-pagination .kami-page-link, .kami-pagination .kami-page-active,
+  .pf-pager a, .pf-search-btn, .pf-sub-form input, .pf-sub-form input:focus,
+  .pf-stats-ranges, .pf-stats-ranges button, .pf-stats-pill,
+  .site-nav-action, .sv-lang, .sv-socials a, .hp-tag, .pf-badge,
+  .subscribe-submit, .cr-cite button
+) {
+  border-radius: var(--sv-r) !important;
+}
+
+/* cards, panels, media → --sv-r-lg */
+:is(.sv-root, .site-shell) :is(
+  .kami-card, .kami-note, .kami-modal, .cr-cite, .pf-stats-readout,
+  .diary-media, .kami-media, .rich-content img, .rich-content pre,
+  .novel-prose pre, .rich-content table, .novel-prose table
+) {
+  border-radius: var(--sv-r-lg) !important;
+}
+
+/* inline code and the tiniest chips → --sv-r-xs */
+:is(.sv-root, .site-shell) :is(.rich-content, .novel-prose) code {
+  border-radius: var(--sv-r-xs) !important;
+}
+
+/* the modal rendered by the footer (admin sign-in) */
+.site-footer ~ div .kami-modal,
+.kami-modal {
+  border-radius: var(--sv-r-lg);
+}

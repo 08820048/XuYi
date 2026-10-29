@@ -7,6 +7,7 @@ import { getSiteHeaderData, type SiteNavLink } from '@/lib/site'
 import { LOCALE_META, localePath, t, type Locale } from '@/lib/i18n'
 import '@/app/portfolio-home.css'
 import '@/app/home-v2.css'
+import '@/app/radius-v2.css'
 
 const PAGE_SIZE = 20
 const BASE_URL = getSiteUrl()

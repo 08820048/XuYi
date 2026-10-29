@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import '@/app/inner-v2.css'
+import '@/app/radius-v2.css'
 import { SiteIsland } from './SiteIsland'
 import { SiteFooter } from './SiteFooter'
 import { ShellRoot } from './ShellRoot'
