@@ -10,19 +10,14 @@ import { openIslandSearch } from '@/lib/island-search'
 import type { PostWithTags } from '@/lib/db'
 import type { SiteNavLink } from '@/lib/site'
 import { isSponsorActive } from '@/lib/sponsor'
-import { freeProject, productPlan, profile, projects, type Product } from '@/lib/portfolio'
-import { AppleIcon, GitHubIcon, MailIcon, RssIcon, SearchIcon, ThreadsIcon, WhatsAppIcon, XIcon } from './icons'
+import { productPlan, profile } from '@/lib/portfolio'
+import { GitHubIcon, MailIcon, RssIcon, SearchIcon, ThreadsIcon, WhatsAppIcon, XIcon } from './icons'
+import { ProductDesktop } from './ProductDesktop'
 import { TrafficStats } from './TrafficStats'
 import { PostTypeBadge } from '@/components/PostTypeBadge'
 import { PostUpdateBadge } from '@/components/PostUpdateBadge'
 
 export type HomeTab = 'work' | 'blog'
-
-function ctaLabel(product: Product, locale: Locale) {
-  if (locale === 'zh') return product.cta
-  if (product.cta.includes('购买')) return translate(locale, 'buy')
-  return product.cta.includes('→') ? `${translate(locale, 'visit')} →` : translate(locale, 'visit')
-}
 
 function ProductPlan() {
   const locale = useLocale()
@@ -211,77 +206,6 @@ function InlineSubscribe() {
   )
 }
 
-/** 单个产品卡片：封面（有截图的才有）+ 图标、名称、一句话简介 + 访问入口。整张卡片就是一个链接。 */
-function ProductCard({ product }: { product: Product }) {
-  const locale = useLocale()
-  const desc = locale === 'en' ? product.descEn : product.desc
-  // 封面只用图片（视频不在首页自动播放），取第一张
-  const cover = product.shots?.find((shot) => !/\.(mp4|webm|mov)$/i.test(shot))
-
-  return (
-    <a className={`pr-card${cover ? ' has-cover' : ''}`} href={product.link} target="_blank" rel="noreferrer">
-      {cover && (
-        <span className="pr-cover">
-          <img src={cover} alt="" loading="lazy" width={530} height={336} />
-        </span>
-      )}
-      <span className="pr-body">
-        <span className="pr-head">
-          <img className="pr-icon" src={product.logo} alt="" width={36} height={36} />
-          <h3>{product.name}</h3>
-          {product.badge && <span className="pr-badge">{product.badge}</span>}
-        </span>
-        <span className="pr-desc">{desc}</span>
-        <span className="pr-go">
-          {product.apple && <AppleIcon />}
-          {ctaLabel(product, locale).replace(/\s*→\s*$/, '')}
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M3.5 8.5 8.5 3.5M4 3.5h4.5V8" />
-          </svg>
-        </span>
-      </span>
-    </a>
-  )
-}
-
-function hasCover(product: Product) {
-  return Boolean(product.shots?.some((shot) => !/\.(mp4|webm|mov)$/i.test(shot)))
-}
-
-function ProductList() {
-  const groups = [
-    { label: 'FREE PROJECT', items: freeProject },
-    { label: 'PROJECTS', items: projects },
-  ]
-  return (
-    <div className="pr-list">
-      {groups.map((group) => {
-        const featured = group.items.filter(hasCover)
-        const plain = group.items.filter((product) => !hasCover(product))
-        return (
-          <section key={group.label} aria-label={group.label}>
-            <h2 className="pf-label pr-group">{group.label}</h2>
-            {featured.length > 0 && (
-              <div className="pr-grid">
-                {featured.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
-            )}
-            {plain.length > 0 && (
-              <div className={`pr-grid${featured.length > 0 ? ' pr-grid-after' : ''}`}>
-                {plain.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
-            )}
-          </section>
-        )
-      })}
-    </div>
-  )
-}
-
 function PostRows({ posts }: { posts: PostWithTags[] }) {
   const locale = useLocale()
   return (
@@ -403,7 +327,7 @@ export function PortfolioHome({
 
           {initialTab === 'work' ? (
             <>
-              <ProductList />
+              <ProductDesktop />
               {posts.length > 0 && (
                 <section className="sv-teaser" aria-label={t('tabWriting')}>
                   <div className="sv-sec-head">
