@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { formatArticleCopyrightText } from '@/lib/article-copyright'
 import { useT } from '@/lib/i18n-client'
 
@@ -17,6 +17,22 @@ export function ArticleCopyrightNotice({
 }) {
   const { locale, t } = useT()
   const clipboardNotice = formatArticleCopyrightText({ title, articleUrl, sourceUrl, locale })
+  const citationHead = locale === 'zh' ? `XuYi，《${title}》，` : `XuYi, “${title}”, `
+  const [copied, setCopied] = useState(false)
+  const timer = useRef<number | undefined>(undefined)
+
+  useEffect(() => () => window.clearTimeout(timer.current), [])
+
+  async function copyCitation() {
+    try {
+      await navigator.clipboard.writeText(`${citationHead}${articleUrl}`)
+    } catch {
+      return
+    }
+    setCopied(true)
+    window.clearTimeout(timer.current)
+    timer.current = window.setTimeout(() => setCopied(false), 1800)
+  }
 
   useEffect(() => {
     const container = document.getElementById(containerId)
@@ -58,26 +74,32 @@ export function ArticleCopyrightNotice({
 
   return (
     <section className="kami-note article-copyright-notice" aria-label={t('copyrightTitle')}>
-      <p className="kami-label">{t('copyrightTitle')}</p>
-      <p>{t('copyrightBody')}</p>
-      <p>
-        {t('articleLink')}
-        <a href={articleUrl}>
-          {articleUrl}
-        </a>
-      </p>
-      {sourceUrl && (
-        <p>
-          {t('sourceLink')}
-          <a
-            href={sourceUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {sourceUrl}
-          </a>
-        </p>
-      )}
+      <div className="cr-mark" aria-hidden="true">
+        <span>©</span>
+        <small>{new Date().getFullYear()}</small>
+      </div>
+      <div className="cr-body">
+        <p className="kami-label">{t('copyrightTitle')}</p>
+        <p className="cr-text">{t('copyrightBody')}</p>
+        <div className="cr-cite">
+          <code>
+            <span className="cr-prompt" aria-hidden="true">❯</span>
+            {citationHead}
+            <a href={articleUrl}>{articleUrl}</a>
+          </code>
+          <button type="button" onClick={copyCitation} aria-live="polite">
+            {copied ? `${t('copied')} ✓` : t('copyCitation')}
+          </button>
+        </div>
+        {sourceUrl && (
+          <p className="cr-source">
+            {t('sourceLink')}
+            <a href={sourceUrl} target="_blank" rel="noopener noreferrer">
+              {sourceUrl}
+            </a>
+          </p>
+        )}
+      </div>
     </section>
   )
 }

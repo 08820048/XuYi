@@ -337,9 +337,9 @@ body:has(.site-shell) {
   display: grid;
   grid-template-columns: 150px minmax(0, 1fr);
   column-gap: 28px;
-  row-gap: 8px;
+  align-items: start;
   margin-top: 0;
-  padding: 1.25rem 0 0;
+  padding: 1.5rem 0 0;
   border: 0;
   border-top: 1px solid var(--sv-line);
   border-radius: 0;
@@ -350,14 +350,40 @@ body:has(.site-shell) {
   line-height: 1.65;
 }
 
-.site-shell .article-copyright-notice > * {
-  grid-column: 2;
+/* big outlined © with the year, like a printer's mark */
+.site-shell .cr-mark {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  user-select: none;
+}
+
+.site-shell .cr-mark span {
+  font-family: var(--sv-display);
+  display: block;
+  font-size: 6.5rem;
+  line-height: 0.9;
+  color: transparent;
+  background: linear-gradient(160deg, rgb(var(--sv-accent-rgb) / 0.3), rgb(var(--sv-accent-rgb) / 0.04) 80%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-stroke: 1.2px var(--sv-accent);
+}
+
+.site-shell .cr-mark small {
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  color: color-mix(in srgb, var(--sv-ink) 52%, transparent);
+}
+
+.site-shell .cr-body > * {
   margin: 0;
 }
 
 .site-shell .article-copyright-notice .kami-label {
-  grid-column: 1;
-  grid-row: 1 / span 3;
+  margin-bottom: 10px;
   font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 10.5px;
   letter-spacing: 0.08em;
@@ -365,8 +391,57 @@ body:has(.site-shell) {
   color: color-mix(in srgb, var(--sv-ink) 52%, transparent);
 }
 
-.site-shell .article-copyright-notice a {
+.site-shell .cr-text {
+  max-width: 38em;
+}
+
+/* the citation, as a terminal line you can copy in one click */
+.site-shell .cr-cite {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 16px !important;
+  padding: 10px 10px 10px 14px;
+  border: 1px solid var(--sv-line);
+  border-radius: 10px;
+  background: var(--sv-card);
+}
+
+.site-shell .cr-cite code {
+  min-width: 0;
+  flex: 1;
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  line-height: 1.6;
   color: var(--sv-ink);
+  word-break: break-all;
+}
+
+.site-shell .cr-prompt {
+  margin-right: 10px;
+  color: var(--sv-accent);
+}
+
+.site-shell .cr-cite button {
+  flex: none;
+  padding: 5px 12px;
+  border: 1px solid var(--sv-line);
+  border-radius: 999px;
+  background: var(--sv-paper);
+  color: var(--sv-ink);
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.site-shell .cr-cite button:hover {
+  border-color: var(--sv-ink);
+  background: var(--sv-ink);
+  color: var(--sv-paper);
+}
+
+.site-shell .article-copyright-notice a {
+  color: inherit;
   text-decoration: none;
   border-bottom: 1px solid var(--sv-line);
   transition: border-color 0.2s, color 0.2s;
@@ -375,6 +450,33 @@ body:has(.site-shell) {
 .site-shell .article-copyright-notice a:hover {
   color: var(--sv-accent);
   border-bottom-color: var(--sv-accent);
+}
+
+.site-shell .cr-source {
+  margin-top: 10px !important;
+  font-size: 12px;
+  word-break: break-all;
+}
+
+@media (max-width: 760px) {
+  .site-shell .article-copyright-notice {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 14px;
+  }
+
+  .site-shell .cr-mark {
+    flex-direction: row;
+    align-items: baseline;
+  }
+
+  .site-shell .cr-mark span {
+    font-size: 3.5rem;
+  }
+
+  .site-shell .cr-cite {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }
 
 /* ---------- friend links ---------- */
@@ -560,15 +662,6 @@ body:has(.site-shell) {
     align-items: stretch;
   }
 
-  .site-shell .article-copyright-notice {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .site-shell .article-copyright-notice > *,
-  .site-shell .article-copyright-notice .kami-label {
-    grid-column: 1;
-    grid-row: auto;
-  }
 }
 
 /* ---------- mobile ---------- */
