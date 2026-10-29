@@ -89,13 +89,15 @@ body:has(.sv-root) {
 .sv-intro-side {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: 18px;
 }
 
 .sv-socials {
   gap: 4px;
-  margin-right: -8px;
+  /* 图标（18px）在 34px 的点击区里居中，左边还有 8px 空白；第一个邮件图标的线条又比它的画布内缩约 1.6px。
+     往左收 9.6px，让肉眼看到的图标左缘和上面“Follow on X”按钮的左缘严格对齐 */
+  margin-left: -9.6px;
 }
 
 .sv-socials a {
