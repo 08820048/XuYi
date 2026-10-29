@@ -159,6 +159,8 @@ export function TrafficStats({ tab }: { tab: 'work' | 'blog' }) {
   const ytickRefs = useRef<(HTMLSpanElement | null)[]>([])
 
   const reducedRef = useRef(false)
+  const hoverRef = useRef(false)
+  const pausedUntilRef = useRef(0)
   const darkRef = useRef(false)
   const viewRef = useRef<ReturnType<typeof buildView>>(null)
 
@@ -451,10 +453,29 @@ export function TrafficStats({ tab }: { tab: 'work' | 'blog' }) {
     plotRef.current?.classList.toggle('is-scrubbing', on)
   }
 
+  // 自动轮播 7 → 14 → 30 → 90 天，图表随之变形；鼠标停在上面、或刚手动点过，就先暂停
+  const hasData = !!data
+  useEffect(() => {
+    if (!hasData) return
+    const timer = window.setInterval(() => {
+      if (reducedRef.current || hoverRef.current || document.hidden || Date.now() < pausedUntilRef.current) return
+      setRange((current) => RANGES[(RANGES.indexOf(current) + 1) % RANGES.length])
+    }, tab === 'blog' ? 4700 : 4200)
+    return () => window.clearInterval(timer)
+  }, [hasData, tab])
+
   if (!view) return null
 
   return (
-    <div className="pf-stats">
+    <div
+      className="pf-stats"
+      onPointerEnter={() => {
+        hoverRef.current = true
+      }}
+      onPointerLeave={() => {
+        hoverRef.current = false
+      }}
+    >
       <div className="pf-stats-kpi">
         <div className="pf-stats-kpi-head">
           <span className="pf-stats-kpi-icon"><EyeGlyph /></span>
@@ -522,7 +543,10 @@ export function TrafficStats({ tab }: { tab: 'work' | 'blog' }) {
             type="button"
             role="tab"
             aria-selected={range === r}
-            onClick={() => setRange(r)}
+            onClick={() => {
+              pausedUntilRef.current = Date.now() + 12000
+              setRange(r)
+            }}
           >
             {isEn ? `${r}d` : `${r}天`}
           </button>
