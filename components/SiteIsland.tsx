@@ -279,7 +279,15 @@ export function SiteIsland({ navLinks }: { navLinks?: SiteNavLink[] }) {
           <div className="island-shape" />
           <div className="island-bar-shape" />
         </div>
-        <div className="island-ears" aria-hidden="true" />
+        <div className="island-ears" aria-hidden="true">
+          {/* 用矢量路径画凹角，边缘比 CSS 渐变的硬边更平滑 */}
+          <svg className="island-ear island-ear-l" viewBox="0 0 1 1" preserveAspectRatio="none" shapeRendering="geometricPrecision" focusable="false">
+            <path d="M0 0H1V1Q1 0 0 0Z" />
+          </svg>
+          <svg className="island-ear island-ear-r" viewBox="0 0 1 1" preserveAspectRatio="none" shapeRendering="geometricPrecision" focusable="false">
+            <path d="M0 0H1V1Q1 0 0 0Z" />
+          </svg>
+        </div>
 
         <div ref={rootRef} className={`island${expanded ? ' is-open' : ''}`}>
           <button

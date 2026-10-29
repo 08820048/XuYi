@@ -296,14 +296,11 @@
   top: -40px;
   bottom: -170px;
   pointer-events: none;
-  filter: drop-shadow(0 2px 5px rgb(0 0 0 / 0.14));
-  transition: filter 0.4s;
+  /* 平时这一层不加任何滤镜：形状直接用浏览器原生的圆角和 box-shadow 绘制，边缘最干净。
+     CSS 滤镜会把这一层单独栅格化，边缘容易出现锯齿和噪点。 */
 }
 
-.island-stack.is-open .island-goo {
-  filter: drop-shadow(0 8px 16px rgb(0 0 0 / 0.28));
-}
-
+/* 只有搜索条冒出来（和缩回去）时才用粘液滤镜 */
 .island-stack.is-goo .island-goo {
   filter: url(#island-goo) drop-shadow(0 8px 16px rgb(0 0 0 / 0.28));
 }
@@ -317,11 +314,62 @@
   bottom: 170px;
   border-radius: 0 0 10px 10px;
   background: var(--island-bg);
-  transition: border-radius 0.7s var(--island-spring);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.16);
+  transition: border-radius 0.7s var(--island-spring), box-shadow 0.4s;
 }
 
 .island-stack.is-open .island-shape {
   border-radius: 0 0 22px 22px;
+  box-shadow: 0 10px 26px rgb(0 0 0 / 0.26);
+}
+
+/* 粘液滤镜启用时，阴影交给滤镜里的 drop-shadow，避免重复 */
+.island-stack.is-goo .island-shape,
+.island-stack.is-goo .island-bar-shape {
+  box-shadow: none;
+}
+
+/* 刘海顶部两个向外张开的凹角（“耳朵”）：反向的四分之一圆。
+   画在滤镜层外面——这么细的尖角经过模糊 + 提高对比度后会被吃掉。 */
+.island-stack {
+  --notch-top: 6px;
+  transition: --notch-top 0.7s var(--island-spring);
+}
+
+.island-stack.is-open {
+  --notch-top: 19px;
+}
+
+.island-ears {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.island-ear {
+  position: absolute;
+  top: 0;
+  /* 比凹角本身多出 0.6px，压在刘海主体下面，避免两块之间出现一条细缝 */
+  width: calc(var(--notch-top) + 0.6px);
+  height: var(--notch-top);
+  fill: var(--island-bg);
+  overflow: visible;
+}
+
+.island-ear-l {
+  left: calc(var(--notch-top) * -1);
+}
+
+.island-ear-r {
+  right: calc(var(--notch-top) * -1);
+  transform: scaleX(-1);
+}
+
+.island-bar-shape {
+  box-shadow: none;
 }
 
 /* 刘海顶部两个向外张开的凹角（“耳朵”）：反向的四分之一圆。
