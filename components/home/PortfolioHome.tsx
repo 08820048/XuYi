@@ -3,13 +3,13 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { LangSync } from '@/components/LangSync'
+import { SiteFooter } from '@/components/SiteFooter'
 import { SiteIsland } from '@/components/SiteIsland'
 import { localePath, t as translate, type Locale } from '@/lib/i18n'
 import { useLocale } from '@/lib/i18n-client'
 import { openIslandSearch } from '@/lib/island-search'
 import type { PostWithTags } from '@/lib/db'
 import type { SiteNavLink } from '@/lib/site'
-import { isSponsorActive } from '@/lib/sponsor'
 import { productPlan, profile } from '@/lib/portfolio'
 import { GitHubIcon, MailIcon, RssIcon, SearchIcon, ThreadsIcon, WhatsAppIcon, XIcon } from './icons'
 import { HomeBackdrop, ProductIndex, TimeLines } from './HomeParts'
@@ -256,7 +256,6 @@ export function PortfolioHome({
 }) {
   const locale = useLocale()
   const t = (key: Parameters<typeof translate>[1]) => translate(locale, key)
-  const [sponsorActive] = useState(isSponsorActive)
   const bio = (locale === 'en' ? profile.bioEn : profile.bio).join('')
   const tagline = (locale === 'en' ? profile.blogTaglineEn : profile.blogTagline).trim()
 
@@ -382,32 +381,7 @@ export function PortfolioHome({
             <TrafficStats tab={initialTab} />
           </section>
 
-          <footer className="sv-foot">
-            <div className="sv-foot-row">
-              <div>
-                <p className="sv-foot-links">
-                  <Link href={localePath('/links', locale)}>{t('linksTitle')}</Link>
-                  <Link href={localePath('/diary', locale)}>{t('diaryTitle')}</Link>
-                </p>
-                <p>
-                  {t('collabContact')}{' '}
-                  <a href={`mailto:${profile.email}`}>{profile.email}</a>
-                </p>
-              </div>
-              <span className="hp-mono">
-                {String(productPlan.done).padStart(2, '0')} / {productPlan.goal}
-              </span>
-              {sponsorActive && (
-                <aside className="pf-sponsor" aria-label={t('sponsor')}>
-                  <span>{t('sponsor')}</span>
-                  <span aria-hidden="true">·</span>
-                  <a href="https://bufancv.com" target="_blank" rel="noopener noreferrer">
-                    AI简历
-                  </a>
-                </aside>
-              )}
-            </div>
-          </footer>
+          <SiteFooter navLinks={navLinks} />
         </div>
       </div>
     </>

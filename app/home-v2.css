@@ -250,33 +250,15 @@ body:has(.sv-root) {
   background: transparent;
 }
 
-/* ---------- footer ---------- */
-.sv-foot {
+/* ---------- footer: see footer-v2.css ---------- */
+.sv-page .site-footer {
   margin-top: 64px;
-  padding-top: 12px;
-  color: var(--pf-muted);
+  background: transparent !important;
 }
 
-.sv-foot-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 24px;
-  flex-wrap: wrap;
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid var(--sv-line);
-  font-size: 13px;
-}
-
-.sv-foot-links {
-  display: flex;
-  gap: 22px;
-  margin-bottom: 8px;
-}
-
-.sv-foot a:hover {
-  color: var(--sv-ink);
+.sv-page .ef {
+  max-width: none;
+  padding-inline: 0;
 }
 
 /* ---------- home v1 prototype: time lines, wordmark hero, 100 index, journal ---------- */

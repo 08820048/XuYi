@@ -60,17 +60,10 @@ body:has(.site-shell) {
   color: var(--sv-ink);
 }
 
-/* ---------- footer ---------- */
+/* ---------- footer (see footer-v2.css) ---------- */
 .site-shell .site-footer {
   margin-top: 3rem;
   background: transparent !important;
-  border-top: 1px solid var(--sv-line);
-}
-
-.site-shell .site-footer-inner {
-  font-size: 0.75rem;
-  letter-spacing: 0.04em;
-  color: var(--kami-stone);
 }
 
 /* ---------- page skeleton ---------- */
