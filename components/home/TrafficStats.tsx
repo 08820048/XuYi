@@ -130,6 +130,15 @@ function EyeGlyph() {
   )
 }
 
+// 首页同时放“作品”和“博客”两块统计，共用同一次请求
+let trafficRequest: Promise<TrafficResponse | null> | null = null
+function loadTraffic() {
+  trafficRequest ??= fetch(TRAFFIC_API)
+    .then((res) => (res.ok ? (res.json() as Promise<TrafficResponse>) : null))
+    .catch(() => null)
+  return trafficRequest
+}
+
 export function TrafficStats({ tab }: { tab: 'work' | 'blog' }) {
   const isEn = useLocale() === 'en'
   const [data, setData] = useState<TrafficResponse | null>(null)
@@ -191,12 +200,9 @@ export function TrafficStats({ tab }: { tab: 'work' | 'blog' }) {
 
   useEffect(() => {
     let alive = true
-    fetch(TRAFFIC_API)
-      .then((res) => (res.ok ? res.json() : null))
-      .then((body: TrafficResponse | null) => {
-        if (alive && body?.products) setData(body)
-      })
-      .catch(() => {})
+    loadTraffic().then((body) => {
+      if (alive && body?.products) setData(body)
+    })
     return () => {
       alive = false
     }

@@ -220,7 +220,8 @@ body:has(.sv-root) {
 /* ---------- plan + traffic stats ---------- */
 .sv-statsrow {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 56px;
   margin-top: 72px;
   padding-top: 32px;
   border-top: 1px solid var(--sv-line);

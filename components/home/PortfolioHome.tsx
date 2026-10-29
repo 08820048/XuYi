@@ -382,7 +382,8 @@ export function PortfolioHome({
           )}
 
           <section className="sv-statsrow" aria-label="Stats">
-            <TrafficStats tab={initialTab} />
+            <TrafficStats tab="work" />
+            <TrafficStats tab="blog" />
           </section>
 
           <SiteFooter navLinks={navLinks} />
