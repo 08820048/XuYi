@@ -21,6 +21,12 @@ export function SiteFooter({ navLinks }: { navLinks?: SiteNavLink[] }) {
   const pathname = usePathname()
   const locale = useLocale()
   const { footerLinks } = splitSiteNavLinks(navLinks)
+  // 友联、日记固定出现在页脚（后台的“日记导航”开关只管顶部灵动岛）；其余页脚项（如简历）照常显示
+  const pageLinks: SiteNavLink[] = [
+    { label: t(locale, 'linksTitle'), url: '/links', openInNewTab: false },
+    { label: t(locale, 'diaryTitle'), url: '/diary', openInNewTab: false },
+    ...footerLinks.filter((link) => link.url !== '/links' && link.url !== '/diary'),
+  ]
   useEffect(() => {
     if (open) {
       setTimeout(() => inputRef.current?.focus(), 50)
@@ -75,7 +81,7 @@ export function SiteFooter({ navLinks }: { navLinks?: SiteNavLink[] }) {
                 XuYi
               </button>
             )}
-            {footerLinks.map((link) => {
+            {pageLinks.map((link) => {
               const href = localePath(link.url, locale)
               const label = localizeNavLabel(link.label, locale)
               const active = pathname === href || pathname.startsWith(`${href}/`)
