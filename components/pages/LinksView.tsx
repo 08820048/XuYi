@@ -28,39 +28,53 @@ export async function LinksView({ lang = 'zh' }: { lang?: Locale }) {
       navLinks={headerData.navLinks}
     >
         <LangSync locale={lang} />
-        <header className="kami-page-header">
-          <p className="kami-label">00 · Links</p>
-          <h1 className="kami-display">{t(lang, 'linksTitle')}</h1>
-          <p className="kami-lead">{t(lang, 'linksLead')}</p>
+        <header className="pg-head">
+          <div className="pg-head-row">
+            <h1 className="pg-title">
+              {t(lang, 'linksTitle')} <em>/ Links</em>
+            </h1>
+            <span className="pg-count">{String(links.length).padStart(2, '0')}</span>
+          </div>
+          <p className="pg-lead">{t(lang, 'linksLead')}</p>
         </header>
 
         {links.length > 0 ? (
-          <div className="kami-card-grid">
-            {links.map((link, index) => (
-              <a
-                key={link.id}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="kami-card"
-              >
-                <div className="kami-card-avatar">
-                  {link.avatar_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={link.avatar_url} alt="" />
-                  ) : (
-                    link.name.slice(0, 1).toUpperCase()
-                  )}
-                </div>
-                <div className="min-w-0">
-                  <p className="kami-label">Link {String(index + 1).padStart(2, '0')}</p>
-                  <h2 className="kami-card-title">{link.name}</h2>
-                  <p className="kami-card-desc">
-                    {link.description || link.url}
-                  </p>
-                </div>
-              </a>
-            ))}
+          <div className="lk-grid">
+            {links.map((link, index) => {
+              let host = link.url
+              try {
+                host = new URL(link.url).host.replace(/^www\./, '')
+              } catch {}
+              return (
+                <a
+                  key={link.id}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="lk-cell"
+                >
+                  <span className="lk-top">
+                    <span className="lk-no">{String(index + 1).padStart(3, '0')}</span>
+                    <span className="lk-arrow" aria-hidden="true">↗</span>
+                  </span>
+                  <span className="lk-main">
+                    <span className="lk-avatar">
+                      {link.avatar_url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={link.avatar_url} alt="" />
+                      ) : (
+                        link.name.slice(0, 1).toUpperCase()
+                      )}
+                    </span>
+                    <span className="lk-text">
+                      <h2 className="lk-name">{link.name}</h2>
+                      <span className="lk-desc">{link.description || host}</span>
+                    </span>
+                  </span>
+                  <span className="lk-host">{host}</span>
+                </a>
+              )
+            })}
           </div>
         ) : (
           <p className="kami-empty">{t(lang, 'linksEmpty')}</p>

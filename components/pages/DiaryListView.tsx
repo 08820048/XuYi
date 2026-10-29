@@ -15,9 +15,10 @@ function formatDate(ts: number, lang: Locale) {
   const date = new Date(ts * 1000)
   const locale = LOCALE_META[lang].dateLocale
   return {
-    day: date.toLocaleDateString(locale, { day: '2-digit' }),
-    monthAndYear: date.toLocaleDateString(locale, { year: 'numeric', month: 'long' }),
+    day: String(date.getDate()).padStart(2, '0'),
+    monthKey: `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}`,
     weekday: date.toLocaleDateString(locale, { weekday: 'short' }),
+    time: date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit', hour12: false }),
     full: date.toLocaleDateString(locale, {
       year: 'numeric',
       month: 'long',
@@ -66,52 +67,64 @@ export async function DiaryListView({ page: pageStr, lang = 'zh' }: { page?: str
       mainId="diary-list"
     >
         <LangSync locale={lang} />
-        <header className="kami-page-header">
-          <p className="kami-label">00 · Diary</p>
-          <h1 className="kami-display">{t(lang, 'diaryTitle')}</h1>
-          <p className="kami-lead">
-            {t(lang, 'diaryLead')}
-          </p>
+        <header className="pg-head">
+          <div className="pg-head-row">
+            <h1 className="pg-title">
+              {t(lang, 'diaryTitle')} <em>/ Diary</em>
+            </h1>
+            <span className="pg-count">{String(totalCount).padStart(2, '0')}</span>
+          </div>
+          <p className="pg-lead">{t(lang, 'diaryLead')}</p>
         </header>
 
         {entries.length === 0 ? (
           <p className="kami-empty">{t(lang, 'diaryEmpty')}</p>
         ) : (
           <div>
-            <div className="kami-diary-list">
-              {highlightedEntries.map((entry) => {
+            <div className="dy-list">
+              {highlightedEntries.map((entry, index) => {
                 const date = formatDate(entry.published_at, lang)
                 const title = entry.title?.trim()
+                const previous = index > 0 ? formatDate(highlightedEntries[index - 1].published_at, lang) : null
+                const startsMonth = !previous || previous.monthKey !== date.monthKey
+                const monthCount = highlightedEntries.filter(
+                  (item) => formatDate(item.published_at, lang).monthKey === date.monthKey,
+                ).length
 
                 return (
-                  <article key={entry.slug} className="kami-diary">
-                    <time dateTime={new Date(entry.published_at * 1000).toISOString()} className="kami-diary-date">
-                      <span className="kami-metric">{date.day}</span>
-                      <span className="kami-diary-caption">{date.monthAndYear}</span>
-                      <span className="kami-diary-caption">{date.weekday}</span>
-                      <span className="sr-only">{date.full}</span>
-                    </time>
+                  <div key={entry.slug} className="dy-group">
+                    {startsMonth && (
+                      <div className="dy-month">
+                        <span>{date.monthKey}</span>
+                        <span>{String(monthCount).padStart(2, '0')}</span>
+                      </div>
+                    )}
+                    <article className="dy-entry">
+                      <time dateTime={new Date(entry.published_at * 1000).toISOString()} className="dy-date">
+                        <span className="dy-day">{date.day}</span>
+                        <span className="dy-meta">{date.weekday}</span>
+                        <span className="dy-meta">{date.time}</span>
+                        <span className="sr-only">{date.full}</span>
+                      </time>
+                      <span className="dy-node" aria-hidden="true" />
 
-                    <div className="min-w-0">
-                      {entry.cover_image ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={entry.cover_image}
-                          alt=""
-                          className="diary-media kami-media mb-7 aspect-[16/9] w-full object-cover sm:mb-8"
+                      <div className="dy-body">
+                        {entry.cover_image ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={entry.cover_image}
+                            alt=""
+                            className="diary-media kami-media mb-6 aspect-[16/9] w-full object-cover"
+                          />
+                        ) : null}
+                        {title ? <h2 className="dy-title">{title}</h2> : null}
+                        <div
+                          className="rich-content diary-content [text-wrap:pretty]"
+                          dangerouslySetInnerHTML={{ __html: entry.html }}
                         />
-                      ) : null}
-                      {title ? (
-                        <h2 className="kami-diary-title">
-                          {title}
-                        </h2>
-                      ) : null}
-                      <div
-                        className="rich-content diary-content [text-wrap:pretty]"
-                        dangerouslySetInnerHTML={{ __html: entry.html }}
-                      />
-                    </div>
-                  </article>
+                      </div>
+                    </article>
+                  </div>
                 )
               })}
             </div>
