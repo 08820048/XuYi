@@ -12,52 +12,19 @@ import type { SiteNavLink } from '@/lib/site'
 import { isSponsorActive } from '@/lib/sponsor'
 import { productPlan, profile } from '@/lib/portfolio'
 import { GitHubIcon, MailIcon, RssIcon, SearchIcon, ThreadsIcon, WhatsAppIcon, XIcon } from './icons'
-import { ProductDesktop } from './ProductDesktop'
+import { ProductIndex, TimeLines } from './HomeParts'
 import { TrafficStats } from './TrafficStats'
 import { PostTypeBadge } from '@/components/PostTypeBadge'
 import { PostUpdateBadge } from '@/components/PostUpdateBadge'
 
 export type HomeTab = 'work' | 'blog'
 
-function ProductPlan() {
-  const locale = useLocale()
-  const { goal, done } = productPlan
-  const percent = Math.round((done / goal) * 100)
-  return (
-    <section className="pf-plan" aria-label={translate(locale, 'planAria')}>
-      <h2 className="pf-label">100 Products</h2>
-      <div className="pf-plan-head">
-        <span className="pf-plan-count">{done}</span>
-        <span className="pf-plan-goal">/ {goal}</span>
-        <span className="pf-plan-percent">{percent}%</span>
-      </div>
-      <div
-        className="pf-plan-grid"
-        role="progressbar"
-        aria-valuemin={0}
-        aria-valuemax={goal}
-        aria-valuenow={done}
-        aria-label={translate(locale, 'planDone', { done, goal })}
-      >
-        {Array.from({ length: goal }, (_, i) => (
-          <i
-            key={i}
-            className={i < done ? 'is-done' : i === done ? 'is-next' : undefined}
-            style={i < done ? { animationDelay: `${i * 28}ms` } : undefined}
-          />
-        ))}
-      </div>
-      <p className="pf-plan-note">{translate(locale, 'planNote')}</p>
-    </section>
-  )
-}
-
-function formatDate(ts: number) {
+function dateParts(ts: number) {
   const d = new Date(ts * 1000)
-  const y = d.getFullYear()
-  const m = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-  return `${y}.${m}.${day}`
+  return {
+    year: String(d.getFullYear()),
+    day: `${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`,
+  }
 }
 
 function BlogSearch() {
@@ -209,17 +176,23 @@ function InlineSubscribe() {
 function PostRows({ posts }: { posts: PostWithTags[] }) {
   const locale = useLocale()
   return (
-    <div className="sv-posts">
-      {posts.map((post) => (
-        <Link key={post.slug} href={localePath(`/${post.slug}`, locale)} className="sv-post">
-          <span className="sv-post-title">
-            <h3>{post.title}</h3>
-            <PostTypeBadge type={post.post_type} lang={locale} />
-            <PostUpdateBadge post={post} />
-          </span>
-          <time dateTime={new Date(post.published_at * 1000).toISOString()}>{formatDate(post.published_at)}</time>
-        </Link>
-      ))}
+    <div className="hp-rows">
+      {posts.map((post) => {
+        const date = dateParts(post.published_at)
+        return (
+          <Link key={post.slug} href={localePath(`/${post.slug}`, locale)} className="hp-row">
+            <time className="hp-date" dateTime={new Date(post.published_at * 1000).toISOString()}>
+              {date.day}
+              <small>{date.year}</small>
+            </time>
+            <span className="hp-row-title">
+              <h3>{post.title}</h3>
+              <PostTypeBadge type={post.post_type} lang={locale} />
+              <PostUpdateBadge post={post} />
+            </span>
+          </Link>
+        )
+      })}
     </div>
   )
 }
@@ -287,6 +260,32 @@ export function PortfolioHome({
   const bio = (locale === 'en' ? profile.bioEn : profile.bio).join('')
   const tagline = (locale === 'en' ? profile.blogTaglineEn : profile.blogTagline).trim()
 
+  const intro = (
+    <div className="sv-intro-side">
+      <InlineSubscribe />
+      <div className="pf-socials sv-socials">
+        <a href={`mailto:${profile.email}`} aria-label={t('emailMe')}>
+          <MailIcon />
+        </a>
+        <a href={profile.xUrl} target="_blank" rel="noreferrer" aria-label="X">
+          <XIcon />
+        </a>
+        <a href={profile.github} target="_blank" rel="noreferrer" aria-label="GitHub">
+          <GitHubIcon />
+        </a>
+        <a href={profile.threads} target="_blank" rel="noreferrer" aria-label="Threads">
+          <ThreadsIcon />
+        </a>
+        <a href={profile.whatsapp} target="_blank" rel="noreferrer" aria-label="WhatsApp">
+          <WhatsAppIcon />
+        </a>
+        <a href="/feed.xml" aria-label="RSS">
+          <RssIcon />
+        </a>
+      </div>
+    </div>
+  )
+
   return (
     <>
       <div className="pf-root sv-root">
@@ -294,69 +293,95 @@ export function PortfolioHome({
         <SiteIsland navLinks={navLinks} />
 
         <div className="sv-page">
-          <header className="sv-intro">
-            <h1 aria-label={profile.name}>
-              {bio}
-              <br />
-              <em>{tagline}</em>
-            </h1>
-            <div className="sv-intro-side">
-              <InlineSubscribe />
-              <div className="pf-socials sv-socials">
-                <a href={`mailto:${profile.email}`} aria-label={t('emailMe')}>
-                  <MailIcon />
-                </a>
-                <a href={profile.xUrl} target="_blank" rel="noreferrer" aria-label="X">
-                  <XIcon />
-                </a>
-                <a href={profile.github} target="_blank" rel="noreferrer" aria-label="GitHub">
-                  <GitHubIcon />
-                </a>
-                <a href={profile.threads} target="_blank" rel="noreferrer" aria-label="Threads">
-                  <ThreadsIcon />
-                </a>
-                <a href={profile.whatsapp} target="_blank" rel="noreferrer" aria-label="WhatsApp">
-                  <WhatsAppIcon />
-                </a>
-                <a href="/feed.xml" aria-label="RSS">
-                  <RssIcon />
-                </a>
-              </div>
-            </div>
-          </header>
+          <TimeLines />
 
           {initialTab === 'work' ? (
             <>
-              <ProductDesktop />
+              <section className="hp-hero">
+                <div>
+                  <p className="hp-eyebrow hp-mono">
+                    <span className="hp-dot" />
+                    <span>
+                      No. {String(productPlan.done).padStart(3, '0')} / {productPlan.goal}
+                    </span>
+                    <span>{t('heroRole')}</span>
+                  </p>
+                  <h1 aria-label={profile.name}>
+                    Xu<em>Yi</em>
+                  </h1>
+                </div>
+                <div>
+                  <dl className="hp-spec">
+                    <div>
+                      <dt>{t('specProgress')}</dt>
+                      <dd>{translate(locale, 'specProgressValue', { done: productPlan.done, goal: productPlan.goal, percent: Math.round((productPlan.done / productPlan.goal) * 100) })}</dd>
+                    </div>
+                    <div>
+                      <dt>{t('specFocus')}</dt>
+                      <dd>{t('specFocusValue')}</dd>
+                    </div>
+                    <div>
+                      <dt>{t('specPrinciple')}</dt>
+                      <dd>{t('specPrincipleValue')}</dd>
+                    </div>
+                    <div>
+                      <dt>{t('specContact')}</dt>
+                      <dd>
+                        <a href={`mailto:${profile.email}`}>{profile.email}</a>
+                      </dd>
+                    </div>
+                  </dl>
+                  <p className="hp-bio">
+                    {bio}
+                    <br />
+                    <em>{tagline}</em>
+                  </p>
+                  {intro}
+                </div>
+              </section>
+
+              <ProductIndex />
               {posts.length > 0 && (
-                <section className="sv-teaser" aria-label={t('tabWriting')}>
-                  <div className="sv-sec-head">
-                    <h2>{t('tabWriting')}</h2>
-                    <Link href={localePath('/?tab=blog', locale)}>{t('viewAllPosts')} →</Link>
+                <section className="hp-journal" aria-label={t('tabWriting')}>
+                  <div className="hp-sec-head">
+                    <h2>
+                      {t('tabWriting')} <em>/ Journal</em>
+                    </h2>
+                    <Link className="hp-mono" href={localePath('/?tab=blog', locale)}>
+                      {t('viewAllPosts')} →
+                    </Link>
                   </div>
                   <PostRows posts={posts.slice(0, 4)} />
                 </section>
               )}
             </>
           ) : (
-            <section className="sv-writing">
-              <div className="sv-sec-head">
-                <h2>{t('tabWriting')}</h2>
-                <BlogSearch />
-              </div>
-              <BlogList posts={posts} currentPage={currentPage} totalPages={totalPages} />
-            </section>
+            <>
+              <header className="sv-intro">
+                <h1 aria-label={profile.name}>
+                  {bio}
+                  <br />
+                  <em>{tagline}</em>
+                </h1>
+                {intro}
+              </header>
+              <section className="hp-journal" aria-label={t('tabWriting')}>
+                <div className="hp-sec-head">
+                  <h2>
+                    {t('tabWriting')} <em>/ Journal</em>
+                  </h2>
+                  <BlogSearch />
+                </div>
+                <BlogList posts={posts} currentPage={currentPage} totalPages={totalPages} />
+              </section>
+            </>
           )}
 
           <section className="sv-statsrow" aria-label="Stats">
-            <ProductPlan />
             <TrafficStats tab={initialTab} />
           </section>
 
           <footer className="sv-foot">
-            <div className="sv-foot-big" aria-hidden="true">
-              Xu<i>Yi</i>
-            </div>
             <div className="sv-foot-row">
               <div>
                 <p className="sv-foot-links">
@@ -368,6 +393,9 @@ export function PortfolioHome({
                   <a href={`mailto:${profile.email}`}>{profile.email}</a>
                 </p>
               </div>
+              <span className="hp-mono">
+                {String(productPlan.done).padStart(2, '0')} / {productPlan.goal}
+              </span>
               {sponsorActive && (
                 <aside className="pf-sponsor" aria-label={t('sponsor')}>
                   <span>{t('sponsor')}</span>
