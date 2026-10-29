@@ -142,7 +142,7 @@ function loadTraffic() {
 export function TrafficStats({ tab }: { tab: 'work' | 'blog' }) {
   const isEn = useLocale() === 'en'
   const [data, setData] = useState<TrafficResponse | null>(null)
-  const [range, setRange] = useState<Range>(30)
+  const [range, setRange] = useState<Range>(7)
 
   const heroRef = useRef<HTMLDivElement>(null)
   const deltaRef = useRef<HTMLDivElement>(null)
