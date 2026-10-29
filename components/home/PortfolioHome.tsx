@@ -299,13 +299,6 @@ export function PortfolioHome({
             <>
               <section className="hp-hero">
                 <div>
-                  <p className="hp-eyebrow hp-mono">
-                    <span className="hp-dot" />
-                    <span>
-                      No. {String(productPlan.done).padStart(3, '0')} / {productPlan.goal}
-                    </span>
-                    <span>{t('heroRole')}</span>
-                  </p>
                   <div className="hp-mark">
                     <h1 aria-label={profile.name}>
                       <span className="hp-ch" aria-hidden="true">X</span>
@@ -318,7 +311,6 @@ export function PortfolioHome({
                     <div className="hp-guides" aria-hidden="true">
                       <span className="hp-guide is-cap"><b>CAP · 715</b></span>
                       <span className="hp-guide is-x"><b>X-HT · 512</b></span>
-                      <span className="hp-guide is-base"><b>BASE · 0</b></span>
                     </div>
                   </div>
                 </div>

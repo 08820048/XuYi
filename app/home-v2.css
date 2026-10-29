@@ -333,22 +333,6 @@ body:has(.sv-root) {
   border-bottom: 1px solid var(--sv-line);
 }
 
-.hp-eyebrow {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 16px;
-  margin-bottom: 34px;
-}
-
-.hp-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--sv-accent);
-  animation: hp-pulse 2.2s ease-in-out infinite;
-}
-
 .hp-mark {
   position: relative;
   font-size: clamp(96px, 19vw, 248px);
@@ -434,12 +418,6 @@ body:has(.sv-root) {
   animation-delay: 0.4s;
 }
 
-.hp-guide.is-base {
-  top: 0.633em;
-  border-top-color: var(--sv-accent);
-  animation-delay: 0.5s;
-}
-
 .hp-guide b {
   position: absolute;
   right: 0;
@@ -450,10 +428,6 @@ body:has(.sv-root) {
   letter-spacing: 0.08em;
   color: var(--pf-muted);
   animation: hp-fade 0.8s ease 1.1s both;
-}
-
-.hp-guide.is-base b {
-  color: var(--sv-accent);
 }
 
 @keyframes hp-letter {
@@ -892,7 +866,6 @@ a.hp-mono:hover {
 
   .hp-cell,
   .hp-fade,
-  .hp-dot,
   .hp-cell.is-next::before {
     animation: none !important;
   }
