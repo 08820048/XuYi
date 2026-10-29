@@ -74,7 +74,6 @@ export function SiteFooter({ navLinks }: { navLinks?: SiteNavLink[] }) {
           <div className="ef-grid">
             <div className="ef-brand">
               <p className="ef-label">{profile.name} — {t(locale, 'heroRole')}</p>
-              <p className="ef-lead">{(locale === 'en' ? profile.bioEn : profile.bio).join('').trim()}</p>
               {year && (
                 <p className="ef-year" aria-label={`${year.label} ${year.percent}%`}>
                   <span>{year.label}</span>
@@ -142,10 +141,6 @@ export function SiteFooter({ navLinks }: { navLinks?: SiteNavLink[] }) {
                 </aside>
               )}
             </div>
-          </div>
-
-          <div className="ef-mark" aria-hidden="true">
-            Xu<i>Yi</i>
           </div>
 
           <div className="ef-base">

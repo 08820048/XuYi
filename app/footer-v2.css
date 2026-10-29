@@ -9,7 +9,7 @@
   width: 100%;
   max-width: calc(var(--kami-page-width, 64rem) - 2 * var(--kami-page-gutter, 1.5rem));
   margin-inline: auto;
-  padding: 2.25rem 0 1.5rem;
+  padding: 1.75rem 0 1.25rem;
   border-top: 1px solid var(--ef-ink);
   color: var(--ef-ink);
   font-family: var(--sv-ui, var(--font-geist-sans), sans-serif);
@@ -32,21 +32,12 @@
   color: var(--ef-muted);
 }
 
-.ef-lead {
-  max-width: 17em;
-  margin: 0;
-  font-family: var(--sv-display, var(--sv-serif, "Newsreader", Georgia, serif));
-  font-size: 22px;
-  line-height: 1.35;
-  letter-spacing: -0.01em;
-}
-
 .ef-year {
   display: flex;
   align-items: center;
   gap: 12px;
   max-width: 17em;
-  margin: 26px 0 0;
+  margin: 0;
   font-family: var(--ef-mono);
   font-size: 10.5px;
   letter-spacing: 0.08em;
@@ -78,7 +69,7 @@
 
 .ef-col ul {
   display: grid;
-  gap: 9px;
+  gap: 7px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -118,7 +109,7 @@
 }
 
 .ef-sponsor {
-  margin-top: 26px;
+  margin-top: 18px;
 }
 
 .ef-sponsor .ef-label {
@@ -126,35 +117,13 @@
   margin-bottom: 8px;
 }
 
-/* ghost wordmark, cropped by the bottom edge */
-.ef-mark {
-  height: 0.6em;
-  margin: 48px 0 18px -0.03em;
-  overflow: hidden;
-  font-family: var(--sv-display, var(--sv-serif, "Newsreader", Georgia, serif));
-  font-size: clamp(96px, 24vw, 340px);
-  font-weight: 400;
-  line-height: 1;
-  letter-spacing: -0.05em;
-  color: transparent;
-  background: linear-gradient(to bottom, rgb(var(--ef-rgb) / 0.13), rgb(var(--ef-rgb) / 0.02) 90%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-stroke: 1px rgb(var(--ef-rgb) / 0.16);
-  user-select: none;
-  pointer-events: none;
-}
-
-.ef-mark i {
-  font-style: italic;
-}
-
 .ef-base {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px 22px;
-  padding-top: 16px;
+  margin-top: 24px;
+  padding-top: 14px;
   border-top: 1px solid var(--ef-line);
   font-family: var(--ef-mono);
   font-size: 10.5px;
