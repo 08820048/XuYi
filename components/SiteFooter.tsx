@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useState, useRef, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { refreshAdminSession, useAdminSession } from '@/lib/admin-session-client'
-import { isSponsorActive } from '@/lib/sponsor'
+import { getActiveSponsors } from '@/lib/sponsor'
 import { splitSiteNavLinks, type SiteNavLink } from '@/lib/site'
 import { localePath, localizeNavLabel, t } from '@/lib/i18n'
 import { useLocale } from '@/lib/i18n-client'
@@ -15,7 +15,7 @@ export function SiteFooter({ navLinks }: { navLinks?: SiteNavLink[] }) {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [sponsorActive] = useState(isSponsorActive)
+  const [sponsors] = useState(getActiveSponsors)
   const inputRef = useRef<HTMLInputElement>(null)
   const { authenticated: isAdmin } = useAdminSession()
   const pathname = usePathname()
@@ -100,12 +100,17 @@ export function SiteFooter({ navLinks }: { navLinks?: SiteNavLink[] }) {
                 </Link>
               )
             })}
-            {sponsorActive && (
+            {sponsors.length > 0 && (
               <span className="ef-sponsor" aria-label={t(locale, 'sponsor')}>
                 {t(locale, 'sponsor')} ·{' '}
-                <a href="https://bufancv.com" target="_blank" rel="noopener noreferrer">
-                  AI简历
-                </a>
+                {sponsors.map((sponsor, i) => (
+                  <span key={sponsor.url}>
+                    {i > 0 && ' / '}
+                    <a href={sponsor.url} target="_blank" rel="noopener noreferrer">
+                      {sponsor.name}
+                    </a>
+                  </span>
+                ))}
               </span>
             )}
             <a
